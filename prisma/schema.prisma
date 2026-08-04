@@ -121,8 +121,9 @@ model User {
   notifications    Notification[]
   messagesSent     Message[]      @relation("MessageSender")
   messagesReceived Message[]      @relation("MessageReceiver")
-  gallery          Gallery[]
-  contactRequests  ContactRequest[]
+  gallery              Gallery[]
+  certificatesIssued   Certificate[] @relation("CertificateIssuer")
+  certificatesReceived Certificate[] @relation("CertificateRecipient")
 
   @@index([email])
   @@index([role])
@@ -360,8 +361,8 @@ model Certificate {
   updatedAt   DateTime       @updatedAt
 
   tournament Tournament?    @relation(fields: [tournamentId], references: [id])
-  recipient  User           @relation(fields: [recipientId], references: [id])
-  issuer     User           @relation(fields: [issuerId], references: [id])
+  recipient  User           @relation("CertificateRecipient", fields: [recipientId], references: [id])
+  issuer     User           @relation("CertificateIssuer", fields: [issuerId], references: [id])
 
   @@index([recipientId])
   @@index([issuerId])

@@ -14,7 +14,7 @@ export const tournamentService = {
     status?: string;
     city?: string;
   }) {
-    const { tournaments, total } = await tournamentRepository.findMany(params);
+    const { tournaments, total } = await tournamentRepository.findMany({ ...params, sortOrder: "desc" });
     return { tournaments, total };
   },
 

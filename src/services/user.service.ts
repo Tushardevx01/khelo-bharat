@@ -101,7 +101,7 @@ export const userService = {
   },
 
   async getUsers(params: { page: number; pageSize: number; search?: string; role?: string }) {
-    const { users, total } = await userRepository.findMany(params);
+    const { users, total } = await userRepository.findMany({ ...params, sortOrder: "desc" });
     return {
       users: users.map(({ password: _, ...user }) => user),
       total,

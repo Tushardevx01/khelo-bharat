@@ -21,7 +21,8 @@ export async function uploadImage(
   file: File,
   folder: string = "khelo-bharat"
 ): Promise<UploadResult> {
-  if (!FILE_UPLOAD.ALLOWED_IMAGE_TYPES.includes(file.type)) {
+  const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+  if (!ALLOWED_TYPES.includes(file.type)) {
     throw new AppError("Invalid file type. Allowed: JPEG, PNG, WebP, GIF", 400);
   }
 

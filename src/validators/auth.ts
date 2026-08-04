@@ -10,9 +10,7 @@ export const registerSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
   password: z.string().min(6, "Password must be at least 6 characters").max(128, "Password must be at most 128 characters"),
   phone: z.string().regex(/^\+?[1-9]\d{9,14}$/, "Please enter a valid phone number").optional(),
-  role: z.enum(["ATHLETE", "SCHOOL_ADMIN", "COACH", "SPONSOR"], {
-    required_error: "Please select a role",
-  }),
+  role: z.enum(["ATHLETE", "SCHOOL_ADMIN", "COACH", "SPONSOR"]).optional(),
 });
 
 export const forgotPasswordSchema = z.object({

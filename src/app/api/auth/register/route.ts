@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
       return errorResponse("Validation failed", 400, details);
     }
 
-    const data = await userService.register(result.data);
+    const data = await userService.register({ ...result.data, role: result.data.role ?? "ATHLETE" });
     return successResponse(data, "Registration successful", 201);
   } catch (error) {
     if (error instanceof AppError) {

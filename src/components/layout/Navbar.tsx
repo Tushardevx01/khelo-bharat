@@ -90,7 +90,7 @@ export default function Navbar() {
             <div className="hidden lg:flex items-center gap-3">
               {user ? (
                 <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
+                  <DropdownMenuTrigger>
                     <Button variant="ghost" className="flex items-center gap-2 rounded-full">
                       <Avatar className="w-8 h-8">
                         <AvatarImage src={undefined} />

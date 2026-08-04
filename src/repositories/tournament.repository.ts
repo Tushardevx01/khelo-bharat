@@ -4,7 +4,6 @@ import type { PaginationInput } from "@/types";
 
 type TournamentWithDetails = Tournament & {
   sport: { name: string; icon: string | null };
-  organizer: { name: string; avatar: string | null };
   _count: { registrations: number };
 };
 
@@ -14,7 +13,6 @@ export const tournamentRepository = {
       where: { id },
       include: {
         sport: { select: { name: true, icon: true } },
-        organizer: { select: { name: true, avatar: true } },
         _count: { select: { registrations: true } },
       },
     });
@@ -25,7 +23,6 @@ export const tournamentRepository = {
       where: { slug },
       include: {
         sport: { select: { name: true, icon: true } },
-        organizer: { select: { name: true, avatar: true } },
         _count: { select: { registrations: true } },
       },
     });
@@ -52,7 +49,6 @@ export const tournamentRepository = {
         where,
         include: {
           sport: { select: { name: true, icon: true } },
-          organizer: { select: { name: true, avatar: true } },
           _count: { select: { registrations: true } },
         },
         orderBy: { startDate: "asc" },
@@ -133,7 +129,6 @@ export const tournamentRepository = {
       },
       include: {
         sport: { select: { name: true, icon: true } },
-        organizer: { select: { name: true, avatar: true } },
         _count: { select: { registrations: true } },
       },
       orderBy: { startDate: "asc" },

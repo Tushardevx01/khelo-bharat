@@ -33,7 +33,7 @@ export const userRepository = {
     phone?: string;
     role: string;
   }): Promise<User> {
-    return prisma.user.create({ data });
+    return prisma.user.create({ data: { ...data, role: data.role as any } });
   },
 
   async update(
