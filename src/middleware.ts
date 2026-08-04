@@ -1,26 +1,23 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const publicRoutes = ["/", "/login", "/register", "/api/auth/*", "/api/contact", "/tournaments", "/api/health"];
-
-const roleBasedRoutes: Record<string, string[]> = {
-  SUPER_ADMIN: ["/admin"],
-  SCHOOL_ADMIN: ["/school"],
-  COACH: ["/coach"],
-  ATHLETE: ["/athlete"],
-  SPONSOR: ["/sponsor"],
-};
+const PUBLIC_PATHS = ["/", "/login", "/register", "/about", "/contact", "/tournaments", "/athletes", "/schools"];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Allow public routes
-  if (publicRoutes.some(route => pathname === route || pathname.startsWith(route.replace("*", "")))) {
+  // Allow public paths
+  if (PUBLIC_PATHS.some((path) => pathname === path)) {
     return NextResponse.next();
   }
 
-  // Allow static files and Next.js internals
-  if (pathname.startsWith("/_next") || pathname.startsWith("/api") || pathname.includes(".")) {
+  // Allow API routes, static files, and Next.js internals
+  if (
+    pathname.startsWith("/api") ||
+    pathname.startsWith("/_next") ||
+    pathname.startsWith("/favicon") ||
+    pathname.includes(".")
+  ) {
     return NextResponse.next();
   }
 

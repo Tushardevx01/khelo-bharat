@@ -1,7 +1,6 @@
 "use client";
 
 import { Bell, Search } from "lucide-react";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
@@ -21,11 +20,7 @@ export default function DashboardHeader({ title, subtitle, notificationCount = 0
       <div className="flex items-center gap-4">
         <div className="hidden md:flex items-center gap-2 bg-gray-100 dark:bg-gray-900 rounded-xl px-4 py-2.5">
           <Search className="w-4 h-4 text-gray-400" />
-          <input
-            type="text"
-            placeholder="Search..."
-            className="bg-transparent border-none outline-none text-sm w-48"
-          />
+          <input type="text" placeholder="Search..." className="bg-transparent border-none outline-none text-sm w-48" />
         </div>
         <Button variant="outline" size="icon" className="relative rounded-xl">
           <Bell className="w-5 h-5" />

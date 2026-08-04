@@ -1,17 +1,10 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-  role: string;
-  avatar: string | null;
-}
+import type { UserPayload } from "@/types";
 
 export function useAuth() {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<UserPayload | null>(null);
   const [loading, setLoading] = useState(true);
 
   const fetchUser = useCallback(async () => {
@@ -19,7 +12,7 @@ export function useAuth() {
       const res = await fetch("/api/auth/me");
       const data = await res.json();
       if (data.success) {
-        setUser(data.user);
+        setUser(data.data.user);
       } else {
         setUser(null);
       }

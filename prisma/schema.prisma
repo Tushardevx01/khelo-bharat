@@ -6,6 +6,8 @@ datasource db {
   provider = "postgresql"
 }
 
+// ─── Enums ───────────────────────────────────────────────────────────────────
+
 enum UserRole {
   SUPER_ADMIN
   SCHOOL_ADMIN
@@ -15,17 +17,10 @@ enum UserRole {
 }
 
 enum OrganizerType {
+  ADMIN
   SCHOOL
   COACH
   SPONSOR
-  ADMIN
-}
-
-enum TournamentFormat {
-  LEAGUE
-  KNOCKOUT
-  GROUP
-  MIXED
 }
 
 enum TournamentStatus {
@@ -38,10 +33,11 @@ enum TournamentStatus {
   CANCELLED
 }
 
-enum RegistrationParticipantType {
-  ATHLETE
-  SCHOOL
-  TEAM
+enum TournamentFormat {
+  LEAGUE
+  KNOCKOUT
+  GROUP
+  MIXED
 }
 
 enum RegistrationStatus {
@@ -51,11 +47,10 @@ enum RegistrationStatus {
   CANCELLED
 }
 
-enum FixtureStatus {
-  SCHEDULED
-  LIVE
-  COMPLETED
-  CANCELLED
+enum RegistrationParticipantType {
+  ATHLETE
+  SCHOOL
+  TEAM
 }
 
 enum CertificateType {
@@ -72,15 +67,11 @@ enum NotificationType {
   ERROR
 }
 
-enum GalleryType {
-  IMAGE
-  VIDEO
-}
-
-enum SponsorshipType {
-  ATHLETE
-  SCHOOL
-  TOURNAMENT
+enum ContactStatus {
+  PENDING
+  READ
+  REPLIED
+  ARCHIVED
 }
 
 enum SponsorshipStatus {
@@ -90,124 +81,131 @@ enum SponsorshipStatus {
   CANCELLED
 }
 
-enum ContactRequestStatus {
-  PENDING
-  READ
-  REPLIED
-  ARCHIVED
+enum SponsorshipType {
+  ATHLETE
+  SCHOOL
+  TOURNAMENT
 }
 
+enum GalleryType {
+  IMAGE
+  VIDEO
+}
+
+enum FixtureStatus {
+  SCHEDULED
+  LIVE
+  COMPLETED
+  CANCELLED
+}
+
+// ─── Models ──────────────────────────────────────────────────────────────────
+
 model User {
-  id            String    @id @default(uuid())
-  email         String    @unique
+  id            String   @id @default(uuid())
+  email         String   @unique
   password      String
   name          String
   phone         String?
   role          UserRole
   avatar        String?
   emailVerified DateTime?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-  athleteProfile       AthleteProfile?
-  schoolProfile        SchoolProfile?
-  coachProfile         CoachProfile?
-  sponsorProfile       SponsorProfile?
-  notifications        Notification[]
-  galleries            Gallery[]
-  sentMessages         Message[]       @relation("Sender")
-  receivedMessages     Message[]       @relation("Receiver")
-  organizerTournaments Tournament[]    @relation("Organizer")
+  athleteProfile   AthleteProfile?
+  schoolProfile    SchoolProfile?
+  coachProfile     CoachProfile?
+  sponsorProfile   SponsorProfile?
+  notifications    Notification[]
+  messagesSent     Message[]      @relation("MessageSender")
+  messagesReceived Message[]      @relation("MessageReceiver")
+  gallery          Gallery[]
+  contactRequests  ContactRequest[]
 
   @@index([email])
   @@index([role])
+  @@index([createdAt])
 }
 
 model AthleteProfile {
-  id                String    @id @default(uuid())
-  userId            String    @unique
-  dateOfBirth       DateTime?
-  gender            String?
-  address           String?
-  city              String?
-  state             String?
-  pincode           String?
-  latitude          Float?
-  longitude         Float?
-  bio               String?
-  sports            String?
-  position          String?
-  schoolId          String?
-  coachId           String?
-  achievementsCount Int       @default(0)
-  certificatesCount Int       @default(0)
-  ranking           Int?
-  createdAt         DateTime  @default(now())
-  updatedAt         DateTime  @updatedAt
+  id               String   @id @default(uuid())
+  userId           String   @unique
+  dateOfBirth      DateTime?
+  gender           String?
+  address          String?
+  city             String?
+  state            String?
+  pincode          String?
+  latitude         Float?
+  longitude        Float?
+  bio              String?
+  sports           String?
+  position         String?
+  schoolId         String?
+  coachId          String?
+  achievementsCount Int     @default(0)
+  certificatesCount Int     @default(0)
+  ranking          Int?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
 
-  user                User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
-  school              SchoolProfile?       @relation(fields: [schoolId], references: [id], onDelete: SetNull)
-  coach               CoachProfile?        @relation(fields: [coachId], references: [id], onDelete: SetNull)
-  athleteSports       AthleteSport[]
+  user                User              @relation(fields: [userId], references: [id], onDelete: Cascade)
   achievements        Achievement[]
   performanceRecords  PerformanceRecord[]
-  certificates        Certificate[]        @relation("AthleteCertificates")
-  sponsorshipRequests SponsorshipRequest[] @relation("AthleteSponsorships")
+  athleteSports       AthleteSport[]
 
   @@index([userId])
-  @@index([schoolId])
-  @@index([coachId])
+  @@index([ranking])
   @@index([city, state])
 }
 
 model SchoolProfile {
-  id              String   @id @default(uuid())
-  userId          String   @unique
-  name            String
-  type            String?
-  address         String?
-  city            String?
-  state           String?
-  pincode         String?
-  latitude        Float?
-  longitude       Float?
-  website         String?
-  phone           String?
-  email           String?
-  logo            String?
-  description     String?
+  id           String   @id @default(uuid())
+  userId       String   @unique
+  name         String
+  type         String
+  address      String
+  city         String
+  state        String
+  pincode      String?
+  latitude     Float?
+  longitude    Float?
+  website      String?
+  phone        String?
+  email        String?
+  logo         String?
+  description  String?
   establishedYear Int?
-  totalStudents   Int?
-  totalSports     Int?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  totalStudents   Int  @default(0)
+  totalSports     Int  @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-  user                User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
-  athletes            AthleteProfile[]
-  sponsorshipRequests SponsorshipRequest[] @relation("SchoolSponsorships")
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([city, state])
 }
 
 model CoachProfile {
-  id             String   @id @default(uuid())
-  userId         String   @unique
-  specialization String?
-  experience     Int?
-  certifications String?
-  bio            String?
-  latitude       Float?
-  longitude      Float?
-  address        String?
-  city           String?
-  state          String?
-  hourlyRate     Float?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id              String   @id @default(uuid())
+  userId          String   @unique
+  specialization  String?
+  experience      Int?
+  certifications  String?
+  bio             String?
+  address         String?
+  city            String?
+  state           String?
+  latitude        Float?
+  longitude       Float?
+  hourlyRate      Float?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
-  user     User             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  athletes AthleteProfile[]
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([city, state])
@@ -225,15 +223,14 @@ model SponsorProfile {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  user                User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
-  sponsorshipRequests SponsorshipRequest[] @relation("SponsorSponsorships")
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
 }
 
 model Sport {
   id          String   @id @default(uuid())
-  name        String
+  name        String   @unique
   slug        String   @unique
   icon        String?
   description String?
@@ -242,12 +239,11 @@ model Sport {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  tournaments        Tournament[]
+  tournaments      Tournament[]
   performanceRecords PerformanceRecord[]
-  athleteSports      AthleteSport[]
+  athleteSports     AthleteSport[]
 
   @@index([slug])
-  @@index([category])
   @@index([isActive])
 }
 
@@ -261,46 +257,44 @@ model Tournament {
   organizerType        OrganizerType
   startDate            DateTime
   endDate              DateTime
-  registrationDeadline DateTime?
-  location             String?
+  registrationDeadline DateTime
+  location             String
   address              String?
-  city                 String?
-  state                String?
+  city                 String
+  state                String
   latitude             Float?
   longitude            Float?
   format               TournamentFormat
-  maxParticipants      Int?
-  entryFee             Float?
-  prizePool            Float?
+  maxParticipants      Int
+  entryFee             Float            @default(0)
+  prizePool            Float            @default(0)
   status               TournamentStatus @default(DRAFT)
   imageUrl             String?
   createdAt            DateTime         @default(now())
   updatedAt            DateTime         @updatedAt
 
-  sport               Sport                    @relation(fields: [sportId], references: [id], onDelete: Cascade)
-  organizer           User                     @relation("Organizer", fields: [organizerId], references: [id], onDelete: Cascade)
-  registrations       TournamentRegistration[]
-  fixtures            TournamentFixture[]
-  certificates        Certificate[]
-  sponsorshipRequests SponsorshipRequest[]
+  sport         Sport                 @relation(fields: [sportId], references: [id])
+  registrations TournamentRegistration[]
+  fixtures      TournamentFixture[]
+  certificates  Certificate[]
 
-  @@index([slug])
   @@index([sportId])
   @@index([organizerId])
   @@index([status])
   @@index([startDate])
   @@index([city, state])
+  @@index([createdAt])
 }
 
 model TournamentRegistration {
-  id              String                      @id @default(uuid())
+  id              String                    @id @default(uuid())
   tournamentId    String
   participantId   String
   participantType RegistrationParticipantType
-  status          RegistrationStatus          @default(PENDING)
-  registeredAt    DateTime                    @default(now())
-  createdAt       DateTime                    @default(now())
-  updatedAt       DateTime                    @updatedAt
+  status          RegistrationStatus        @default(PENDING)
+  registeredAt    DateTime                  @default(now())
+  createdAt       DateTime                  @default(now())
+  updatedAt       DateTime                  @updatedAt
 
   tournament Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
 
@@ -315,8 +309,8 @@ model TournamentFixture {
   tournamentId   String
   round          Int
   matchNumber    Int
-  participant1Id String
-  participant2Id String
+  participant1Id String?
+  participant2Id String?
   winnerId       String?
   score1         Int?
   score2         Int?
@@ -330,49 +324,50 @@ model TournamentFixture {
 
   @@index([tournamentId])
   @@index([round, matchNumber])
-  @@index([status])
 }
 
 model Achievement {
-  id          String    @id @default(uuid())
+  id          String   @id @default(uuid())
   athleteId   String
   title       String
   description String?
-  date        DateTime?
-  category    String?
+  date        DateTime
+  category    String
   imageUrl    String?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   athlete AthleteProfile @relation(fields: [athleteId], references: [id], onDelete: Cascade)
 
   @@index([athleteId])
   @@index([category])
+  @@index([date])
 }
 
 model Certificate {
-  id           String          @id @default(uuid())
-  title        String
-  description  String?
-  type         CertificateType
-  recipientId  String
-  issuerId     String
+  id          String         @id @default(uuid())
+  title       String
+  description String?
+  type        CertificateType
+  recipientId String
+  issuerId    String
   tournamentId String?
-  athleteId    String?
-  qrCode       String?
-  pdfUrl       String?
-  issuedAt     DateTime        @default(now())
-  createdAt    DateTime        @default(now())
-  updatedAt    DateTime        @updatedAt
+  athleteId   String?
+  qrCode      String?
+  pdfUrl      String?
+  issuedAt    DateTime       @default(now())
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
 
-  tournament Tournament?     @relation(fields: [tournamentId], references: [id], onDelete: SetNull)
-  athlete    AthleteProfile? @relation("AthleteCertificates", fields: [athleteId], references: [id], onDelete: SetNull)
+  tournament Tournament?    @relation(fields: [tournamentId], references: [id])
+  recipient  User           @relation(fields: [recipientId], references: [id])
+  issuer     User           @relation(fields: [issuerId], references: [id])
 
   @@index([recipientId])
   @@index([issuerId])
   @@index([tournamentId])
-  @@index([athleteId])
   @@index([type])
+  @@index([issuedAt])
 }
 
 model Notification {
@@ -388,8 +383,7 @@ model Notification {
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([userId])
-  @@index([isRead])
+  @@index([userId, isRead])
   @@index([createdAt])
 }
 
@@ -400,13 +394,13 @@ model PerformanceRecord {
   date      DateTime
   metric    String
   value     Float
-  unit      String?
+  unit      String
   notes     String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   athlete AthleteProfile @relation(fields: [athleteId], references: [id], onDelete: Cascade)
-  sport   Sport          @relation(fields: [sportId], references: [id], onDelete: Cascade)
+  sport   Sport          @relation(fields: [sportId], references: [id])
 
   @@index([athleteId])
   @@index([sportId])
@@ -426,16 +420,9 @@ model SponsorshipRequest {
   createdAt    DateTime          @default(now())
   updatedAt    DateTime          @updatedAt
 
-  sponsor    SponsorProfile  @relation("SponsorSponsorships", fields: [sponsorId], references: [id], onDelete: Cascade)
-  athlete    AthleteProfile? @relation("AthleteSponsorships", fields: [athleteId], references: [id], onDelete: SetNull)
-  school     SchoolProfile?  @relation("SchoolSponsorships", fields: [schoolId], references: [id], onDelete: SetNull)
-  tournament Tournament?     @relation(fields: [tournamentId], references: [id], onDelete: SetNull)
-
   @@index([sponsorId])
-  @@index([athleteId])
-  @@index([schoolId])
-  @@index([tournamentId])
   @@index([status])
+  @@index([type])
 }
 
 model Gallery {
@@ -461,10 +448,9 @@ model Message {
   content    String
   isRead     Boolean  @default(false)
   createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
 
-  sender   User @relation("Sender", fields: [senderId], references: [id], onDelete: Cascade)
-  receiver User @relation("Receiver", fields: [receiverId], references: [id], onDelete: Cascade)
+  sender   User @relation("MessageSender", fields: [senderId], references: [id])
+  receiver User @relation("MessageReceiver", fields: [receiverId], references: [id])
 
   @@index([senderId])
   @@index([receiverId])
@@ -472,30 +458,30 @@ model Message {
 }
 
 model ContactRequest {
-  id        String               @id @default(uuid())
+  id        String        @id @default(uuid())
   name      String
   email     String
   phone     String?
-  subject   String?
+  subject   String
   message   String
-  status    ContactRequestStatus @default(PENDING)
-  createdAt DateTime             @default(now())
-  updatedAt DateTime             @updatedAt
+  status    ContactStatus @default(PENDING)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
 
   @@index([status])
   @@index([createdAt])
 }
 
 model AthleteSport {
-  id           String   @id @default(uuid())
-  athleteId    String
-  sportId      String
-  level        String?
+  id          String   @id @default(uuid())
+  athleteId   String
+  sportId     String
+  level       String?
   achievements String?
-  createdAt    DateTime @default(now())
+  createdAt   DateTime @default(now())
 
   athlete AthleteProfile @relation(fields: [athleteId], references: [id], onDelete: Cascade)
-  sport   Sport          @relation(fields: [sportId], references: [id], onDelete: Cascade)
+  sport   Sport          @relation(fields: [sportId], references: [id])
 
   @@unique([athleteId, sportId])
   @@index([athleteId])

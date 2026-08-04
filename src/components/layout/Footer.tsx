@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Trophy, Mail, Phone, MapPin } from "lucide-react";
 
-const footerLinks = {
+const FOOTER_LINKS = {
   Platform: [
     { label: "About Us", href: "/about" },
     { label: "Tournaments", href: "/tournaments" },
@@ -11,8 +11,6 @@ const footerLinks = {
   ],
   Resources: [
     { label: "Help Center", href: "/help" },
-    { label: "Blog", href: "/blog" },
-    { label: "Careers", href: "/careers" },
     { label: "Privacy Policy", href: "/privacy" },
     { label: "Terms of Service", href: "/terms" },
   ],
@@ -23,7 +21,7 @@ const footerLinks = {
     { label: "Athletics", href: "/tournaments?sport=athletics" },
     { label: "Swimming", href: "/tournaments?sport=swimming" },
   ],
-};
+} as const;
 
 export default function Footer() {
   return (
@@ -38,7 +36,7 @@ export default function Footer() {
               <span className="text-xl font-bold text-white">Khelo Bharat</span>
             </Link>
             <p className="text-sm leading-relaxed mb-6">
-              India&apos;s premier sports ecosystem platform connecting athletes, schools, coaches, tournament organizers, and sponsors. Empowering sports talent across the nation.
+              India&apos;s premier sports ecosystem platform connecting athletes, schools, coaches, tournament organizers, and sponsors.
             </p>
             <div className="space-y-3">
               <div className="flex items-center gap-3 text-sm">
@@ -56,7 +54,7 @@ export default function Footer() {
             </div>
           </div>
 
-          {Object.entries(footerLinks).map(([title, links]) => (
+          {Object.entries(FOOTER_LINKS).map(([title, links]) => (
             <div key={title}>
               <h3 className="text-white font-semibold mb-4">{title}</h3>
               <ul className="space-y-3">
@@ -73,7 +71,7 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-gray-800 mt-12 pt-8 text-center text-sm">
-          <p>© {new Date().getFullYear()} Khelo Bharat. All rights reserved. Built with ❤️ for Indian Sports.</p>
+          <p>&copy; {new Date().getFullYear()} Khelo Bharat. All rights reserved.</p>
         </div>
       </div>
     </footer>

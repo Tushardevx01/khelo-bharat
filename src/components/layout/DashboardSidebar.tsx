@@ -5,10 +5,9 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  LayoutDashboard, Users, Trophy, Medal, GraduationCap,
-  Settings, Bell, FileText, BarChart3, Calendar, MapPin,
-  ChevronLeft, ChevronRight, LogOut, User, Target,
-  Image, Award, MessageSquare, Handshake, Megaphone
+  LayoutDashboard, Users, Trophy, Medal, GraduationCap, Settings, Bell,
+  FileText, BarChart3, Calendar, MapPin, ChevronLeft, ChevronRight, LogOut,
+  User, Target, Image, Award, MessageSquare, Handshake, Megaphone,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -18,7 +17,6 @@ interface SidebarLink {
   label: string;
   href: string;
   icon: React.ComponentType<{ className?: string }>;
-  badge?: number;
 }
 
 interface DashboardSidebarProps {
@@ -27,7 +25,7 @@ interface DashboardSidebarProps {
   notificationCount?: number;
 }
 
-const roleConfigs: Record<string, { links: SidebarLink[]; color: string }> = {
+const ROLE_CONFIGS: Record<string, { links: SidebarLink[]; color: string }> = {
   SUPER_ADMIN: {
     color: "from-[#FF6B35] to-[#D72638]",
     links: [
@@ -104,7 +102,7 @@ const roleConfigs: Record<string, { links: SidebarLink[]; color: string }> = {
 export default function DashboardSidebar({ role, user, notificationCount = 0 }: DashboardSidebarProps) {
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
-  const config = roleConfigs[role] || roleConfigs.ATHLETE;
+  const config = ROLE_CONFIGS[role] || ROLE_CONFIGS.ATHLETE;
 
   const handleLogout = async () => {
     await fetch("/api/auth/logout", { method: "POST" });
@@ -171,9 +169,6 @@ export default function DashboardSidebar({ role, user, notificationCount = 0 }: 
                   </motion.span>
                 )}
               </AnimatePresence>
-              {link.badge && !isCollapsed && (
-                <Badge className="ml-auto bg-red-500 text-white text-xs">{link.badge}</Badge>
-              )}
             </Link>
           );
         })}
@@ -181,32 +176,16 @@ export default function DashboardSidebar({ role, user, notificationCount = 0 }: 
 
       <div className="p-3 border-t border-gray-200 dark:border-gray-800 space-y-2">
         {notificationCount > 0 && (
-          <Link
-            href="/notifications"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-900"
-          >
+          <Link href="/notifications" className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-900">
             <Bell className="w-5 h-5" />
-            {!isCollapsed && (
-              <>
-                <span>Notifications</span>
-                <Badge className="ml-auto bg-red-500 text-white text-xs">{notificationCount}</Badge>
-              </>
-            )}
+            {!isCollapsed && <span>Notifications</span>}
           </Link>
         )}
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 w-full"
-        >
+        <button onClick={handleLogout} className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-950/20 w-full">
           <LogOut className="w-5 h-5" />
           {!isCollapsed && <span>Logout</span>}
         </button>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setIsCollapsed(!isCollapsed)}
-          className="w-full rounded-xl"
-        >
+        <Button variant="ghost" size="icon" onClick={() => setIsCollapsed(!isCollapsed)} className="w-full rounded-xl">
           {isCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
         </Button>
       </div>

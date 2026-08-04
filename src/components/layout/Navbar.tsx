@@ -5,33 +5,38 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Trophy, ChevronDown, User, LogOut, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-  DropdownMenuSeparator
-} from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import type { UserPayload } from "@/types";
 
-const navLinks = [
+const NAV_LINKS = [
   { href: "/", label: "Home" },
   { href: "/tournaments", label: "Tournaments" },
   { href: "/athletes", label: "Athletes" },
   { href: "/schools", label: "Schools" },
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
-];
+] as const;
+
+const ROLE_DASHBOARD_MAP: Record<string, string> = {
+  SUPER_ADMIN: "/admin",
+  SCHOOL_ADMIN: "/school",
+  COACH: "/coach",
+  ATHLETE: "/athlete",
+  SPONSOR: "/sponsor",
+};
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const [user, setUser] = useState<{ id: string; name: string; email: string; role: string; avatar: string | null } | null>(null);
+  const [user, setUser] = useState<UserPayload | null>(null);
 
   useEffect(() => {
     fetch("/api/auth/me")
       .then((res) => res.json())
-      .then((data) => { if (data.success) setUser(data.user); })
+      .then((data) => {
+        if (data.success) setUser(data.data.user);
+      })
       .catch(() => {});
   }, []);
 
@@ -46,17 +51,7 @@ export default function Navbar() {
     window.location.href = "/";
   };
 
-  const getDashboardLink = () => {
-    if (!user) return "/login";
-    switch (user.role) {
-      case "SUPER_ADMIN": return "/admin";
-      case "SCHOOL_ADMIN": return "/school";
-      case "COACH": return "/coach";
-      case "ATHLETE": return "/athlete";
-      case "SPONSOR": return "/sponsor";
-      default: return "/dashboard";
-    }
-  };
+  const dashboardPath = user ? ROLE_DASHBOARD_MAP[user.role] || "/dashboard" : "/login";
 
   return (
     <>
@@ -81,7 +76,7 @@ export default function Navbar() {
             </Link>
 
             <div className="hidden lg:flex items-center gap-1">
-              {navLinks.map((link) => (
+              {NAV_LINKS.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
@@ -95,10 +90,10 @@ export default function Navbar() {
             <div className="hidden lg:flex items-center gap-3">
               {user ? (
                 <DropdownMenu>
-                  <DropdownMenuTrigger>
+                  <DropdownMenuTrigger asChild>
                     <Button variant="ghost" className="flex items-center gap-2 rounded-full">
                       <Avatar className="w-8 h-8">
-                        <AvatarImage src={user.avatar || undefined} />
+                        <AvatarImage src={undefined} />
                         <AvatarFallback className="bg-gradient-to-br from-[#FF6B35] to-[#D72638] text-white text-sm">
                           {user.name.charAt(0)}
                         </AvatarFallback>
@@ -109,7 +104,7 @@ export default function Navbar() {
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-48">
                     <DropdownMenuItem>
-                      <Link href={getDashboardLink()} className="flex items-center gap-2 w-full">
+                      <Link href={dashboardPath} className="flex items-center gap-2 w-full">
                         <LayoutDashboard className="w-4 h-4" />
                         Dashboard
                       </Link>
@@ -160,7 +155,7 @@ export default function Navbar() {
             className="fixed inset-0 z-40 bg-white dark:bg-gray-950 pt-20 px-6 lg:hidden"
           >
             <div className="flex flex-col gap-2">
-              {navLinks.map((link) => (
+              {NAV_LINKS.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
@@ -173,10 +168,8 @@ export default function Navbar() {
               <hr className="my-4" />
               {user ? (
                 <>
-                  <Link href={getDashboardLink()} onClick={() => setIsMobileOpen(false)}>
-                    <Button className="w-full rounded-full bg-gradient-to-r from-[#FF6B35] to-[#D72638] text-white">
-                      Dashboard
-                    </Button>
+                  <Link href={dashboardPath} onClick={() => setIsMobileOpen(false)}>
+                    <Button className="w-full rounded-full bg-gradient-to-r from-[#FF6B35] to-[#D72638] text-white">Dashboard</Button>
                   </Link>
                   <Button variant="outline" onClick={() => { handleLogout(); setIsMobileOpen(false); }} className="w-full rounded-full text-red-600">
                     Logout
@@ -188,9 +181,7 @@ export default function Navbar() {
                     <Button variant="outline" className="w-full rounded-full">Log in</Button>
                   </Link>
                   <Link href="/register" onClick={() => setIsMobileOpen(false)}>
-                    <Button className="w-full rounded-full bg-gradient-to-r from-[#FF6B35] to-[#D72638] text-white">
-                      Get Started
-                    </Button>
+                    <Button className="w-full rounded-full bg-gradient-to-r from-[#FF6B35] to-[#D72638] text-white">Get Started</Button>
                   </Link>
                 </>
               )}

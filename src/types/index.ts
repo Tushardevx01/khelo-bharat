@@ -1,68 +1,48 @@
-export type UserRole = "SUPER_ADMIN" | "SCHOOL_ADMIN" | "COACH" | "ATHLETE" | "SPONSOR";
+import { z } from "zod";
 
-export interface DashboardStats {
-  totalUsers: number;
-  totalAthletes: number;
-  totalSchools: number;
-  totalCoaches: number;
-  totalSponsors: number;
-  totalTournaments: number;
-  activeTournaments: number;
-  totalCertificates: number;
-}
-
-export interface TournamentWithDetails {
-  id: string;
-  title: string;
-  slug: string;
-  description: string | null;
-  startDate: Date;
-  endDate: Date;
-  registrationDeadline: Date;
-  location: string;
-  city: string;
-  state: string;
-  format: string;
-  maxParticipants: number;
-  entryFee: number;
-  prizePool: number;
-  status: string;
-  imageUrl: string | null;
-  sport: { name: string; icon: string | null };
-  organizer: { name: string; avatar: string | null };
-  _count: { registrations: number };
-}
-
-export interface AthleteWithProfile {
-  id: string;
-  name: string;
-  email: string;
-  avatar: string | null;
-  athleteProfile: {
-    dateOfBirth: Date | null;
-    gender: string | null;
-    city: string | null;
-    state: string | null;
-    bio: string | null;
-    sports: string | null;
-    position: string | null;
-    ranking: number | null;
-    achievementsCount: number;
-    certificatesCount: number;
-  };
-}
-
-export interface ApiResponse<T = unknown> {
+export type ApiResponse<T = null> = {
   success: boolean;
   data?: T;
   error?: string;
   message?: string;
-}
+};
 
-export interface PaginatedResponse<T> {
-  items: T[];
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
-}
+export type PaginatedResponse<T> = {
+  success: boolean;
+  data: T[];
+  pagination: {
+    page: number;
+    pageSize: number;
+    total: number;
+    totalPages: number;
+  };
+};
+
+export type PaginationParams = {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+};
+
+export const paginationSchema = z.object({
+  page: z.coerce.number().int().positive().default(1),
+  pageSize: z.coerce.number().int().positive().max(100).default(12),
+  search: z.string().optional(),
+  sortBy: z.string().optional(),
+  sortOrder: z.enum(["asc", "desc"]).default("desc"),
+});
+
+export type PaginationInput = z.infer<typeof paginationSchema>;
+
+export type UserPayload = {
+  userId: string;
+  email: string;
+  role: string;
+  name: string;
+};
+
+export type RouteParams = {
+  params: Promise<{ id: string }>;
+};

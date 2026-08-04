@@ -4,7 +4,6 @@ import { useState } from "react";
 import { Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 
 interface Column<T> {
   key: string;
@@ -19,24 +18,20 @@ interface DataTableProps<T> {
   searchable?: boolean;
   searchKey?: string;
   pageSize?: number;
-  onRowClick?: (item: T) => void;
 }
 
-export default function DataTable<T extends Record<string, any>>({
+export default function DataTable<T extends Record<string, unknown>>({
   columns,
   data,
   searchable = true,
   searchKey,
   pageSize = 10,
-  onRowClick,
 }: DataTableProps<T>) {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
 
   const filtered = searchKey
-    ? data.filter((item) =>
-        String(item[searchKey]).toLowerCase().includes(search.toLowerCase())
-      )
+    ? data.filter((item) => String(item[searchKey] ?? "").toLowerCase().includes(search.toLowerCase()))
     : data;
 
   const totalPages = Math.ceil(filtered.length / pageSize);
@@ -48,12 +43,7 @@ export default function DataTable<T extends Record<string, any>>({
         <div className="mb-4">
           <div className="relative max-w-sm">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-            <Input
-              placeholder="Search..."
-              value={search}
-              onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-              className="pl-10"
-            />
+            <Input placeholder="Search..." value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} className="pl-10" />
           </div>
         </div>
       )}
@@ -62,7 +52,7 @@ export default function DataTable<T extends Record<string, any>>({
           <thead>
             <tr className="border-b border-gray-200 dark:border-gray-800">
               {columns.map((col) => (
-                <th key={col.key} className={`text-left py-3 px-4 text-sm font-medium text-gray-500 ${col.className || ""}`}>
+                <th key={col.key} className={`text-left py-3 px-4 text-sm font-medium text-gray-500 ${col.className ?? ""}`}>
                   {col.label}
                 </th>
               ))}
@@ -70,14 +60,10 @@ export default function DataTable<T extends Record<string, any>>({
           </thead>
           <tbody>
             {paginated.map((item, i) => (
-              <tr
-                key={i}
-                onClick={() => onRowClick?.(item)}
-                className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors cursor-pointer"
-              >
+              <tr key={i} className="border-b border-gray-100 dark:border-gray-800 hover:bg-gray-50 dark:hover:bg-gray-900 transition-colors">
                 {columns.map((col) => (
-                  <td key={col.key} className={`py-3 px-4 text-sm ${col.className || ""}`}>
-                    {col.render ? col.render(item) : item[col.key]}
+                  <td key={col.key} className={`py-3 px-4 text-sm ${col.className ?? ""}`}>
+                    {col.render ? col.render(item) : String(item[col.key] ?? "")}
                   </td>
                 ))}
               </tr>

@@ -1,15 +1,13 @@
-import { NextRequest, NextResponse } from "next/server";
+import { notificationService } from "@/services";
 import { getSession } from "@/lib/auth";
-import { markAllAsRead } from "@/lib/notifications";
+import { successResponse, errorResponse } from "@/types/api";
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     const session = await getSession();
-    if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-    await markAllAsRead(session.userId);
-    return NextResponse.json({ success: true });
+    await notificationService.markAllAsRead(session.userId);
+    return successResponse(null, "Notifications marked as read");
   } catch (error) {
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return errorResponse("Internal server error", 500);
   }
 }

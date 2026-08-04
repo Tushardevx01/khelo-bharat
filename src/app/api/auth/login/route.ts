@@ -1,50 +1,30 @@
-import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { verifyPassword, generateToken, setSessionCookie } from "@/lib/auth";
-import { loginSchema } from "@/lib/validations";
-import { rateLimit } from "@/lib/rate-limit";
+import { NextRequest } from "next/server";
+import { userService } from "@/services";
+import { loginSchema } from "@/validators";
+import { successResponse, errorResponse } from "@/types/api";
+import { checkRateLimit } from "@/lib/rate-limit";
+import { AppError } from "@/lib/errors";
+import { logger } from "@/lib/logger";
 
 export async function POST(request: NextRequest) {
   try {
-    if (!rateLimit("login", 5, 60000)) {
-      return NextResponse.json({ error: "Too many requests. Try again later." }, { status: 429 });
-    }
+    checkRateLimit("login", 5);
 
     const body = await request.json();
     const result = loginSchema.safeParse(body);
 
     if (!result.success) {
-      return NextResponse.json({ error: result.error.issues[0].message }, { status: 400 });
+      const details = result.error.flatten().fieldErrors;
+      return errorResponse("Validation failed", 400, details);
     }
 
-    const { email, password } = result.data;
-
-    const user = await prisma.user.findUnique({ where: { email } });
-    if (!user) {
-      return NextResponse.json({ error: "Invalid email or password" }, { status: 401 });
-    }
-
-    const isValid = await verifyPassword(password, user.password);
-    if (!isValid) {
-      return NextResponse.json({ error: "Invalid email or password" }, { status: 401 });
-    }
-
-    const token = generateToken({
-      userId: user.id,
-      email: user.email,
-      role: user.role,
-      name: user.name,
-    });
-
-    await setSessionCookie(token);
-
-    return NextResponse.json({
-      success: true,
-      message: "Login successful",
-      user: { id: user.id, name: user.name, email: user.email, role: user.role, avatar: user.avatar },
-    });
+    const data = await userService.login(result.data);
+    return successResponse(data, "Login successful");
   } catch (error) {
-    console.error("Login error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    if (error instanceof AppError) {
+      return errorResponse(error.message, error.statusCode);
+    }
+    logger.error("Login failed", error as Error);
+    return errorResponse("Internal server error", 500);
   }
 }

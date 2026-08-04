@@ -1,70 +1,55 @@
-import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { NextRequest } from "next/server";
+import { tournamentService } from "@/services";
+import { tournamentQuerySchema, createTournamentSchema } from "@/validators";
+import { successResponse, errorResponse, paginatedResponse } from "@/types/api";
 import { getSession } from "@/lib/auth";
-import { tournamentSchema } from "@/lib/validations";
+import { AppError } from "@/lib/errors";
+import { logger } from "@/lib/logger";
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
-    const sport = searchParams.get("sport");
-    const status = searchParams.get("status");
-    const page = parseInt(searchParams.get("page") || "1");
-    const limit = parseInt(searchParams.get("limit") || "12");
+    const params = Object.fromEntries(searchParams.entries());
+    const validated = tournamentQuerySchema.parse(params);
 
-    const where: any = {};
-    if (sport) where.sport = { name: sport };
-    if (status) where.status = status;
-
-    const [tournaments, total] = await Promise.all([
-      prisma.tournament.findMany({
-        where,
-        include: { sport: true, organizer: { select: { name: true, avatar: true } }, _count: { select: { registrations: true } } },
-        orderBy: { startDate: "asc" },
-        skip: (page - 1) * limit,
-        take: limit,
-      }),
-      prisma.tournament.count({ where }),
-    ]);
-
-    return NextResponse.json({
-      success: true,
-      data: tournaments,
-      pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
+    const { tournaments, total } = await tournamentService.getTournaments(validated);
+    return paginatedResponse(tournaments, {
+      page: validated.page,
+      pageSize: validated.pageSize,
+      total,
     });
   } catch (error) {
-    console.error("Get tournaments error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    if (error instanceof AppError) {
+      return errorResponse(error.message, error.statusCode);
+    }
+    logger.error("Failed to fetch tournaments", error as Error);
+    return errorResponse("Internal server error", 500);
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
     const session = await getSession();
-    if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
     const body = await request.json();
-    const result = tournamentSchema.safeParse(body);
-    if (!result.success) return NextResponse.json({ error: result.error.issues[0].message }, { status: 400 });
+    const result = createTournamentSchema.safeParse(body);
 
-    const data = result.data;
-    const slug = data.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+    if (!result.success) {
+      const details = result.error.flatten().fieldErrors;
+      return errorResponse("Validation failed", 400, details);
+    }
 
-    const tournament = await prisma.tournament.create({
-      data: {
-        ...data,
-        slug,
-        organizerId: session.userId,
-        organizerType: "ADMIN",
-        startDate: new Date(data.startDate),
-        endDate: new Date(data.endDate),
-        registrationDeadline: new Date(data.registrationDeadline),
-      },
-      include: { sport: true },
+    const tournament = await tournamentService.createTournament({
+      ...result.data,
+      organizerId: session.userId,
+      organizerType: "ADMIN",
     });
 
-    return NextResponse.json({ success: true, data: tournament }, { status: 201 });
+    return successResponse(tournament, "Tournament created", 201);
   } catch (error) {
-    console.error("Create tournament error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    if (error instanceof AppError) {
+      return errorResponse(error.message, error.statusCode);
+    }
+    logger.error("Failed to create tournament", error as Error);
+    return errorResponse("Internal server error", 500);
   }
 }

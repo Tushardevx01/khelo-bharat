@@ -1,7 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { contactSchema } from "@/lib/validations";
-import { sendEmail, contactFormEmailTemplate } from "@/lib/email";
+import { NextRequest } from "next/server";
+import { contactService } from "@/services";
+import { contactSchema } from "@/validators";
+import { successResponse, errorResponse } from "@/types/api";
+import { AppError } from "@/lib/errors";
+import { logger } from "@/lib/logger";
 
 export async function POST(request: NextRequest) {
   try {
@@ -9,24 +11,17 @@ export async function POST(request: NextRequest) {
     const result = contactSchema.safeParse(body);
 
     if (!result.success) {
-      return NextResponse.json({ error: result.error.issues[0].message }, { status: 400 });
+      const details = result.error.flatten().fieldErrors;
+      return errorResponse("Validation failed", 400, details);
     }
 
-    const { name, email, phone, subject, message } = result.data;
-
-    await prisma.contactRequest.create({
-      data: { name, email, phone, subject, message },
-    });
-
-    await sendEmail({
-      to: process.env.EMAIL_FROM!,
-      subject: `Contact: ${subject}`,
-      html: contactFormEmailTemplate(name, email, subject, message),
-    }).catch(console.error);
-
-    return NextResponse.json({ success: true, message: "Message sent successfully" });
+    const data = await contactService.submitContact(result.data);
+    return successResponse(null, data.message, 201);
   } catch (error) {
-    console.error("Contact error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    if (error instanceof AppError) {
+      return errorResponse(error.message, error.statusCode);
+    }
+    logger.error("Failed to submit contact form", error as Error);
+    return errorResponse("Internal server error", 500);
   }
 }

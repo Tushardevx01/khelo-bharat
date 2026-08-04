@@ -1,22 +1,32 @@
+import { RATE_LIMIT } from "@/constants";
+import { RateLimitError } from "./errors";
+
 const rateLimitMap = new Map<string, { count: number; lastReset: number }>();
 
-export function rateLimit(
+export function checkRateLimit(
   key: string,
-  limit: number = 10,
-  windowMs: number = 60000
-): boolean {
+  limit: number = RATE_LIMIT.MAX_REQUESTS,
+  windowMs: number = RATE_LIMIT.WINDOW_MS
+): void {
   const now = Date.now();
   const record = rateLimitMap.get(key);
 
   if (!record || now - record.lastReset > windowMs) {
     rateLimitMap.set(key, { count: 1, lastReset: now });
-    return true;
+    return;
   }
 
   if (record.count >= limit) {
-    return false;
+    throw new RateLimitError("Too many requests. Please try again later.");
   }
 
   record.count++;
-  return true;
+}
+
+export function resetRateLimit(key: string): void {
+  rateLimitMap.delete(key);
+}
+
+export function getRateLimitCount(key: string): number {
+  return rateLimitMap.get(key)?.count ?? 0;
 }

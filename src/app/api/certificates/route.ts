@@ -1,20 +1,15 @@
-import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { certificateRepository } from "@/repositories";
 import { getSession } from "@/lib/auth";
+import { successResponse, errorResponse } from "@/types/api";
+import { logger } from "@/lib/logger";
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const session = await getSession();
-    if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-
-    const certificates = await prisma.certificate.findMany({
-      where: { recipientId: session.userId },
-      orderBy: { issuedAt: "desc" },
-    });
-
-    return NextResponse.json({ success: true, data: certificates });
+    const certificates = await certificateRepository.findByRecipient(session.userId);
+    return successResponse(certificates);
   } catch (error) {
-    console.error("Get certificates error:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    logger.error("Failed to fetch certificates", error as Error);
+    return errorResponse("Internal server error", 500);
   }
 }
