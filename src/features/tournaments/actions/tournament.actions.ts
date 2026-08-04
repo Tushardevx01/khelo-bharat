@@ -1,7 +1,7 @@
 "use server";
 
-import { TournamentService } from "../services/tournament.service";
-import { AppError } from "@/core/errors/AppError";
+import { tournamentService } from "../services/tournament.service";
+import { AppError } from "@/lib/errors";
 
 export type ActionResponse<T = any> = {
   success: boolean;
@@ -11,7 +11,7 @@ export type ActionResponse<T = any> = {
 
 export async function getActiveTournamentsAction(): Promise<ActionResponse> {
   try {
-    const data = await TournamentService.getActiveTournaments();
+    const data = await tournamentService.getTournaments({ page: 1, pageSize: 50, status: "REGISTRATION_OPEN" });
     return { success: true, data };
   } catch (error: any) {
     if (error instanceof AppError) {

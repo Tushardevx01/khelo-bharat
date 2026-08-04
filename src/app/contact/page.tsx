@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
 import { Mail, Phone, MapPin, Send, Loader2, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { contactSchema, type ContactInput } from "@/validators";
+import { contactSchema, type ContactInput } from "@/lib/validators/common";
 import Navbar from "@/components/layout/Navbar";
 
 const CONTACT_INFO = [

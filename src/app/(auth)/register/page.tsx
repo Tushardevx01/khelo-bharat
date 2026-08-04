@@ -7,7 +7,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Loader2, Mail, Lock, User, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { registerSchema, type RegisterInput } from "@/validators";
+import { registerSchema, type RegisterInput } from "@/features/auth/validators";
 
 const ROLES = [
   { value: "ATHLETE", label: "Athlete", description: "Compete and track your performance" },

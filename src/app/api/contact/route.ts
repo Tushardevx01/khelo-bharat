@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
-import { contactService } from "@/services";
-import { contactSchema } from "@/validators";
+import { contactService } from "@/features/contact/services/contact.service";
+import { contactSchema } from "@/lib/validators/common";
 import { successResponse, errorResponse } from "@/types/api";
 import { AppError } from "@/lib/errors";
 import { logger } from "@/lib/logger";

@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
-import { userService } from "@/services";
-import { registerSchema } from "@/validators";
+import { userService } from "@/features/auth/services/user.service";
+import { registerSchema } from "@/features/auth/validators";
 import { successResponse, errorResponse } from "@/types/api";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { AppError, ValidationError } from "@/lib/errors";

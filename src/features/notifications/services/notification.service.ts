@@ -1,4 +1,4 @@
-import { notificationRepository } from "@/repositories";
+import { notificationRepository } from "@/features/notifications/repositories/notification.repository";
 
 export const notificationService = {
   async getNotifications(userId: string, limit: number = 20) {

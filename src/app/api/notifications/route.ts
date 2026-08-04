@@ -1,4 +1,4 @@
-import { notificationService } from "@/services";
+import { notificationService } from "@/features/notifications/services/notification.service";
 import { getSession } from "@/lib/auth";
 import { successResponse, errorResponse } from "@/types/api";
 import { logger } from "@/lib/logger";

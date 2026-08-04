@@ -1,4 +1,4 @@
-import { userService } from "@/services";
+import { userService } from "@/features/auth/services/user.service";
 import { getSession } from "@/lib/auth";
 import { successResponse, errorResponse } from "@/types/api";
 import { UnauthorizedError } from "@/lib/errors";

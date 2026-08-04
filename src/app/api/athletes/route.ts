@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
-import { athleteRepository } from "@/repositories";
-import { paginationSchema } from "@/validators";
+import { athleteRepository } from "@/features/athletes/repositories/athlete.repository";
+import { paginationSchema } from "@/lib/validators/common";
 import { successResponse, errorResponse, paginatedResponse } from "@/types/api";
 import { logger } from "@/lib/logger";
 

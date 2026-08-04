@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { tournamentService } from "@/services";
+import { tournamentService } from "@/features/tournaments/services/tournament.service";
 import { getSession } from "@/lib/auth";
 import { successResponse, errorResponse } from "@/types/api";
 import { AppError } from "@/lib/errors";

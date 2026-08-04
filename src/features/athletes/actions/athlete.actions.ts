@@ -2,7 +2,7 @@
 
 import { AthleteService } from "../services/athlete.service";
 import { AthleteProfileInput, AthleteProfileSchema } from "../validators";
-import { AppError } from "@/core/errors/AppError";
+import { AppError } from "@/lib/errors";
 import { ZodError } from "zod";
 import { getSession } from "@/features/auth/utils/session";
 import { revalidatePath } from "next/cache";

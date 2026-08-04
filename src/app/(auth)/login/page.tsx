@@ -7,7 +7,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Loader2, Mail, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { loginSchema, type LoginInput } from "@/validators";
+import { loginSchema, type LoginInput } from "@/features/auth/validators";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);

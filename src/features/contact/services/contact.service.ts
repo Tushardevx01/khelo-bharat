@@ -1,4 +1,4 @@
-import { contactRepository } from "@/repositories";
+import { contactRepository } from "@/features/contact/repositories/contact.repository";
 import { sendEmail, emailTemplates } from "@/lib/email";
 import { logger } from "@/lib/logger";
 

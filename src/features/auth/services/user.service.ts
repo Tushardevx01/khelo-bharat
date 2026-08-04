@@ -1,4 +1,4 @@
-import { userRepository } from "@/repositories";
+import { userRepository } from "@/features/auth/repositories/user.repository";
 import { hashPassword, verifyPassword, generateToken, setSessionCookie } from "@/lib/auth";
 import { sendEmail, emailTemplates } from "@/lib/email";
 import { ConflictError, NotFoundError, UnauthorizedError } from "@/lib/errors";
@@ -103,7 +103,7 @@ export const userService = {
   async getUsers(params: { page: number; pageSize: number; search?: string; role?: string }) {
     const { users, total } = await userRepository.findMany({ ...params, sortOrder: "desc" });
     return {
-      users: users.map(({ password: _, ...user }) => user),
+      users: users.map(({ password: _, ...user }: any) => user),
       total,
     };
   },

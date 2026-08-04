@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
-import { tournamentService } from "@/services";
-import { tournamentQuerySchema, createTournamentSchema } from "@/validators";
+import { tournamentService } from "@/features/tournaments/services/tournament.service";
+import { tournamentQuerySchema, createTournamentSchema } from "@/features/tournaments/validators";
 import { successResponse, errorResponse, paginatedResponse } from "@/types/api";
 import { getSession } from "@/lib/auth";
 import { AppError } from "@/lib/errors";

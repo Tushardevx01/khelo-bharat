@@ -1,4 +1,4 @@
-import { certificateRepository } from "@/repositories";
+import { certificateRepository } from "@/features/certificates/repositories/certificate.repository";
 import { getSession } from "@/lib/auth";
 import { successResponse, errorResponse } from "@/types/api";
 import { logger } from "@/lib/logger";
