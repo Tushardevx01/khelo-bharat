@@ -13,10 +13,10 @@ import {
   Mail,
   Phone,
   MapPin,
-  Facebook,
-  Twitter,
-  Instagram,
-  Linkedin,
+  Globe,
+  Share2,
+  MessageCircle,
+  AtSign,
   Send,
   Loader2,
 } from "lucide-react";
@@ -253,7 +253,7 @@ export default function ContactSection() {
                 Follow Us
               </h3>
               <div className="flex gap-3">
-                {[Facebook, Twitter, Instagram, Linkedin].map((Icon, i) => (
+                {[Globe, Share2, MessageCircle, AtSign].map((Icon, i) => (
                   <a
                     key={i}
                     href="#"

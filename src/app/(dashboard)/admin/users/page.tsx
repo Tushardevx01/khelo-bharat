@@ -97,7 +97,7 @@ export default function UsersPage() {
                   <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input placeholder="Search users..." className="pl-9 w-56" value={search} onChange={(e) => setSearch(e.target.value)} />
                 </div>
-                <Select value={roleFilter} onValueChange={setRoleFilter}>
+                <Select value={roleFilter} onValueChange={(v) => setRoleFilter(v || "")}>
                   <SelectTrigger className="w-36">
                     <SelectValue placeholder="All Roles" />
                   </SelectTrigger>

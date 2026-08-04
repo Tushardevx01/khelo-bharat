@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Camera, Save, User, Mail, Phone, Calendar, MapPin, Globe, Linkedin, Twitter, Instagram } from "lucide-react";
+import { Camera, Save, User, Mail, Phone, Calendar, MapPin, Globe, Link2, Hash, AtSign } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -71,13 +71,13 @@ export default function AthleteProfilePage() {
                   <Button variant="outline" size="icon-sm" className="rounded-full"><Globe className="w-4 h-4" /></Button>
                 )}
                 {profile.linkedin && (
-                  <Button variant="outline" size="icon-sm" className="rounded-full"><Linkedin className="w-4 h-4" /></Button>
+                  <Button variant="outline" size="icon-sm" className="rounded-full"><Link2 className="w-4 h-4" /></Button>
                 )}
                 {profile.twitter && (
-                  <Button variant="outline" size="icon-sm" className="rounded-full"><Twitter className="w-4 h-4" /></Button>
+                  <Button variant="outline" size="icon-sm" className="rounded-full"><Hash className="w-4 h-4" /></Button>
                 )}
                 {profile.instagram && (
-                  <Button variant="outline" size="icon-sm" className="rounded-full"><Instagram className="w-4 h-4" /></Button>
+                  <Button variant="outline" size="icon-sm" className="rounded-full"><AtSign className="w-4 h-4" /></Button>
                 )}
               </div>
             </CardContent>
@@ -190,16 +190,16 @@ export default function AthleteProfilePage() {
                 <Input value={profile.website} onChange={(e) => handleChange("website", e.target.value)} placeholder="https://yoursite.com" />
               </div>
               <div className="space-y-2">
-                <Label className="flex items-center gap-1.5"><Linkedin className="w-3.5 h-3.5" /> LinkedIn</Label>
+                <Label className="flex items-center gap-1.5"><Link2 className="w-3.5 h-3.5" /> LinkedIn</Label>
                 <Input value={profile.linkedin} onChange={(e) => handleChange("linkedin", e.target.value)} placeholder="linkedin.com/in/yourprofile" />
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label className="flex items-center gap-1.5"><Twitter className="w-3.5 h-3.5" /> Twitter</Label>
+                  <Label className="flex items-center gap-1.5"><Hash className="w-3.5 h-3.5" /> Hash</Label>
                   <Input value={profile.twitter} onChange={(e) => handleChange("twitter", e.target.value)} placeholder="@username" />
                 </div>
                 <div className="space-y-2">
-                  <Label className="flex items-center gap-1.5"><Instagram className="w-3.5 h-3.5" /> Instagram</Label>
+                  <Label className="flex items-center gap-1.5"><AtSign className="w-3.5 h-3.5" /> AtSign</Label>
                   <Input value={profile.instagram} onChange={(e) => handleChange("instagram", e.target.value)} placeholder="@username" />
                 </div>
               </div>

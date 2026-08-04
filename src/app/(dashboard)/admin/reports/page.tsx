@@ -169,7 +169,7 @@ export default function ReportsPage() {
                 <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                 <XAxis dataKey="month" tick={{ fontSize: 12 }} />
                 <YAxis tick={{ fontSize: 12 }} />
-                <Tooltip formatter={(value: number) => `₹${(value / 1000).toFixed(0)}K`} />
+                <Tooltip formatter={(value: any) => `₹${(value / 1000).toFixed(0)}K`} />
                 <Bar dataKey="revenue" fill="#FF6B35" radius={[6, 6, 0, 0]} />
                 <Bar dataKey="expenses" fill="#D72638" radius={[6, 6, 0, 0]} />
               </BarChart>

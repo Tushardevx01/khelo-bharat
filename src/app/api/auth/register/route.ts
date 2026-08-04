@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
     } else if (role === "COACH") {
       await prisma.coachProfile.create({ data: { userId: user.id } });
     } else if (role === "SPONSOR") {
-      await prisma.sponsorProfile.create({ data: { userId: user.id } });
+      await prisma.sponsorProfile.create({ data: { userId: user.id, companyName: "" } });
     }
 
     const token = generateToken({

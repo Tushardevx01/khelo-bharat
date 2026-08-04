@@ -9,7 +9,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       include: {
         sport: true,
         organizer: { select: { name: true, avatar: true } },
-        registrations: { include: { participant: { select: { name: true, avatar: true } } } },
+        registrations: true,
         fixtures: true,
         _count: { select: { registrations: true } },
       },

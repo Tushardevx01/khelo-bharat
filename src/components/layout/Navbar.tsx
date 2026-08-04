@@ -95,7 +95,7 @@ export default function Navbar() {
             <div className="hidden lg:flex items-center gap-3">
               {user ? (
                 <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
+                  <DropdownMenuTrigger>
                     <Button variant="ghost" className="flex items-center gap-2 rounded-full">
                       <Avatar className="w-8 h-8">
                         <AvatarImage src={user.avatar || undefined} />
@@ -108,14 +108,14 @@ export default function Navbar() {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end" className="w-48">
-                    <DropdownMenuItem asChild>
-                      <Link href={getDashboardLink()} className="flex items-center gap-2 cursor-pointer">
+                    <DropdownMenuItem>
+                      <Link href={getDashboardLink()} className="flex items-center gap-2 w-full">
                         <LayoutDashboard className="w-4 h-4" />
                         Dashboard
                       </Link>
                     </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href="/profile" className="flex items-center gap-2 cursor-pointer">
+                    <DropdownMenuItem>
+                      <Link href="/profile" className="flex items-center gap-2 w-full">
                         <User className="w-4 h-4" />
                         Profile
                       </Link>

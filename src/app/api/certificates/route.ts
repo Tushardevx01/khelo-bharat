@@ -9,7 +9,6 @@ export async function GET(request: NextRequest) {
 
     const certificates = await prisma.certificate.findMany({
       where: { recipientId: session.userId },
-      include: { issuer: { select: { name: true } } },
       orderBy: { issuedAt: "desc" },
     });
 

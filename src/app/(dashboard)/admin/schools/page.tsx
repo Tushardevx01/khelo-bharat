@@ -94,7 +94,7 @@ export default function SchoolsPage() {
                   <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input placeholder="Search schools..." className="pl-9 w-56" value={search} onChange={(e) => setSearch(e.target.value)} />
                 </div>
-                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v || "")}>
                   <SelectTrigger className="w-36">
                     <SelectValue placeholder="All Status" />
                   </SelectTrigger>

@@ -45,11 +45,11 @@ const performanceData = [
 
 const trainingLog = [
   { date: "2024-12-01", activity: "Morning Run", duration: "45 min", intensity: "Medium", notes: "Completed 5K run" },
-  { date: "2024-11-30", activity: "Cricket Practice", duration: "2 hrs", intensity: "High", nets session with bowling drills" },
-  { date: "2024-11-29", activity: "Strength Training", duration: "1 hr", intensity: "High", upper body focus" },
-  { date: "2024-11-28", activity: "Swimming", duration: "30 min", intensity: "Low", recovery swim" },
-  { date: "2024-11-27", activity: "Cricket Match", duration: "6 hrs", intensity: "High", inter-college match" },
-  { date: "2024-11-26", activity: "Yoga & Stretching", duration: "40 min", intensity: "Low", flexibility work" },
+  { date: "2024-11-30", activity: "Cricket Practice", duration: "2 hrs", intensity: "High", notes: "nets session with bowling drills" },
+  { date: "2024-11-29", activity: "Strength Training", duration: "1 hr", intensity: "High", notes: "upper body focus" },
+  { date: "2024-11-28", activity: "Swimming", duration: "30 min", intensity: "Low", notes: "recovery swim" },
+  { date: "2024-11-27", activity: "Cricket Match", duration: "6 hrs", intensity: "High", notes: "inter-college match" },
+  { date: "2024-11-26", activity: "Yoga & Stretching", duration: "40 min", intensity: "Low", notes: "flexibility work" },
 ];
 
 const dateRanges = ["This Week", "This Month", "Last 3 Months", "Last 6 Months", "This Year"];

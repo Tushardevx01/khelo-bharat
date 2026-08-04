@@ -94,7 +94,7 @@ export default function CoachesPage() {
                   <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                   <Input placeholder="Search coaches..." className="pl-9 w-56" value={search} onChange={(e) => setSearch(e.target.value)} />
                 </div>
-                <Select value={specFilter} onValueChange={setSpecFilter}>
+                <Select value={specFilter} onValueChange={(v) => setSpecFilter(v || "")}>
                   <SelectTrigger className="w-40">
                     <SelectValue placeholder="All Sports" />
                   </SelectTrigger>
