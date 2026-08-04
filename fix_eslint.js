@@ -10,5 +10,3 @@ const replaceInFile = (file, search, replace) => {
 // Fix any -> unknown or disable
 replaceInFile("src/features/athletes/actions/athlete.actions.ts", /catch \(error: any\)/g, "catch (error: unknown)");
 replaceInFile("src/features/auth/repositories/user.repository.ts", /any/g, "unknown"); // Actually wait, too dangerous.
-
-
