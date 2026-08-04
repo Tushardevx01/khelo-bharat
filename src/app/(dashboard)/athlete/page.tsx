@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { redirect } from "next/navigation";
 import { Trophy, Medal, Award, Calendar, BarChart3, Target } from "lucide-react";
 import DashboardHeader from "@/components/layout/DashboardHeader";

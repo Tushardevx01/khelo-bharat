@@ -1,5 +1,5 @@
 import { v2 as cloudinary } from "cloudinary";
-import { FILE_UPLOAD } from "@/constants";
+import { FILE_UPLOAD } from "@/config";
 import { AppError } from "./errors";
 import { logger } from "./logger";
 

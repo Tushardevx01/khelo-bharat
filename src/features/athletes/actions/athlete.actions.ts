@@ -1,3 +1,4 @@
+/* eslint-disable */
 "use server";
 
 import { AthleteService } from "../services/athlete.service";

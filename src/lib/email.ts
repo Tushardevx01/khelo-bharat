@@ -1,14 +1,15 @@
 import nodemailer from "nodemailer";
-import { config } from "@/config";
+import { env } from "@/config/env";
+import { APP_URL } from "@/config";
 import { logger } from "./logger";
 
 const transporter = nodemailer.createTransport({
-  host: config.email.host,
-  port: config.email.port,
-  secure: config.email.port === 465,
+  host: env.SMTP_HOST || "",
+  port: Number(env.SMTP_PORT) || 587,
+  secure: Number(env.SMTP_PORT) === 465,
   auth: {
-    user: config.email.user,
-    pass: config.email.pass,
+    user: env.SMTP_USER || "",
+    pass: env.SMTP_PASS || "",
   },
 });
 
@@ -22,7 +23,7 @@ export type EmailOptions = {
 export async function sendEmail(options: EmailOptions): Promise<void> {
   try {
     await transporter.sendMail({
-      from: config.email.from,
+      from: "Khelo Bharat <noreply@khelobharat.in>",
       to: options.to,
       subject: options.subject,
       html: options.html,
@@ -79,7 +80,7 @@ export const emailTemplates = {
       <p>Hello ${name},</p>
       <p>Welcome to India's premier sports ecosystem platform. You're now part of a community connecting athletes, schools, coaches, and sponsors.</p>
       <p>Get started by completing your profile and exploring upcoming tournaments.</p>
-      <a href="${config.app.url}/dashboard" class="btn">Go to Dashboard</a>
+      <a href="${APP_URL}/dashboard" class="btn">Go to Dashboard</a>
     `),
 
   passwordReset: (name: string, resetUrl: string) =>
@@ -97,7 +98,7 @@ export const emailTemplates = {
       <p>Hello ${name},</p>
       <p>You have been successfully registered for <strong>${tournamentName}</strong>.</p>
       <p>Good luck and give your best!</p>
-      <a href="${config.app.url}/tournaments" class="btn">View Tournament</a>
+      <a href="${APP_URL}/tournaments" class="btn">View Tournament</a>
     `),
 
   certificateReady: (name: string, certificateTitle: string) =>
@@ -105,7 +106,7 @@ export const emailTemplates = {
       <h2>Your Certificate is Ready!</h2>
       <p>Congratulations ${name}!</p>
       <p>Your certificate "<strong>${certificateTitle}</strong>" is now available for download.</p>
-      <a href="${config.app.url}/certificates" class="btn">Download Certificate</a>
+      <a href="${APP_URL}/certificates" class="btn">Download Certificate</a>
     `),
 
   sponsorshipRequest: (sponsorName: string, amount: number) =>
@@ -113,7 +114,7 @@ export const emailTemplates = {
       <h2>New Sponsorship Request</h2>
       <p><strong>${sponsorName}</strong> has submitted a sponsorship request of <strong>₹${amount.toLocaleString("en-IN")}</strong>.</p>
       <p>Log in to your dashboard to review and respond.</p>
-      <a href="${config.app.url}/sponsor" class="btn">View Request</a>
+      <a href="${APP_URL}/sponsor" class="btn">View Request</a>
     `),
 
   contactForm: (name: string, email: string, subject: string, message: string) =>

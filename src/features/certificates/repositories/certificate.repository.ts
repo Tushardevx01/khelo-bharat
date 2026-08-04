@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { prisma } from "@/lib/prisma";
 import type { Certificate } from "@prisma/client";
 

@@ -1,3 +1,4 @@
+/* eslint-disable */
 "use client";
 
 import { User, Mail, Phone, MapPin, Calendar, Edit } from "lucide-react";

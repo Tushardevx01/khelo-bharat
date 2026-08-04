@@ -1,4 +1,4 @@
-import { RATE_LIMIT } from "@/constants";
+import { RATE_LIMIT } from "@/config";
 import { RateLimitError } from "./errors";
 
 const rateLimitMap = new Map<string, { count: number; lastReset: number }>();

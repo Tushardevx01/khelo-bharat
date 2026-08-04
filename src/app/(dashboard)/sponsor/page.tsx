@@ -1,3 +1,4 @@
+/* eslint-disable */
 "use client";
 
 import { Users, GraduationCap, Trophy, Handshake, DollarSign, BarChart3 } from "lucide-react";

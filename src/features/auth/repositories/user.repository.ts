@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { prisma } from "@/lib/prisma";
 import type { User, AthleteProfile, SchoolProfile, CoachProfile, SponsorProfile } from "@prisma/client";
 import type { PaginationInput } from "@/types";

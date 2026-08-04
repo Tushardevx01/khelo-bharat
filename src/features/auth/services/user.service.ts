@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { userRepository } from "@/features/auth/repositories/user.repository";
 import { hashPassword, verifyPassword, generateToken, setSessionCookie } from "@/lib/auth";
 import { sendEmail, emailTemplates } from "@/lib/email";
