@@ -1,0 +1,203 @@
+"use client";
+
+import Link from "next/link";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Menu, X, Trophy, ChevronDown, User, LogOut, LayoutDashboard } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
+const navLinks = [
+  { href: "/", label: "Home" },
+  { href: "/tournaments", label: "Tournaments" },
+  { href: "/athletes", label: "Athletes" },
+  { href: "/schools", label: "Schools" },
+  { href: "/about", label: "About" },
+  { href: "/contact", label: "Contact" },
+];
+
+export default function Navbar() {
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const [user, setUser] = useState<{ id: string; name: string; email: string; role: string; avatar: string | null } | null>(null);
+
+  useEffect(() => {
+    fetch("/api/auth/me")
+      .then((res) => res.json())
+      .then((data) => { if (data.success) setUser(data.user); })
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const handleLogout = async () => {
+    await fetch("/api/auth/logout", { method: "POST" });
+    window.location.href = "/";
+  };
+
+  const getDashboardLink = () => {
+    if (!user) return "/login";
+    switch (user.role) {
+      case "SUPER_ADMIN": return "/admin";
+      case "SCHOOL_ADMIN": return "/school";
+      case "COACH": return "/coach";
+      case "ATHLETE": return "/athlete";
+      case "SPONSOR": return "/sponsor";
+      default: return "/dashboard";
+    }
+  };
+
+  return (
+    <>
+      <motion.nav
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+          isScrolled
+            ? "bg-white/80 dark:bg-gray-950/80 backdrop-blur-xl border-b border-gray-200 dark:border-gray-800"
+            : "bg-transparent"
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16 lg:h-20">
+            <Link href="/" className="flex items-center gap-2 group">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#FF6B35] to-[#D72638] flex items-center justify-center shadow-lg group-hover:shadow-[#FF6B35]/25 transition-shadow">
+                <Trophy className="w-6 h-6 text-white" />
+              </div>
+              <span className="text-xl font-bold bg-gradient-to-r from-[#FF6B35] to-[#D72638] bg-clip-text text-transparent">
+                Khelo Bharat
+              </span>
+            </Link>
+
+            <div className="hidden lg:flex items-center gap-1">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-[#FF6B35] dark:hover:text-[#FF6B35] rounded-lg hover:bg-orange-50 dark:hover:bg-orange-950/20 transition-all"
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+
+            <div className="hidden lg:flex items-center gap-3">
+              {user ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="flex items-center gap-2 rounded-full">
+                      <Avatar className="w-8 h-8">
+                        <AvatarImage src={user.avatar || undefined} />
+                        <AvatarFallback className="bg-gradient-to-br from-[#FF6B35] to-[#D72638] text-white text-sm">
+                          {user.name.charAt(0)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <span className="text-sm font-medium">{user.name}</span>
+                      <ChevronDown className="w-4 h-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuItem asChild>
+                      <Link href={getDashboardLink()} className="flex items-center gap-2 cursor-pointer">
+                        <LayoutDashboard className="w-4 h-4" />
+                        Dashboard
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/profile" className="flex items-center gap-2 cursor-pointer">
+                        <User className="w-4 h-4" />
+                        Profile
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem onClick={handleLogout} className="flex items-center gap-2 cursor-pointer text-red-600">
+                      <LogOut className="w-4 h-4" />
+                      Logout
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <>
+                  <Link href="/login">
+                    <Button variant="ghost" className="rounded-full">Log in</Button>
+                  </Link>
+                  <Link href="/register">
+                    <Button className="rounded-full bg-gradient-to-r from-[#FF6B35] to-[#D72638] hover:from-[#D72638] hover:to-[#FF6B35] text-white shadow-lg hover:shadow-[#FF6B35]/25 transition-all">
+                      Get Started
+                    </Button>
+                  </Link>
+                </>
+              )}
+            </div>
+
+            <button
+              onClick={() => setIsMobileOpen(!isMobileOpen)}
+              className="lg:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+            >
+              {isMobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+          </div>
+        </div>
+      </motion.nav>
+
+      <AnimatePresence>
+        {isMobileOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="fixed inset-0 z-40 bg-white dark:bg-gray-950 pt-20 px-6 lg:hidden"
+          >
+            <div className="flex flex-col gap-2">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setIsMobileOpen(false)}
+                  className="px-4 py-3 text-lg font-medium text-gray-600 dark:text-gray-300 hover:text-[#FF6B35] rounded-xl hover:bg-orange-50 dark:hover:bg-orange-950/20 transition-all"
+                >
+                  {link.label}
+                </Link>
+              ))}
+              <hr className="my-4" />
+              {user ? (
+                <>
+                  <Link href={getDashboardLink()} onClick={() => setIsMobileOpen(false)}>
+                    <Button className="w-full rounded-full bg-gradient-to-r from-[#FF6B35] to-[#D72638] text-white">
+                      Dashboard
+                    </Button>
+                  </Link>
+                  <Button variant="outline" onClick={() => { handleLogout(); setIsMobileOpen(false); }} className="w-full rounded-full text-red-600">
+                    Logout
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Link href="/login" onClick={() => setIsMobileOpen(false)}>
+                    <Button variant="outline" className="w-full rounded-full">Log in</Button>
+                  </Link>
+                  <Link href="/register" onClick={() => setIsMobileOpen(false)}>
+                    <Button className="w-full rounded-full bg-gradient-to-r from-[#FF6B35] to-[#D72638] text-white">
+                      Get Started
+                    </Button>
+                  </Link>
+                </>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}
