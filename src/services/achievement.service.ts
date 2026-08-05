@@ -1,4 +1,5 @@
 import { achievementRepository } from "@/repositories/achievement.repository";
+import { SportCategory } from "@prisma/client";
 
 export class AchievementService {
   async addAchievement(data: {
@@ -9,7 +10,14 @@ export class AchievementService {
     date: Date;
     image?: string;
   }) {
-    return achievementRepository.create(data);
+    return achievementRepository.create({
+      athlete: { connect: { id: data.athleteId } },
+      title: data.title,
+      description: data.description,
+      sport: data.sport as SportCategory,
+      date: data.date,
+      image: data.image,
+    });
   }
 
   async getAthleteAchievements(athleteId: string) {
