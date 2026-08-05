@@ -1,7 +1,7 @@
 export const ROUTES = {
   HOME: "/",
   LOGIN: "/login",
-  REGISTER: "/register",
+  SIGN_UP: "/sign-up",
   ABOUT: "/about",
   CONTACT: "/contact",
   TOURNAMENTS: "/tournaments",
@@ -33,7 +33,7 @@ export const ROUTES = {
 export const PUBLIC_ROUTES = [
   ROUTES.HOME,
   ROUTES.LOGIN,
-  ROUTES.REGISTER,
+  ROUTES.SIGN_UP,
   ROUTES.ABOUT,
   ROUTES.CONTACT,
   ROUTES.TOURNAMENTS,
