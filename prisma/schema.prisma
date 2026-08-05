@@ -258,6 +258,7 @@ model Tournament {
   performances          Performance[]
   certificates          Certificate[]
   galleries             Gallery[]
+  sponsorships          Sponsorship[]
 
   @@index([organizerId])
   @@index([sportCategory])
