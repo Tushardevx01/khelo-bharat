@@ -20,10 +20,10 @@ export class CoachService {
     sportCategory: SportCategory;
     specialization?: string;
     certifications?: string[];
-    experience?: string;
+    experience?: number;
     hourlyRate?: number;
   }) {
-    return coachRepository.create({ userId, ...data });
+    return coachRepository.create({ user: { connect: { id: userId } }, ...data });
   }
 
   async updateCoachProfile(id: string, data: Record<string, unknown>) {

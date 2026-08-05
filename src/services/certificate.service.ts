@@ -1,6 +1,7 @@
 import { certificateRepository } from "@/repositories/certificate.repository";
 import { CertificateStatus } from "@prisma/client";
 import { NotFoundError } from "@/lib/errors";
+import { generateVerificationCode } from "@/lib/utils";
 
 export class CertificateService {
   async getCertificateById(id: string) {
@@ -16,7 +17,14 @@ export class CertificateService {
     description?: string;
     certificateType: string;
   }) {
-    return certificateRepository.create(data);
+    return certificateRepository.create({
+      user: { connect: { id: data.userId } },
+      tournament: data.tournamentId ? { connect: { id: data.tournamentId } } : undefined,
+      title: data.title,
+      description: data.description,
+      certificateType: data.certificateType,
+      verificationCode: generateVerificationCode(),
+    });
   }
 
   async updateStatus(id: string, status: CertificateStatus, certificateUrl?: string) {

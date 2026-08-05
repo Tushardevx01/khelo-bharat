@@ -9,7 +9,14 @@ export class GalleryService {
     mediaUrl: string;
     mediaType: string;
   }) {
-    return galleryRepository.create(data);
+    return galleryRepository.create({
+      user: { connect: { id: data.userId } },
+      ...(data.tournamentId && { tournament: { connect: { id: data.tournamentId } } }),
+      title: data.title,
+      description: data.description,
+      mediaUrl: data.mediaUrl,
+      mediaType: data.mediaType,
+    });
   }
 
   async getUserMedia(userId: string) {

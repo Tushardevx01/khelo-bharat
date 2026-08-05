@@ -21,7 +21,15 @@ export class SponsorshipService {
     logo?: string;
   }) {
     return sponsorshipRepository.create({
-      ...data,
+      sponsor: { connect: { id: data.sponsorId } },
+      ...(data.athleteId && { athlete: { connect: { id: data.athleteId } } }),
+      ...(data.schoolId && { school: { connect: { id: data.schoolId } } }),
+      ...(data.tournamentId && { tournament: { connect: { id: data.tournamentId } } }),
+      amount: data.amount,
+      startDate: data.startDate,
+      endDate: data.endDate,
+      terms: data.terms,
+      logo: data.logo,
       status: "PENDING",
     });
   }

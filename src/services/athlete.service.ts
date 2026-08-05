@@ -22,7 +22,7 @@ export class AthleteService {
     coachId?: string;
     height?: number;
     weight?: number;
-    experience?: string;
+    experience?: number;
   }) {
     return athleteRepository.create({
       user: { connect: { id: userId } },
@@ -31,7 +31,7 @@ export class AthleteService {
       coach: data.coachId ? { connect: { id: data.coachId } } : undefined,
       height: data.height,
       weight: data.weight,
-      experience: data.experience ? parseInt(data.experience) || 0 : 0,
+      experience: data.experience || 0,
     });
   }
 
@@ -39,7 +39,7 @@ export class AthleteService {
     sportCategory?: SportCategory;
     height?: number;
     weight?: number;
-    experience?: string;
+    experience?: number;
   }) {
     return athleteRepository.update(id, data);
   }

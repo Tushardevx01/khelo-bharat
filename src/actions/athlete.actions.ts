@@ -21,7 +21,7 @@ export async function createAthleteProfile(data: {
   coachId?: string;
   height?: number;
   weight?: number;
-  experience?: string;
+  experience?: number;
 }) {
   const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
@@ -33,7 +33,7 @@ export async function updateAthleteProfile(id: string, data: {
   sportCategory?: SportCategory;
   height?: number;
   weight?: number;
-  experience?: string;
+  experience?: number;
 }) {
   const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");

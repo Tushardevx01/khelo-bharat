@@ -23,7 +23,7 @@ export class SponsorService {
     website?: string;
     logo?: string;
   }) {
-    return sponsorRepository.create({ userId, ...data });
+    return sponsorRepository.create({ user: { connect: { id: userId } }, ...data });
   }
 
   async updateSponsorProfile(id: string, data: Record<string, unknown>) {
