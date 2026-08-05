@@ -30,7 +30,23 @@ export class TournamentService {
     poster?: string;
   }) {
     return tournamentRepository.create({
-      ...data,
+      organizer: { connect: { id: data.organizerId } },
+      title: data.title,
+      description: data.description,
+      sportCategory: data.sportCategory,
+      startDate: data.startDate,
+      endDate: data.endDate,
+      registrationDeadline: data.registrationDeadline,
+      location: data.location,
+      city: data.city,
+      state: data.state,
+      latitude: data.latitude,
+      longitude: data.longitude,
+      maxParticipants: data.maxParticipants,
+      entryFee: data.entryFee,
+      prizePool: data.prizePool,
+      rules: data.rules,
+      poster: data.poster,
       status: "DRAFT",
       totalParticipants: 0,
     });

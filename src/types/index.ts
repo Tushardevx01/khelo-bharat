@@ -1,4 +1,4 @@
-export type {
+import type {
   User,
   Athlete,
   School,
@@ -24,6 +24,33 @@ export type {
   NotificationType,
   MatchStatus,
 } from "@prisma/client";
+
+export type {
+  User,
+  Athlete,
+  School,
+  Coach,
+  Sponsor,
+  Tournament,
+  TournamentRegistration,
+  Match,
+  Performance,
+  Certificate,
+  Achievement,
+  Sponsorship,
+  Message,
+  Notification,
+  Gallery,
+  AuditLog,
+  UserRole,
+  SportCategory,
+  TournamentStatus,
+  CertificateStatus,
+  SponsorStatus,
+  Gender,
+  NotificationType,
+  MatchStatus,
+};
 
 export interface ApiResponse<T = unknown> {
   success: boolean;

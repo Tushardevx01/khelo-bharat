@@ -1,4 +1,5 @@
 import { performanceRepository } from "@/repositories/performance.repository";
+import { SportCategory } from "@prisma/client";
 
 export class PerformanceService {
   async addPerformance(data: {
@@ -12,9 +13,15 @@ export class PerformanceService {
     notes?: string;
   }) {
     return performanceRepository.create({
-      ...data,
-      date: new Date(),
+      athlete: { connect: { id: data.athleteId } },
+      tournament: data.tournamentId ? { connect: { id: data.tournamentId } } : undefined,
+      match: data.matchId ? { connect: { id: data.matchId } } : undefined,
+      sport: data.sport as SportCategory,
+      score: data.score ? parseFloat(data.score) : undefined,
+      rank: data.rank,
       stats: data.stats as never,
+      notes: data.notes,
+      date: new Date(),
     });
   }
 

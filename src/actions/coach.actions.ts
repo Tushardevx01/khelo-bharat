@@ -19,7 +19,7 @@ export async function createCoachProfile(data: {
   sportCategory: SportCategory;
   specialization?: string;
   certifications?: string[];
-  experience?: string;
+  experience?: number;
   hourlyRate?: number;
 }) {
   const { userId } = await auth();
