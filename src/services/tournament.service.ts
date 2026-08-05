@@ -1,0 +1,89 @@
+import { tournamentRepository } from "@/repositories/tournament.repository";
+import { TournamentStatus, SportCategory } from "@prisma/client";
+import { NotFoundError, ValidationError } from "@/lib/errors";
+import { PaginationInput } from "@/lib/validators";
+
+export class TournamentService {
+  async getTournamentById(id: string) {
+    const tournament = await tournamentRepository.findById(id);
+    if (!tournament) throw new NotFoundError("Tournament");
+    return tournament;
+  }
+
+  async createTournament(data: {
+    organizerId: string;
+    title: string;
+    description?: string;
+    sportCategory: SportCategory;
+    startDate: Date;
+    endDate: Date;
+    registrationDeadline?: Date;
+    location: string;
+    city: string;
+    state: string;
+    latitude?: number;
+    longitude?: number;
+    maxParticipants?: number;
+    entryFee?: number;
+    prizePool?: number;
+    rules?: string;
+    poster?: string;
+  }) {
+    return tournamentRepository.create({
+      ...data,
+      status: "DRAFT",
+      totalParticipants: 0,
+    });
+  }
+
+  async updateTournament(id: string, data: Record<string, unknown>) {
+    return tournamentRepository.update(id, data);
+  }
+
+  async updateStatus(id: string, status: TournamentStatus) {
+    return tournamentRepository.update(id, { status });
+  }
+
+  async deleteTournament(id: string) {
+    return tournamentRepository.delete(id);
+  }
+
+  async getAllTournaments(pagination: PaginationInput, filters?: {
+    status?: TournamentStatus;
+    sportCategory?: SportCategory;
+    organizerId?: string;
+    city?: string;
+    state?: string;
+  }) {
+    return tournamentRepository.findAll(pagination, filters);
+  }
+
+  async registerForTournament(tournamentId: string, athleteId: string, data?: { teamName?: string }) {
+    const tournament = await tournamentRepository.findById(tournamentId);
+    if (!tournament) throw new NotFoundError("Tournament");
+
+    if (tournament.status !== "REGISTRATION_OPEN") {
+      throw new ValidationError("Registration is not open for this tournament");
+    }
+
+    if (tournament.registrationDeadline && new Date() > tournament.registrationDeadline) {
+      throw new ValidationError("Registration deadline has passed");
+    }
+
+    if (tournament.maxParticipants && tournament.totalParticipants >= tournament.maxParticipants) {
+      throw new ValidationError("Tournament is full");
+    }
+
+    return tournamentRepository.register(tournamentId, athleteId, data);
+  }
+
+  async getUpcomingTournaments(limit?: number) {
+    return tournamentRepository.getUpcoming(limit);
+  }
+
+  async getFeaturedTournaments(limit?: number) {
+    return tournamentRepository.getFeatured(limit);
+  }
+}
+
+export const tournamentService = new TournamentService();

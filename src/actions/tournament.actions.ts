@@ -1,0 +1,92 @@
+"use server";
+
+import { auth } from "@clerk/nextjs/server";
+import { tournamentService } from "@/services/tournament.service";
+import { TournamentStatus, SportCategory } from "@prisma/client";
+
+export async function createTournament(data: {
+  title: string;
+  description?: string;
+  sportCategory: SportCategory;
+  startDate: Date;
+  endDate: Date;
+  registrationDeadline?: Date;
+  location: string;
+  city: string;
+  state: string;
+  latitude?: number;
+  longitude?: number;
+  maxParticipants?: number;
+  entryFee?: number;
+  prizePool?: number;
+  rules?: string;
+  poster?: string;
+}) {
+  const { userId } = await auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const { userService } = await import("@/services/user.service");
+  const user = await userService.getUserByClerkId(userId);
+
+  return tournamentService.createTournament({
+    ...data,
+    organizerId: user.id,
+  });
+}
+
+export async function getTournamentById(id: string) {
+  return tournamentService.getTournamentById(id);
+}
+
+export async function updateTournament(id: string, data: Record<string, unknown>) {
+  const { userId } = await auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  return tournamentService.updateTournament(id, data);
+}
+
+export async function updateTournamentStatus(id: string, status: TournamentStatus) {
+  const { userId } = await auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  return tournamentService.updateStatus(id, status);
+}
+
+export async function deleteTournament(id: string) {
+  const { userId } = await auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  return tournamentService.deleteTournament(id);
+}
+
+export async function getAllTournaments(
+  page: number = 1,
+  limit: number = 10,
+  filters?: {
+    status?: TournamentStatus;
+    sportCategory?: SportCategory;
+    organizerId?: string;
+    city?: string;
+    state?: string;
+  }
+) {
+  return tournamentService.getAllTournaments({ page, limit }, filters);
+}
+
+export async function registerForTournament(tournamentId: string, teamName?: string) {
+  const { userId } = await auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const { athleteService } = await import("@/services/athlete.service");
+  const athlete = await athleteService.getAthleteByUserId(userId);
+
+  return tournamentService.registerForTournament(tournamentId, athlete.id, { teamName });
+}
+
+export async function getUpcomingTournaments(limit?: number) {
+  return tournamentService.getUpcomingTournaments(limit);
+}
+
+export async function getFeaturedTournaments(limit?: number) {
+  return tournamentService.getFeaturedTournaments(limit);
+}

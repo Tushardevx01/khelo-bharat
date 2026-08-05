@@ -1,0 +1,14 @@
+export { userRepository } from "./user.repository";
+export { athleteRepository } from "./athlete.repository";
+export { tournamentRepository } from "./tournament.repository";
+export { schoolRepository } from "./school.repository";
+export { coachRepository } from "./coach.repository";
+export { sponsorRepository } from "./sponsor.repository";
+export { certificateRepository } from "./certificate.repository";
+export { messageRepository } from "./message.repository";
+export { notificationRepository } from "./notification.repository";
+export { performanceRepository } from "./performance.repository";
+export { achievementRepository } from "./achievement.repository";
+export { sponsorshipRepository } from "./sponsorship.repository";
+export { galleryRepository } from "./gallery.repository";
+export { auditRepository } from "./audit.repository";
