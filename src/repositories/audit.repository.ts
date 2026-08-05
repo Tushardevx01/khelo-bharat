@@ -8,7 +8,7 @@ export class AuditRepository {
   }
 
   async findAll(pagination: PaginationInput, filters?: { userId?: string; action?: string; entity?: string }) {
-    const { page, limit, search, sortBy, sortOrder } = pagination;
+    const { page, limit, search, sortOrder } = pagination;
     const skip = (page - 1) * limit;
 
     const where: Prisma.AuditLogWhereInput = {

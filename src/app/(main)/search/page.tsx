@@ -4,12 +4,12 @@ import { useState } from "react";
 import { Header } from "@/components/layout/header";
 import { PageHeader } from "@/components/layout/page-header";
 import { SearchInput } from "@/components/shared/search-input";
-import { Card, CardContent } from "@/components/ui/card";
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { User, Trophy, School, Building2 } from "lucide-react";
 
 export default function SearchPage() {
-  const [search, setSearch] = useState("");
+  const [, setSearch] = useState("");
 
   return (
     <div className="min-h-screen">

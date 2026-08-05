@@ -12,7 +12,7 @@ import { MapPin, Star, Users } from "lucide-react";
 import Link from "next/link";
 
 export default function SchoolsPage() {
-  const [search, setSearch] = useState("");
+  const [, setSearch] = useState("");
   const [page, setPage] = useState(1);
 
   const schools = [

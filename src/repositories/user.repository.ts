@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { Prisma, User, UserRole } from "@prisma/client";
+import { Prisma, UserRole } from "@prisma/client";
 import { NotFoundError, ConflictError } from "@/lib/errors";
 import { PaginationInput, createPaginatedResponse } from "@/lib/validators";
 

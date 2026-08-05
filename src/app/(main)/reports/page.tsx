@@ -2,9 +2,9 @@
 
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { PageHeader } from "@/components/layout/page-header";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { FileText, Download, Calendar, Filter } from "lucide-react";
+import { FileText, Download, Calendar } from "lucide-react";
 
 export default function ReportsPage() {
   const reports = [

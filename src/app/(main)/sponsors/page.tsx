@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Building2, TrendingUp, Handshake } from "lucide-react";
 
 export default function SponsorsPage() {
-  const [search, setSearch] = useState("");
+  const [, setSearch] = useState("");
 
   const sponsors = [
     { id: "1", name: "Sports India", industry: "Sports Equipment", totalSponsored: 5000000, activeSponsorships: 12, verified: true },

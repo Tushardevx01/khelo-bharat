@@ -3,7 +3,7 @@
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { PageHeader } from "@/components/layout/page-header";
 import { StatCard } from "@/components/shared/stat-card";
-import { Users, Trophy, School, Handshake, TrendingUp, Activity } from "lucide-react";
+import { Users, Trophy, School, Handshake, TrendingUp } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useEffect, useState } from "react";
 import { getDashboardStats } from "@/actions/user.actions";

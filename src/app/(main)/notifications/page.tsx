@@ -4,7 +4,7 @@ import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { PageHeader } from "@/components/layout/page-header";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Bell, Trophy, Award, MessageSquare, Settings, CheckCircle } from "lucide-react";
+import { Trophy, Award, MessageSquare, Settings, CheckCircle } from "lucide-react";
 
 export default function NotificationsPage() {
   const notifications = [

@@ -14,7 +14,7 @@ import { SPORT_CATEGORIES } from "@/constants";
 import Link from "next/link";
 
 export default function AthletesPage() {
-  const [search, setSearch] = useState("");
+  const [, setSearch] = useState("");
   const [sportFilter, setSportFilter] = useState("all");
   const [page, setPage] = useState(1);
 

@@ -4,7 +4,7 @@ import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { PageHeader } from "@/components/layout/page-header";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Image, Video, Plus, Heart, MessageSquare } from "lucide-react";
+import { Image as ImageIcon, Video, Plus, Heart, MessageSquare } from "lucide-react";
 
 export default function GalleryPage() {
   const media = [
@@ -37,7 +37,7 @@ export default function GalleryPage() {
                 {item.type === "video" ? (
                   <Video className="absolute inset-0 m-auto h-8 w-8 text-neutral-400" />
                 ) : (
-                  <Image className="absolute inset-0 m-auto h-8 w-8 text-neutral-400" />
+                  <ImageIcon className="absolute inset-0 m-auto h-8 w-8 text-neutral-400" />
                 )}
                 <div className="absolute inset-0 bg-black/0 transition-colors group-hover:bg-black/20" />
               </div>

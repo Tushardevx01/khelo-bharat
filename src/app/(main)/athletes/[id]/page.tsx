@@ -1,11 +1,11 @@
 "use client";
 
 import { Header } from "@/components/layout/header";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { MapPin, Trophy, Star, Calendar, TrendingUp } from "lucide-react";
+import { MapPin, Trophy, Star } from "lucide-react";
 
 export default function AthleteDetailPage() {
   const athlete = {
