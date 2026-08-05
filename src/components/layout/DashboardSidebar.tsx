@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useClerk } from "@clerk/nextjs";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -104,8 +105,10 @@ export default function DashboardSidebar({ role, user, notificationCount = 0 }: 
   const [isCollapsed, setIsCollapsed] = useState(false);
   const config = ROLE_CONFIGS[role] || ROLE_CONFIGS.ATHLETE;
 
+  const { signOut } = useClerk();
+
   const handleLogout = async () => {
-    await fetch("/api/auth/logout", { method: "POST" });
+    await signOut();
     window.location.href = "/";
   };
 

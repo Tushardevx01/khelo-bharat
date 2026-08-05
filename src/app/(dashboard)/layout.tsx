@@ -1,26 +1,25 @@
-/* eslint-disable */
-"use client";
-
-import { useAuth } from "@/hooks/useAuth";
+import { auth } from "@clerk/nextjs/server";
+import { currentUser } from "@clerk/nextjs/server";
+import { prisma } from "@/lib/prisma";
 import DashboardSidebar from "@/components/layout/DashboardSidebar";
-import LoadingSpinner from "@/components/shared/LoadingSpinner";
-import { motion } from "framer-motion";
+import DashboardContent from "./DashboardContent";
 
-export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const { user, loading } = useAuth();
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <LoadingSpinner size="lg" />
-      </div>
-    );
+export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
+  await auth.protect();
+  
+  const user = await currentUser();
+  
+  let dbUser = null;
+  if (user) {
+    dbUser = await prisma.user.findUnique({
+      where: { clerkId: user.id }
+    });
   }
 
-  if (!user) {
+  if (!dbUser) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-500">Please log in to access the dashboard.</p>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
       </div>
     );
   }
@@ -28,16 +27,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       <DashboardSidebar
-        role={user.role}
-        user={{ name: user.name, email: user.email, avatar: (user as any).avatar || null }}
+        role={dbUser.role}
+        user={{ 
+          name: `${dbUser.firstName} ${dbUser.lastName}`, 
+          email: dbUser.email, 
+          avatar: dbUser.imageUrl 
+        }}
       />
-      <motion.main
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="ml-[280px] p-6 lg:p-8 min-h-screen"
-      >
+      <DashboardContent>
         {children}
-      </motion.main>
+      </DashboardContent>
     </div>
   );
 }
