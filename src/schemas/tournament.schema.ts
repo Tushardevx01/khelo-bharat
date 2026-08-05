@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const createTournamentSchema = z.object({
+const tournamentBaseSchema = z.object({
   title: z.string().min(3).max(200),
   description: z.string().max(2000).optional(),
   sportCategory: z.enum([
@@ -20,15 +20,23 @@ export const createTournamentSchema = z.object({
   prizePool: z.number().min(0).optional(),
   rules: z.string().max(5000).optional(),
   poster: z.string().url().optional(),
-}).refine((data) => data.endDate >= data.startDate, {
-  message: "End date must be after start date",
-  path: ["endDate"],
-}).refine((data) => !data.registrationDeadline || data.registrationDeadline >= new Date(), {
-  message: "Registration deadline must be in the future",
-  path: ["registrationDeadline"],
 });
 
-export const updateTournamentSchema = createTournamentSchema.partial();
+export const createTournamentSchema = tournamentBaseSchema.refine(
+  (data) => data.endDate >= data.startDate,
+  {
+    message: "End date must be after start date",
+    path: ["endDate"],
+  }
+).refine(
+  (data) => !data.registrationDeadline || data.registrationDeadline >= new Date(),
+  {
+    message: "Registration deadline must be in the future",
+    path: ["registrationDeadline"],
+  }
+);
+
+export const updateTournamentSchema = tournamentBaseSchema.partial();
 
 export const tournamentQuerySchema = z.object({
   page: z.coerce.number().min(1).default(1),

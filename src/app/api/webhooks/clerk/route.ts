@@ -24,16 +24,15 @@ async function handleWebhook(event: { type: string; data: Record<string, unknown
   }
 
   if (eventType === "user.updated") {
-    const { id, email_addresses, first_name, last_name, image_url } = event.data;
-    const email = (email_addresses as Array<{ email_address: string }>)?.[0]?.email_address;
+    const { id, first_name, last_name, image_url } = event.data;
     const name = `${first_name || ""} ${last_name || ""}`.trim() || "User";
 
     try {
       const user = await userService.getUserByClerkId(id as string);
-      await userService.updateUser(user.id, {
-        name,
-        avatar: image_url as string || undefined,
-      });
+      await userService.updateUser(user.id, { name });
+      if (image_url) {
+        await userService.updateAvatar(user.id, image_url as string);
+      }
     } catch {
       // User not found, skip
     }

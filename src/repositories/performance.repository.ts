@@ -32,6 +32,9 @@ export class PerformanceRepository {
   async getStats(athleteId: string) {
     const performances = await prisma.performance.findMany({
       where: { athleteId },
+      include: {
+        tournament: { select: { id: true, title: true } },
+      },
       orderBy: { date: "desc" },
     });
 

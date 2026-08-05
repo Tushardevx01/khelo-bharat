@@ -112,6 +112,7 @@ model User {
   receivedMessages Message[]      @relation("Receiver")
   galleries       Gallery[]
   auditLogs       AuditLog[]
+  tournaments     Tournament[]
 
   @@index([email])
   @@index([clerkId])
@@ -253,6 +254,7 @@ model Tournament {
   updatedAt             DateTime  @updatedAt
   deletedAt             DateTime?
 
+  organizer             User      @relation(fields: [organizerId], references: [id], onDelete: Cascade)
   registrations         TournamentRegistration[]
   matches               Match[]
   performances          Performance[]
