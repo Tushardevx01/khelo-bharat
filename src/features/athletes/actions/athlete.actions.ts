@@ -5,7 +5,7 @@ import { AthleteService } from "../services/athlete.service";
 import { AthleteProfileInput, AthleteProfileSchema } from "../validators";
 import { AppError } from "@/lib/errors";
 import { ZodError } from "zod";
-import { getSession } from "@/features/auth/utils/session";
+import { getCurrentUser } from "@/features/auth/utils/auth";
 import { revalidatePath } from "next/cache";
 
 export type ActionResponse<T = any> = {
@@ -17,10 +17,10 @@ export type ActionResponse<T = any> = {
 
 export async function getDashboardAction(): Promise<ActionResponse> {
   try {
-    const session = await getSession();
-    if (!session) throw new AppError("Unauthorized", 401);
+    const user = await getCurrentUser();
+    if (!user) throw new AppError("Unauthorized", 401);
 
-    const data = await AthleteService.getDashboardData(session.userId);
+    const data = await AthleteService.getDashboardData(user.id);
     return { success: true, data };
   } catch (error: any) {
     if (error instanceof AppError) {
@@ -32,11 +32,11 @@ export async function getDashboardAction(): Promise<ActionResponse> {
 
 export async function setupProfileAction(input: AthleteProfileInput): Promise<ActionResponse> {
   try {
-    const session = await getSession();
-    if (!session) throw new AppError("Unauthorized", 401);
+    const user = await getCurrentUser();
+    if (!user) throw new AppError("Unauthorized", 401);
 
     const validatedData = AthleteProfileSchema.parse(input);
-    const profile = await AthleteService.setupProfile(session.userId, validatedData);
+    const profile = await AthleteService.setupProfile(user.id, validatedData);
     
     revalidatePath("/athlete");
     return { success: true, data: profile };

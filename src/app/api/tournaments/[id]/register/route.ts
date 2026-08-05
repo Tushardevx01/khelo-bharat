@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { tournamentService } from "@/features/tournaments/services/tournament.service";
-import { getSession } from "@/lib/auth";
+import { requireAuth } from "@/features/auth/utils/auth";
 import { successResponse, errorResponse } from "@/types/api";
 import { AppError } from "@/lib/errors";
 import { logger } from "@/lib/logger";
@@ -10,12 +10,12 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const session = await getSession();
+    const user = await requireAuth();
     const { id } = await params;
 
     const registration = await tournamentService.registerForTournament(
       id,
-      session.userId,
+      user.id,
       "ATHLETE"
     );
 

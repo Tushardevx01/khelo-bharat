@@ -1,12 +1,12 @@
 import { certificateRepository } from "@/features/certificates/repositories/certificate.repository";
-import { getSession } from "@/lib/auth";
+import { requireAuth } from "@/features/auth/utils/auth";
 import { successResponse, errorResponse } from "@/types/api";
 import { logger } from "@/lib/logger";
 
 export async function GET() {
   try {
-    const session = await getSession();
-    const certificates = await certificateRepository.findByRecipient(session.userId);
+    const user = await requireAuth();
+    const certificates = await certificateRepository.findByRecipient(user.id);
     return successResponse(certificates);
   } catch (error) {
     logger.error("Failed to fetch certificates", error as Error);

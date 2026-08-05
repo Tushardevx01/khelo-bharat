@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, Trophy, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
+import { useAuth, UserButton } from "@clerk/nextjs";
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
@@ -19,6 +19,7 @@ const NAV_LINKS = [
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
+  const { isSignedIn, isLoaded } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -61,26 +62,30 @@ export default function Navbar() {
             </div>
 
             <div className="hidden lg:flex items-center gap-3">
-              <SignedIn>
-                <Link href="/dashboard">
-                  <Button variant="ghost" className="flex items-center gap-2 rounded-full">
-                    <LayoutDashboard className="w-4 h-4" />
-                    Dashboard
-                  </Button>
-                </Link>
-                <UserButton afterSignOutUrl="/" />
-              </SignedIn>
+              {isLoaded && isSignedIn && (
+                <>
+                  <Link href="/dashboard">
+                    <Button variant="ghost" className="flex items-center gap-2 rounded-full">
+                      <LayoutDashboard className="w-4 h-4" />
+                      Dashboard
+                    </Button>
+                  </Link>
+                  <UserButton />
+                </>
+              )}
 
-              <SignedOut>
-                <Link href="/login">
-                  <Button variant="ghost" className="rounded-full">Log in</Button>
-                </Link>
-                <Link href="/sign-up">
-                  <Button className="rounded-full bg-gradient-to-r from-[#FF6B35] to-[#D72638] hover:from-[#D72638] hover:to-[#FF6B35] text-white shadow-lg hover:shadow-[#FF6B35]/25 transition-all">
-                    Get Started
-                  </Button>
-                </Link>
-              </SignedOut>
+              {isLoaded && !isSignedIn && (
+                <>
+                  <Link href="/login">
+                    <Button variant="ghost" className="rounded-full">Log in</Button>
+                  </Link>
+                  <Link href="/sign-up">
+                    <Button className="rounded-full bg-gradient-to-r from-[#FF6B35] to-[#D72638] hover:from-[#D72638] hover:to-[#FF6B35] text-white shadow-lg hover:shadow-[#FF6B35]/25 transition-all">
+                      Get Started
+                    </Button>
+                  </Link>
+                </>
+              )}
             </div>
 
             <button
@@ -113,23 +118,27 @@ export default function Navbar() {
                 </Link>
               ))}
               <hr className="my-4" />
-              <SignedIn>
-                <Link href="/dashboard" onClick={() => setIsMobileOpen(false)}>
-                  <Button className="w-full rounded-full bg-gradient-to-r from-[#FF6B35] to-[#D72638] text-white">Dashboard</Button>
-                </Link>
-                <div className="flex justify-center mt-4">
-                  <UserButton afterSignOutUrl="/" />
-                </div>
-              </SignedIn>
+              {isLoaded && isSignedIn && (
+                <>
+                  <Link href="/dashboard" onClick={() => setIsMobileOpen(false)}>
+                    <Button className="w-full rounded-full bg-gradient-to-r from-[#FF6B35] to-[#D72638] text-white">Dashboard</Button>
+                  </Link>
+                  <div className="flex justify-center mt-4">
+                    <UserButton />
+                  </div>
+                </>
+              )}
 
-              <SignedOut>
-                <Link href="/login" onClick={() => setIsMobileOpen(false)}>
-                  <Button variant="outline" className="w-full rounded-full">Log in</Button>
-                </Link>
-                <Link href="/sign-up" onClick={() => setIsMobileOpen(false)}>
-                  <Button className="w-full rounded-full bg-gradient-to-r from-[#FF6B35] to-[#D72638] text-white">Get Started</Button>
-                </Link>
-              </SignedOut>
+              {isLoaded && !isSignedIn && (
+                <>
+                  <Link href="/login" onClick={() => setIsMobileOpen(false)}>
+                    <Button variant="outline" className="w-full rounded-full">Log in</Button>
+                  </Link>
+                  <Link href="/sign-up" onClick={() => setIsMobileOpen(false)}>
+                    <Button className="w-full rounded-full bg-gradient-to-r from-[#FF6B35] to-[#D72638] text-white">Get Started</Button>
+                  </Link>
+                </>
+              )}
             </div>
           </motion.div>
         )}
