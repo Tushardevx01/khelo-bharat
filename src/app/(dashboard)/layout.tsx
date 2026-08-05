@@ -4,8 +4,13 @@ import { prisma } from "@/lib/prisma";
 import DashboardSidebar from "@/components/layout/DashboardSidebar";
 import DashboardContent from "./DashboardContent";
 
+import { redirect } from "next/navigation";
+
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
-  await auth.protect();
+  const { userId } = await auth();
+  if (!userId) {
+    redirect("/login");
+  }
   
   const user = await currentUser();
   
