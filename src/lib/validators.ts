@@ -12,7 +12,13 @@ export const idSchema = z.object({
   id: z.string().uuid(),
 });
 
-export type PaginationInput = z.infer<typeof paginationSchema>;
+export type PaginationInput = {
+  page: number;
+  limit: number;
+  search?: string;
+  sortBy?: string;
+  sortOrder?: "asc" | "desc";
+};
 
 export function createPaginatedResponse<T>(
   data: T[],
