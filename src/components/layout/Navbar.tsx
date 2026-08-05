@@ -3,11 +3,9 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, Trophy, ChevronDown, User, LogOut, LayoutDashboard } from "lucide-react";
+import { Menu, X, Trophy, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import type { UserPayload } from "@/types";
+import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 
 const NAV_LINKS = [
   { href: "/", label: "Home" },
@@ -18,40 +16,15 @@ const NAV_LINKS = [
   { href: "/contact", label: "Contact" },
 ] as const;
 
-const ROLE_DASHBOARD_MAP: Record<string, string> = {
-  SUPER_ADMIN: "/admin",
-  SCHOOL_ADMIN: "/school",
-  COACH: "/coach",
-  ATHLETE: "/athlete",
-  SPONSOR: "/sponsor",
-};
-
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
-  const [user, setUser] = useState<UserPayload | null>(null);
-
-  useEffect(() => {
-    fetch("/api/auth/me")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success) setUser(data.data.user);
-      })
-      .catch(() => {});
-  }, []);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  const handleLogout = async () => {
-    await fetch("/api/auth/logout", { method: "POST" });
-    window.location.href = "/";
-  };
-
-  const dashboardPath = user ? ROLE_DASHBOARD_MAP[user.role] || "/dashboard" : "/login";
 
   return (
     <>
@@ -88,52 +61,26 @@ export default function Navbar() {
             </div>
 
             <div className="hidden lg:flex items-center gap-3">
-              {user ? (
-                <DropdownMenu>
-                  <DropdownMenuTrigger>
-                    <Button variant="ghost" className="flex items-center gap-2 rounded-full">
-                      <Avatar className="w-8 h-8">
-                        <AvatarImage src={undefined} />
-                        <AvatarFallback className="bg-gradient-to-br from-[#FF6B35] to-[#D72638] text-white text-sm">
-                          {user.name.charAt(0)}
-                        </AvatarFallback>
-                      </Avatar>
-                      <span className="text-sm font-medium">{user.name}</span>
-                      <ChevronDown className="w-4 h-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-48">
-                    <DropdownMenuItem>
-                      <Link href={dashboardPath} className="flex items-center gap-2 w-full">
-                        <LayoutDashboard className="w-4 h-4" />
-                        Dashboard
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem>
-                      <Link href="/profile" className="flex items-center gap-2 w-full">
-                        <User className="w-4 h-4" />
-                        Profile
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem onClick={handleLogout} className="flex items-center gap-2 cursor-pointer text-red-600">
-                      <LogOut className="w-4 h-4" />
-                      Logout
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              ) : (
-                <>
-                  <Link href="/login">
-                    <Button variant="ghost" className="rounded-full">Log in</Button>
-                  </Link>
-                  <Link href="/register">
-                    <Button className="rounded-full bg-gradient-to-r from-[#FF6B35] to-[#D72638] hover:from-[#D72638] hover:to-[#FF6B35] text-white shadow-lg hover:shadow-[#FF6B35]/25 transition-all">
-                      Get Started
-                    </Button>
-                  </Link>
-                </>
-              )}
+              <SignedIn>
+                <Link href="/dashboard">
+                  <Button variant="ghost" className="flex items-center gap-2 rounded-full">
+                    <LayoutDashboard className="w-4 h-4" />
+                    Dashboard
+                  </Button>
+                </Link>
+                <UserButton afterSignOutUrl="/" />
+              </SignedIn>
+
+              <SignedOut>
+                <Link href="/login">
+                  <Button variant="ghost" className="rounded-full">Log in</Button>
+                </Link>
+                <Link href="/sign-up">
+                  <Button className="rounded-full bg-gradient-to-r from-[#FF6B35] to-[#D72638] hover:from-[#D72638] hover:to-[#FF6B35] text-white shadow-lg hover:shadow-[#FF6B35]/25 transition-all">
+                    Get Started
+                  </Button>
+                </Link>
+              </SignedOut>
             </div>
 
             <button
@@ -166,25 +113,23 @@ export default function Navbar() {
                 </Link>
               ))}
               <hr className="my-4" />
-              {user ? (
-                <>
-                  <Link href={dashboardPath} onClick={() => setIsMobileOpen(false)}>
-                    <Button className="w-full rounded-full bg-gradient-to-r from-[#FF6B35] to-[#D72638] text-white">Dashboard</Button>
-                  </Link>
-                  <Button variant="outline" onClick={() => { handleLogout(); setIsMobileOpen(false); }} className="w-full rounded-full text-red-600">
-                    Logout
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Link href="/login" onClick={() => setIsMobileOpen(false)}>
-                    <Button variant="outline" className="w-full rounded-full">Log in</Button>
-                  </Link>
-                  <Link href="/register" onClick={() => setIsMobileOpen(false)}>
-                    <Button className="w-full rounded-full bg-gradient-to-r from-[#FF6B35] to-[#D72638] text-white">Get Started</Button>
-                  </Link>
-                </>
-              )}
+              <SignedIn>
+                <Link href="/dashboard" onClick={() => setIsMobileOpen(false)}>
+                  <Button className="w-full rounded-full bg-gradient-to-r from-[#FF6B35] to-[#D72638] text-white">Dashboard</Button>
+                </Link>
+                <div className="flex justify-center mt-4">
+                  <UserButton afterSignOutUrl="/" />
+                </div>
+              </SignedIn>
+
+              <SignedOut>
+                <Link href="/login" onClick={() => setIsMobileOpen(false)}>
+                  <Button variant="outline" className="w-full rounded-full">Log in</Button>
+                </Link>
+                <Link href="/sign-up" onClick={() => setIsMobileOpen(false)}>
+                  <Button className="w-full rounded-full bg-gradient-to-r from-[#FF6B35] to-[#D72638] text-white">Get Started</Button>
+                </Link>
+              </SignedOut>
             </div>
           </motion.div>
         )}

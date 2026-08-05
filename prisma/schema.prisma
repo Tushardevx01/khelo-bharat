@@ -103,13 +103,13 @@ enum FixtureStatus {
 
 model User {
   id            String   @id @default(uuid())
+  clerkId       String   @unique
   email         String   @unique
-  password      String
-  name          String
-  phone         String?
   role          UserRole
-  avatar        String?
-  emailVerified DateTime?
+  firstName     String
+  lastName      String
+  imageUrl      String?
+  phone         String?
   isActive      Boolean  @default(true)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
