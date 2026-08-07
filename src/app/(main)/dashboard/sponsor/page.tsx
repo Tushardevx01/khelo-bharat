@@ -1,5 +1,3 @@
-"use client";
-
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { PageHeader } from "@/components/layout/page-header";
 import { StatCard } from "@/components/shared/stat-card";
@@ -8,8 +6,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { getSponsorSponsorships } from "@/actions/sponsorship.actions";
 
-export default function SponsorDashboardPage() {
+export default async function SponsorDashboardPage() {
+  let sponsorships: any[] = [];
+  try {
+    sponsorships = await getSponsorSponsorships();
+  } catch (error) {}
+
+  const activeSponsorships = sponsorships.filter(s => s.status === "ACTIVE");
+  const totalAmount = sponsorships.reduce((sum, s) => sum + s.amount, 0);
+
   return (
     <DashboardLayout>
       <div className="space-y-8">
@@ -19,10 +26,10 @@ export default function SponsorDashboardPage() {
         />
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <StatCard title="Active Sponsorships" value="8" icon={Handshake} trend={{ value: 2, isPositive: true }} />
-          <StatCard title="Athletes Sponsored" value="15" icon={Users} trend={{ value: 3, isPositive: true }} />
-          <StatCard title="Total Invested" value="₹25L" icon={TrendingUp} trend={{ value: 18, isPositive: true }} />
-          <StatCard title="ROI Score" value="92" icon={BarChart3} trend={{ value: 5, isPositive: true }} />
+          <StatCard title="Active Sponsorships" value={activeSponsorships.length} icon={Handshake} />
+          <StatCard title="Athletes Sponsored" value={sponsorships.filter(s => s.athleteId).length} icon={Users} />
+          <StatCard title="Total Invested" value={`₹${(totalAmount / 100000).toFixed(2)}L`} icon={TrendingUp} />
+          <StatCard title="ROI Score" value="-" icon={BarChart3} />
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">
@@ -35,31 +42,37 @@ export default function SponsorDashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {[
-                  { athlete: "Aarav Singh", sport: "Cricket", amount: "₹5L", status: "ACTIVE" },
-                  { athlete: "Diya Patel", sport: "Badminton", amount: "₹3L", status: "ACTIVE" },
-                  { athlete: "Rohan Kumar", sport: "Football", amount: "₹2L", status: "PENDING" },
-                ].map((sponsorship, i) => (
-                  <div key={i} className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800">
-                        <span className="text-sm font-medium">{sponsorship.athlete.charAt(0)}</span>
+                {activeSponsorships.length === 0 ? (
+                  <p className="text-sm text-muted-foreground text-center py-4">No active sponsorships</p>
+                ) : (
+                  activeSponsorships.slice(0, 3).map((sponsorship, i) => (
+                    <div key={i} className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800">
+                          <span className="text-sm font-medium">
+                            {sponsorship.athlete?.user?.name.charAt(0) || "T"}
+                          </span>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-neutral-900 dark:text-white">
+                            {sponsorship.athlete?.user?.name || "Tournament/School"}
+                          </p>
+                          <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                            {sponsorship.athlete?.sportCategory || ""}
+                          </p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-sm font-medium text-neutral-900 dark:text-white">
-                          {sponsorship.athlete}
+                      <div className="text-right">
+                        <p className="text-sm font-bold text-neutral-900 dark:text-white">
+                          ₹{(sponsorship.amount / 100000).toFixed(2)}L
                         </p>
-                        <p className="text-xs text-neutral-500 dark:text-neutral-400">{sponsorship.sport}</p>
+                        <Badge variant="success" className="text-xs">
+                          {sponsorship.status}
+                        </Badge>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-sm font-bold text-neutral-900 dark:text-white">{sponsorship.amount}</p>
-                      <Badge variant={sponsorship.status === "ACTIVE" ? "success" : "warning"} className="text-xs">
-                        {sponsorship.status}
-                      </Badge>
-                    </div>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </CardContent>
           </Card>
@@ -71,10 +84,10 @@ export default function SponsorDashboardPage() {
             <CardContent>
               <div className="space-y-4">
                 {[
-                  { label: "Total Budget", value: "₹50L" },
-                  { label: "Spent", value: "₹25L" },
-                  { label: "Remaining", value: "₹25L" },
-                  { label: "Avg. per Athlete", value: "₹1.67L" },
+                  { label: "Total Budget", value: "-" },
+                  { label: "Spent", value: `₹${(totalAmount / 100000).toFixed(2)}L` },
+                  { label: "Remaining", value: "-" },
+                  { label: "Avg. per Sponsorship", value: sponsorships.length ? `₹${((totalAmount / sponsorships.length) / 100000).toFixed(2)}L` : "₹0L" },
                 ].map((item, i) => (
                   <div key={i} className="flex items-center justify-between">
                     <span className="text-sm text-neutral-600 dark:text-neutral-400">{item.label}</span>

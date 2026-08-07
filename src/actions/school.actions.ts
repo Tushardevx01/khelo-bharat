@@ -42,8 +42,8 @@ export async function updateSchoolProfile(id: string, data: Record<string, unkno
   return schoolService.updateSchoolProfile(id, data);
 }
 
-export async function getAllSchools(page: number = 1, limit: number = 10, filters?: { city?: string; state?: string }) {
-  return schoolService.getAllSchools({ page, limit }, filters);
+export async function getAllSchools(page: number = 1, limit: number = 10, search?: string, filters?: { city?: string; state?: string }) {
+  return schoolService.getAllSchools({ page, limit, search }, filters);
 }
 
 export async function getVerifiedSchools(limit?: number) {

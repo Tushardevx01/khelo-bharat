@@ -1,29 +1,31 @@
-"use client";
-
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { PageHeader } from "@/components/layout/page-header";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Trophy, Award, MessageSquare, Settings, CheckCircle } from "lucide-react";
+import { Trophy, Award, MessageSquare, Settings, CheckCircle, BellRing, Bell } from "lucide-react";
+import { getNotifications } from "@/actions/notification.actions";
+import { MarkAllReadButton } from "./_components/mark-all-read-button";
+import { formatDistanceToNow } from "date-fns";
 
-export default function NotificationsPage() {
-  const notifications = [
-    { id: "1", type: "TOURNAMENT", title: "Tournament Registration Open", message: "National Cricket Championship 2026 is now open for registration.", time: "5 minutes ago", read: false },
-    { id: "2", type: "ACHIEVEMENT", title: "Achievement Verified", message: "Your State Championship achievement has been verified.", time: "2 hours ago", read: false },
-    { id: "3", type: "MESSAGE", title: "New Message", message: "Rajesh Kumar sent you a message.", time: "3 hours ago", read: true },
-    { id: "4", type: "SPONSOR", title: "Sponsorship Opportunity", message: "Sports India is interested in sponsoring you.", time: "1 day ago", read: true },
-    { id: "5", type: "SYSTEM", title: "Profile Update Required", message: "Please update your profile information.", time: "2 days ago", read: true },
-  ];
+const getIcon = (type: string) => {
+  switch (type) {
+    case "TOURNAMENT": return Trophy;
+    case "ACHIEVEMENT": return Award;
+    case "MESSAGE": return MessageSquare;
+    case "SPONSOR": return CheckCircle;
+    case "SYSTEM": return BellRing;
+    default: return Settings;
+  }
+};
 
-  const getIcon = (type: string) => {
-    switch (type) {
-      case "TOURNAMENT": return Trophy;
-      case "ACHIEVEMENT": return Award;
-      case "MESSAGE": return MessageSquare;
-      case "SPONSOR": return CheckCircle;
-      default: return Settings;
-    }
-  };
+export default async function NotificationsPage() {
+  let notifications: any[] = [];
+  try {
+    notifications = await getNotifications();
+  } catch (error) {
+    // User might not be logged in or have profile set up
+  }
+
+  const hasUnread = notifications.some((n) => !n.read);
 
   return (
     <DashboardLayout>
@@ -33,43 +35,55 @@ export default function NotificationsPage() {
             title="Notifications"
             description="Stay updated with your activities."
           />
-          <Button variant="outline" size="sm">
-            Mark all as read
-          </Button>
+          <MarkAllReadButton hasUnread={hasUnread} />
         </div>
 
-        <div className="space-y-4">
-          {notifications.map((notification) => {
-            const Icon = getIcon(notification.type);
-            return (
-              <Card
-                key={notification.id}
-                className={`transition-all hover:shadow-md ${
-                  !notification.read ? "border-l-4 border-l-neutral-900 dark:border-l-white" : ""
-                }`}
-              >
-                <CardContent className="p-4">
-                  <div className="flex items-start gap-4">
-                    <div className="rounded-lg bg-neutral-100 p-2 dark:bg-neutral-800">
-                      <Icon className="h-5 w-5 text-neutral-600 dark:text-neutral-400" />
-                    </div>
-                    <div className="flex-1">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                        <p className={`text-sm font-medium ${!notification.read ? "text-neutral-900 dark:text-white" : "text-neutral-600 dark:text-neutral-400"}`}>
-                          {notification.title}
-                        </p>
-                        <span className="text-xs text-neutral-500">{notification.time}</span>
+        {notifications.length === 0 ? (
+          <div className="mt-12 flex flex-col items-center justify-center text-center p-8 border border-dashed border-border rounded-xl bg-card">
+            <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+              <Bell className="h-6 w-6 text-primary" />
+            </div>
+            <h3 className="text-xl font-bold text-foreground">No notifications</h3>
+            <p className="mt-2 text-sm text-muted-foreground max-w-sm">
+              You're all caught up! We'll notify you when there's new activity on your account.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {notifications.map((notification) => {
+              const Icon = getIcon(notification.type);
+              return (
+                <Card
+                  key={notification.id}
+                  className={`transition-all hover:shadow-md bg-card border-border ${
+                    !notification.read ? "border-l-4 border-l-primary" : ""
+                  }`}
+                >
+                  <CardContent className="p-4">
+                    <div className="flex items-start gap-4">
+                      <div className="rounded-lg bg-primary/10 p-2">
+                        <Icon className="h-5 w-5 text-primary" />
                       </div>
-                      <p className="mt-1 text-sm text-neutral-500 dark:text-neutral-400">
-                        {notification.message}
-                      </p>
+                      <div className="flex-1">
+                        <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                          <p className={`text-sm font-medium ${!notification.read ? "text-foreground" : "text-muted-foreground"}`}>
+                            {notification.title}
+                          </p>
+                          <span className="text-xs text-muted-foreground whitespace-nowrap">
+                            {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}
+                          </span>
+                        </div>
+                        <p className={`mt-1 text-sm ${!notification.read ? "text-muted-foreground" : "text-muted-foreground/80"}`}>
+                          {notification.message}
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        )}
       </div>
     </DashboardLayout>
   );

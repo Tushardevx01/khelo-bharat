@@ -1,77 +1,40 @@
-"use client";
-
-import { useState } from "react";
 import { Header } from "@/components/layout/header";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { PageHeader } from "@/components/layout/page-header";
-import { SearchInput } from "@/components/shared/search-input";
 import { Pagination } from "@/components/shared/pagination";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar, MapPin, Users } from "lucide-react";
-import { SPORT_CATEGORIES, TOURNAMENT_STATUSES } from "@/constants";
 import Link from "next/link";
-import { useAuth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
+import { getAllTournaments } from "@/actions/tournament.actions";
+import { TournamentsFilters } from "./_components/tournaments-filters";
+import { TournamentStatus, SportCategory } from "@prisma/client";
 
-export default function TournamentsPage() {
-  const { isLoaded, isSignedIn } = useAuth();
-  const [, setSearch] = useState("");
-  const [sportFilter, setSportFilter] = useState("all");
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [page, setPage] = useState(1);
+export default async function TournamentsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const { userId } = await auth();
+  const isSignedIn = !!userId;
 
-  const tournaments = [
-    {
-      id: "1",
-      title: "National Cricket Championship 2026",
-      sportCategory: "CRICKET",
-      status: "REGISTRATION_OPEN",
-      startDate: "2026-03-15",
-      location: "Mumbai, Maharashtra",
-      totalParticipants: 128,
-      maxParticipants: 256,
-      entryFee: 5000,
-      prizePool: 500000,
-    },
-    {
-      id: "2",
-      title: "Inter-State Football League",
-      sportCategory: "FOOTBALL",
-      status: "UPCOMING",
-      startDate: "2026-04-01",
-      location: "Delhi, NCR",
-      totalParticipants: 64,
-      maxParticipants: 128,
-      entryFee: 3000,
-      prizePool: 300000,
-    },
-    {
-      id: "3",
-      title: "All India Badminton Open",
-      sportCategory: "BADMINTON",
-      status: "REGISTRATION_OPEN",
-      startDate: "2026-04-20",
-      location: "Hyderabad, Telangana",
-      totalParticipants: 32,
-      maxParticipants: 64,
-      entryFee: 2000,
-      prizePool: 200000,
-    },
-    {
-      id: "4",
-      title: "State Athletics Meet",
-      sportCategory: "ATHLETICS",
-      status: "UPCOMING",
-      startDate: "2026-05-10",
-      location: "Bangalore, Karnataka",
-      totalParticipants: 200,
-      maxParticipants: 500,
-      entryFee: 1000,
-      prizePool: 100000,
-    },
-  ];
+  const params = await searchParams;
+  const page = typeof params.page === "string" ? parseInt(params.page) : 1;
+  const search = typeof params.search === "string" ? params.search : undefined;
+  const sportCategory = typeof params.sport === "string" && params.sport !== "all" 
+    ? (params.sport as SportCategory) 
+    : undefined;
+  const status = typeof params.status === "string" && params.status !== "all" 
+    ? (params.status as TournamentStatus) 
+    : undefined;
+
+  const { data: tournaments, pagination: meta } = await getAllTournaments(page, 9, {
+    sportCategory,
+    status,
+    search,
+  } as any);
 
   const content = (
     <div className={isSignedIn ? "space-y-8" : ""}>
@@ -80,98 +43,80 @@ export default function TournamentsPage() {
         description="Discover and register for tournaments across India."
       />
 
-      <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
-        <div className="flex-1">
-          <SearchInput placeholder="Search tournaments..." onSearch={setSearch} />
+      <TournamentsFilters />
+
+      {tournaments.length === 0 ? (
+        <div className="mt-12 flex flex-col items-center justify-center text-center p-8 border border-dashed border-border rounded-xl bg-card">
+          <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+            <Calendar className="h-6 w-6 text-primary" />
+          </div>
+          <h3 className="text-xl font-bold text-foreground">No tournaments found</h3>
+          <p className="mt-2 text-sm text-muted-foreground max-w-sm">
+            We couldn't find any tournaments matching your criteria. Try adjusting your filters or check back later.
+          </p>
         </div>
-        <Select value={sportFilter} onValueChange={setSportFilter}>
-          <SelectTrigger className="w-full sm:w-[180px]">
-            <SelectValue placeholder="All Sports" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Sports</SelectItem>
-            {SPORT_CATEGORIES.map((sport) => (
-              <SelectItem key={sport.value} value={sport.value}>
-                {sport.icon} {sport.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-full sm:w-[180px]">
-            <SelectValue placeholder="All Status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Status</SelectItem>
-            {TOURNAMENT_STATUSES.map((status) => (
-              <SelectItem key={status.value} value={status.value}>
-                {status.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {tournaments.map((tournament) => (
-          <Link key={tournament.id} href={`/tournaments/${tournament.id}`}>
-            <Card className="h-full bg-card border-border transition-all hover:shadow-md shadow-sm">
-              <div className="h-40 bg-muted p-4 flex flex-col justify-between">
-                <div className="flex justify-between items-start">
-                  <Badge className="bg-primary/10 text-primary hover:bg-primary/20 border-0">
-                    {tournament.status.replace(/_/g, " ")}
+      ) : (
+        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {tournaments.map((tournament) => (
+            <Link key={tournament.id} href={`/tournaments/${tournament.id}`}>
+              <Card className="h-full bg-card border-border transition-all hover:shadow-md shadow-sm">
+                <div className="h-40 bg-muted p-4 flex flex-col justify-between" style={tournament.poster ? { backgroundImage: `url(${tournament.poster})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}>
+                  <div className="flex justify-between items-start">
+                    <Badge className="bg-primary/10 text-primary hover:bg-primary/20 border-0">
+                      {tournament.status.replace(/_/g, " ")}
+                    </Badge>
+                  </div>
+                </div>
+                <CardContent className="p-6 relative z-10 -mt-6 bg-card rounded-t-2xl border-t border-border">
+                  <Badge variant="secondary" className="mb-2 border-0">
+                    {tournament.sportCategory}
                   </Badge>
-                </div>
-              </div>
-              <CardContent className="p-6 relative z-10 -mt-6 bg-card rounded-t-2xl border-t border-border">
-                <Badge variant="secondary" className="mb-2 border-0">
-                  {tournament.sportCategory}
-                </Badge>
-                <h3 className="text-lg font-bold text-foreground">
-                  {tournament.title}
-                </h3>
-                <div className="mt-4 space-y-3">
-                  <div className="flex items-center text-sm text-muted-foreground">
-                    <Calendar className="mr-3 h-4 w-4 text-primary" />
-                    {new Date(tournament.startDate).toLocaleDateString("en-IN", {
-                      day: "numeric",
-                      month: "short",
-                      year: "numeric",
-                    })}
+                  <h3 className="text-lg font-bold text-foreground line-clamp-1">
+                    {tournament.title}
+                  </h3>
+                  <div className="mt-4 space-y-3">
+                    <div className="flex items-center text-sm text-muted-foreground">
+                      <Calendar className="mr-3 h-4 w-4 text-primary" />
+                      {new Date(tournament.startDate).toLocaleDateString("en-IN", {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                      })}
+                    </div>
+                    <div className="flex items-center text-sm text-muted-foreground">
+                      <MapPin className="mr-3 h-4 w-4 text-primary" />
+                      {tournament.city}, {tournament.state}
+                    </div>
+                    <div className="flex items-center text-sm text-muted-foreground">
+                      <Users className="mr-3 h-4 w-4 text-primary" />
+                      {tournament.totalParticipants}/{tournament.maxParticipants || "∞"} participants
+                    </div>
                   </div>
-                  <div className="flex items-center text-sm text-muted-foreground">
-                    <MapPin className="mr-3 h-4 w-4 text-primary" />
-                    {tournament.location}
+                  <div className="mt-6 flex items-center justify-between">
+                    <div>
+                      <p className="text-xs text-muted-foreground">Prize Pool</p>
+                      <p className="text-sm font-bold text-accent">
+                        ₹{tournament.prizePool.toLocaleString("en-IN")}
+                      </p>
+                    </div>
+                    <Button size="sm" className="font-medium">
+                      {tournament.status === "REGISTRATION_OPEN" ? "Register Now" : "View Details"}
+                    </Button>
                   </div>
-                  <div className="flex items-center text-sm text-muted-foreground">
-                    <Users className="mr-3 h-4 w-4 text-primary" />
-                    {tournament.totalParticipants}/{tournament.maxParticipants} participants
-                  </div>
-                </div>
-                <div className="mt-6 flex items-center justify-between">
-                  <div>
-                    <p className="text-xs text-muted-foreground">Prize Pool</p>
-                    <p className="text-sm font-bold text-accent">
-                      ₹{tournament.prizePool.toLocaleString("en-IN")}
-                    </p>
-                  </div>
-                  <Button size="sm" className="font-medium">
-                    {tournament.status === "REGISTRATION_OPEN" ? "Register Now" : "View Details"}
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
-        ))}
-      </div>
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
+        </div>
+      )}
 
-      <div className="mt-8">
-        <Pagination currentPage={page} totalPages={5} onPageChange={setPage} />
-      </div>
+      {meta.totalPages > 1 && (
+        <div className="mt-8">
+          <Pagination currentPage={meta.page} totalPages={meta.totalPages} />
+        </div>
+      )}
     </div>
   );
-
-  if (!isLoaded) return null;
 
   if (isSignedIn) {
     return (

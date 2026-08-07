@@ -35,8 +35,8 @@ export async function updateSponsorProfile(id: string, data: Record<string, unkn
   return sponsorService.updateSponsorProfile(id, data);
 }
 
-export async function getAllSponsors(page: number = 1, limit: number = 10) {
-  return sponsorService.getAllSponsors({ page, limit });
+export async function getAllSponsors(page: number = 1, limit: number = 10, search?: string) {
+  return sponsorService.getAllSponsors({ page, limit, search });
 }
 
 export async function getVerifiedSponsors(limit?: number) {

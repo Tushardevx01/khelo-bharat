@@ -1,34 +1,32 @@
-"use client";
-
-import { useState } from "react";
 import { Header } from "@/components/layout/header";
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { PageHeader } from "@/components/layout/page-header";
-import { SearchInput } from "@/components/shared/search-input";
 import { Pagination } from "@/components/shared/pagination";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { MapPin, Star, Trophy } from "lucide-react";
-import { SPORT_CATEGORIES } from "@/constants";
+import { MapPin, Star, Trophy, Users } from "lucide-react";
 import Link from "next/link";
-import { useAuth } from "@clerk/nextjs";
+import { auth } from "@clerk/nextjs/server";
+import { getAllAthletes } from "@/actions/athlete.actions";
+import { AthletesFilters } from "./_components/athletes-filters";
 
-export default function AthletesPage() {
-  const { isLoaded, isSignedIn } = useAuth();
-  const [, setSearch] = useState("");
-  const [sportFilter, setSportFilter] = useState("all");
-  const [page, setPage] = useState(1);
+export default async function AthletesPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}) {
+  const { userId } = await auth();
+  const isSignedIn = !!userId;
 
-  const athletes = [
-    { id: "1", name: "Aarav Singh", sport: "CRICKET", location: "Mumbai, Maharashtra", ranking: 42, achievements: 8, avatar: "" },
-    { id: "2", name: "Diya Patel", sport: "BADMINTON", location: "Hyderabad, Telangana", ranking: 15, achievements: 12, avatar: "" },
-    { id: "3", name: "Rohan Kumar", sport: "FOOTBALL", location: "Delhi, NCR", ranking: 28, achievements: 6, avatar: "" },
-    { id: "4", name: "Ananya Reddy", sport: "ATHLETICS", location: "Bangalore, Karnataka", ranking: 8, achievements: 15, avatar: "" },
-    { id: "5", name: "Vikram Joshi", sport: "CRICKET", location: "Pune, Maharashtra", ranking: 35, achievements: 5, avatar: "" },
-    { id: "6", name: "Nisha Sharma", sport: "TENNIS", location: "Chennai, Tamil Nadu", ranking: 22, achievements: 9, avatar: "" },
-  ];
+  const params = await searchParams;
+  const page = typeof params.page === "string" ? parseInt(params.page) : 1;
+  const search = typeof params.search === "string" ? params.search : undefined;
+  const sportCategory = typeof params.sport === "string" && params.sport !== "all" 
+    ? params.sport 
+    : undefined;
+
+  const { data: athletes, pagination: meta } = await getAllAthletes(page, 9, sportCategory, search);
 
   const content = (
     <div className={isSignedIn ? "space-y-8" : ""}>
@@ -37,69 +35,70 @@ export default function AthletesPage() {
         description="Discover talented athletes across India."
       />
 
-      <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
-        <div className="flex-1">
-          <SearchInput placeholder="Search athletes..." onSearch={setSearch} />
+      <AthletesFilters />
+
+      {athletes.length === 0 ? (
+        <div className="mt-12 flex flex-col items-center justify-center text-center p-8 border border-dashed border-border rounded-xl bg-card">
+          <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-4">
+            <Users className="h-6 w-6 text-primary" />
+          </div>
+          <h3 className="text-xl font-bold text-foreground">No athletes found</h3>
+          <p className="mt-2 text-sm text-muted-foreground max-w-sm">
+            We couldn't find any athletes matching your criteria. Try adjusting your search or filters.
+          </p>
         </div>
-        <Select value={sportFilter} onValueChange={setSportFilter}>
-          <SelectTrigger className="w-full sm:w-[180px]">
-            <SelectValue placeholder="All Sports" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Sports</SelectItem>
-            {SPORT_CATEGORIES.map((sport) => (
-              <SelectItem key={sport.value} value={sport.value}>
-                {sport.icon} {sport.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {athletes.map((athlete) => (
-          <Link key={athlete.id} href={`/athletes/${athlete.id}`}>
-            <Card className="transition-all hover:shadow-md shadow-sm border-border bg-card">
-              <CardContent className="p-6">
-                <div className="flex items-start gap-4">
-                  <Avatar className="h-12 w-12 border border-border">
-                    <AvatarImage src={athlete.avatar} />
-                    <AvatarFallback className="bg-primary/10 text-primary font-semibold">{athlete.name.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <h3 className="font-bold text-foreground">
-                      {athlete.name}
-                    </h3>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
-                      <MapPin className="h-3.5 w-3.5 text-primary" />
-                      {athlete.location}
+      ) : (
+        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {athletes.map((athlete) => (
+            <Link key={athlete.id} href={`/athletes/${athlete.id}`}>
+              <Card className="transition-all hover:shadow-md shadow-sm border-border bg-card">
+                <CardContent className="p-6">
+                  <div className="flex items-start gap-4">
+                    <Avatar className="h-12 w-12 border border-border">
+                      <AvatarImage src={athlete.user.avatar || undefined} />
+                      <AvatarFallback className="bg-primary/10 text-primary font-semibold">
+                        {athlete.user.name.charAt(0)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1">
+                      <h3 className="font-bold text-foreground line-clamp-1">
+                        {athlete.user.name}
+                      </h3>
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
+                        <MapPin className="h-3.5 w-3.5 text-primary" />
+                        {athlete.user.location || "Location not provided"}
+                      </div>
                     </div>
+                    <Badge variant="secondary" className="border-0 bg-secondary/60 text-foreground">
+                      {athlete.sportCategory}
+                    </Badge>
                   </div>
-                  <Badge variant="secondary" className="border-0 bg-secondary/60 text-foreground">{athlete.sport}</Badge>
-                </div>
-                <div className="mt-5 flex items-center justify-between text-sm">
-                  <div className="flex items-center gap-1.5 text-muted-foreground font-medium">
-                    <Trophy className="h-4 w-4 text-accent" />
-                    {athlete.achievements} achievements
+                  <div className="mt-5 flex items-center justify-between text-sm">
+                    <div className="flex items-center gap-1.5 text-muted-foreground font-medium">
+                      <Trophy className="h-4 w-4 text-accent" />
+                      {athlete.achievementsCount} achievements
+                    </div>
+                    {athlete.ranking && (
+                      <div className="flex items-center gap-1.5 text-muted-foreground font-medium">
+                        <Star className="h-4 w-4 text-accent" />
+                        #{athlete.ranking}
+                      </div>
+                    )}
                   </div>
-                  <div className="flex items-center gap-1.5 text-muted-foreground font-medium">
-                    <Star className="h-4 w-4 text-accent" />
-                    #{athlete.ranking}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
-        ))}
-      </div>
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
+        </div>
+      )}
 
-      <div className="mt-8">
-        <Pagination currentPage={page} totalPages={5} onPageChange={setPage} />
-      </div>
+      {meta.totalPages > 1 && (
+        <div className="mt-8">
+          <Pagination currentPage={meta.page} totalPages={meta.totalPages} />
+        </div>
+      )}
     </div>
   );
-
-  if (!isLoaded) return null;
 
   if (isSignedIn) {
     return (

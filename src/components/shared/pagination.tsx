@@ -1,21 +1,33 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useRouter, useSearchParams, usePathname } from "next/navigation";
 
 interface PaginationProps {
   currentPage: number;
   totalPages: number;
-  onPageChange: (page: number) => void;
 }
 
-export function Pagination({ currentPage, totalPages, onPageChange }: PaginationProps) {
+export function Pagination({ currentPage, totalPages }: PaginationProps) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
   if (totalPages <= 1) return null;
+
+  const handlePageChange = (page: number) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", page.toString());
+    router.push(`${pathname}?${params.toString()}`);
+  };
 
   return (
     <div className="flex items-center justify-center gap-2">
       <Button
         variant="outline"
         size="icon"
-        onClick={() => onPageChange(currentPage - 1)}
+        onClick={() => handlePageChange(currentPage - 1)}
         disabled={currentPage === 1}
       >
         <ChevronLeft className="h-4 w-4" />
@@ -38,7 +50,7 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
           key={page}
           variant={currentPage === page ? "default" : "outline"}
           size="icon"
-          onClick={() => onPageChange(page)}
+          onClick={() => handlePageChange(page)}
         >
           {page}
         </Button>
@@ -47,7 +59,7 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
       <Button
         variant="outline"
         size="icon"
-        onClick={() => onPageChange(currentPage + 1)}
+        onClick={() => handlePageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
       >
         <ChevronRight className="h-4 w-4" />
@@ -55,3 +67,4 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
     </div>
   );
 }
+

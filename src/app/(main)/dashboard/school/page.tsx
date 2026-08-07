@@ -1,5 +1,3 @@
-"use client";
-
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { PageHeader } from "@/components/layout/page-header";
 import { StatCard } from "@/components/shared/stat-card";
@@ -7,8 +5,24 @@ import { Users, Trophy, Award, TrendingUp } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import { auth } from "@clerk/nextjs/server";
+import { userService } from "@/services/user.service";
+import { schoolService } from "@/services/school.service";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-export default function SchoolDashboardPage() {
+export default async function SchoolDashboardPage() {
+  const { userId } = await auth();
+  if (!userId) return null;
+  const user = await userService.getUserByClerkId(userId);
+
+  let school: any = null;
+  try {
+    school = await schoolService.getSchoolByUserId(user.id);
+  } catch (error) {}
+
+  const athletes = school?.athletes || [];
+  const facilities = school?.facilities || [];
+
   return (
     <DashboardLayout>
       <div className="space-y-8">
@@ -18,10 +32,10 @@ export default function SchoolDashboardPage() {
         />
 
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <StatCard title="Total Athletes" value="156" icon={Users} trend={{ value: 12, isPositive: true }} />
-          <StatCard title="Active Tournaments" value="8" icon={Trophy} />
-          <StatCard title="Achievements" value="42" icon={Award} trend={{ value: 8, isPositive: true }} />
-          <StatCard title="Performance Score" value="78" icon={TrendingUp} trend={{ value: 3, isPositive: true }} />
+          <StatCard title="Total Athletes" value={athletes.length} icon={Users} />
+          <StatCard title="Active Tournaments" value="-" icon={Trophy} />
+          <StatCard title="Achievements" value="-" icon={Award} />
+          <StatCard title="Performance Score" value="-" icon={TrendingUp} />
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">
@@ -34,26 +48,27 @@ export default function SchoolDashboardPage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {[
-                  { name: "Aarav Singh", sport: "Cricket", score: 92 },
-                  { name: "Diya Patel", sport: "Badminton", score: 88 },
-                  { name: "Rohan Kumar", sport: "Football", score: 85 },
-                ].map((athlete, i) => (
-                  <div key={i} className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="flex h-8 w-8 items-center justify-center rounded-full bg-neutral-100 dark:bg-neutral-800">
-                        <span className="text-sm font-medium">{athlete.name.charAt(0)}</span>
+                {athletes.length === 0 ? (
+                  <p className="text-sm text-muted-foreground text-center py-4">No athletes found</p>
+                ) : (
+                  athletes.slice(0, 3).map((athlete: any) => (
+                    <div key={athlete.id} className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <Avatar className="h-8 w-8">
+                          <AvatarImage src={athlete.user.avatar || undefined} />
+                          <AvatarFallback>{athlete.user.name.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                          <p className="text-sm font-medium text-foreground">
+                            {athlete.user.name}
+                          </p>
+                          <p className="text-xs text-muted-foreground">{athlete.sportCategory}</p>
+                        </div>
                       </div>
-                      <div>
-                        <p className="text-sm font-medium text-neutral-900 dark:text-white">
-                          {athlete.name}
-                        </p>
-                        <p className="text-xs text-neutral-500 dark:text-neutral-400">{athlete.sport}</p>
-                      </div>
+                      <span className="text-sm font-bold text-foreground">{athlete.points || 0} pts</span>
                     </div>
-                    <span className="text-sm font-bold text-neutral-900 dark:text-white">{athlete.score}</span>
-                  </div>
-                ))}
+                  ))
+                )}
               </div>
             </CardContent>
           </Card>
@@ -63,16 +78,20 @@ export default function SchoolDashboardPage() {
               <CardTitle>Sports Facilities</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex flex-wrap gap-2">
-                {["Cricket Ground", "Football Field", "Basketball Court", "Swimming Pool", "Athletics Track"].map((facility) => (
-                  <span
-                    key={facility}
-                    className="inline-flex items-center rounded-full bg-neutral-100 px-3 py-1 text-sm text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300"
-                  >
-                    {facility}
-                  </span>
-                ))}
-              </div>
+              {facilities.length === 0 ? (
+                <p className="text-sm text-muted-foreground text-center py-4">No facilities registered</p>
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  {facilities.map((facility: string) => (
+                    <span
+                      key={facility}
+                      className="inline-flex items-center rounded-full bg-secondary px-3 py-1 text-sm text-secondary-foreground"
+                    >
+                      {facility}
+                    </span>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>

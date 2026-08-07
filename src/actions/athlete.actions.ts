@@ -41,9 +41,9 @@ export async function updateAthleteProfile(id: string, data: {
   return athleteService.updateAthleteProfile(id, data);
 }
 
-export async function getAllAthletes(page: number = 1, limit: number = 10, sportCategory?: string) {
+export async function getAllAthletes(page: number = 1, limit: number = 10, sportCategory?: string, search?: string) {
   return athleteService.getAllAthletes(
-    { page, limit },
+    { page, limit, search },
     sportCategory as SportCategory | undefined
   );
 }
