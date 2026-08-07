@@ -40,36 +40,36 @@ export default function SchoolsPage() {
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {schools.map((school) => (
             <Link key={school.id} href={`/schools/${school.id}`}>
-              <Card className="transition-all hover:shadow-lg">
+              <Card className="transition-all hover:shadow-md shadow-sm border-border bg-card">
                 <CardContent className="p-6">
                   <div className="flex items-start gap-4">
-                    <Avatar className="h-12 w-12">
-                      <AvatarFallback className="bg-neutral-100 dark:bg-neutral-800">
+                    <Avatar className="h-12 w-12 border border-border">
+                      <AvatarFallback className="bg-primary/10 text-primary font-semibold">
                         {school.name.charAt(0)}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <h3 className="font-semibold text-neutral-900 dark:text-white">
+                        <h3 className="font-bold text-foreground">
                           {school.name}
                         </h3>
                         {school.verified && (
-                          <Badge variant="success" className="text-xs">Verified</Badge>
+                          <Badge variant="success" className="text-xs border-0">Verified</Badge>
                         )}
                       </div>
-                      <div className="flex items-center gap-2 text-sm text-neutral-500 dark:text-neutral-400">
-                        <MapPin className="h-3 w-3" />
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
+                        <MapPin className="h-3.5 w-3.5 text-primary" />
                         {school.location}
                       </div>
                     </div>
                   </div>
-                  <div className="mt-4 flex items-center justify-between text-sm">
-                    <div className="flex items-center gap-1 text-neutral-600 dark:text-neutral-400">
-                      <Users className="h-4 w-4" />
+                  <div className="mt-5 flex items-center justify-between text-sm">
+                    <div className="flex items-center gap-1.5 text-muted-foreground font-medium">
+                      <Users className="h-4 w-4 text-accent" />
                       {school.students.toLocaleString()} students
                     </div>
-                    <div className="flex items-center gap-1 text-neutral-600 dark:text-neutral-400">
-                      <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                    <div className="flex items-center gap-1.5 text-muted-foreground font-medium">
+                      <Star className="h-4 w-4 fill-accent text-accent" />
                       {school.rating}
                     </div>
                   </div>
