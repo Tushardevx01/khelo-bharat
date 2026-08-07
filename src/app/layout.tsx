@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
-import { Inter } from "next/font/google";
+import { Inter, Oswald, Roboto_Mono } from "next/font/google";
 import { Providers } from "@/providers";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const oswald = Oswald({ subsets: ["latin"], variable: "--font-oswald" });
+const robotoMono = Roboto_Mono({ subsets: ["latin"], variable: "--font-roboto-mono" });
 
 export const metadata: Metadata = {
   title: "Khelo Bharat | One Platform. Every Athlete. Every Opportunity.",
@@ -24,7 +26,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={inter.className}>
+      <body className={`${inter.variable} ${oswald.variable} ${robotoMono.variable} font-sans antialiased`} style={{ backgroundColor: "var(--color-background)" }}>
         <ClerkProvider>
           <Providers>
             {children}

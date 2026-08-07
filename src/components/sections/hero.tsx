@@ -7,57 +7,59 @@ import Link from "next/link";
 
 export function HeroSection() {
   return (
-    <section className="relative overflow-hidden bg-neutral-950 px-4 py-24 sm:px-6 lg:px-8">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-neutral-800/20 via-neutral-950 to-neutral-950" />
-
+    <section className="relative overflow-hidden bg-background px-4 py-24 sm:px-6 lg:px-8">
       <div className="relative mx-auto max-w-7xl">
-        <div className="mx-auto max-w-3xl text-center">
+        <div className="mx-auto max-w-4xl text-left">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <span className="inline-flex items-center rounded-full border border-neutral-800 bg-neutral-900/50 px-4 py-1.5 text-sm text-neutral-300 backdrop-blur-sm">
-              🏆 India&apos;s Premier Sports Platform
-            </span>
+            <p className="font-mono text-sm font-semibold tracking-[0.2em] text-[#6b7b59] uppercase">
+              Making a bridge for the sports ecosystem
+            </p>
           </motion.div>
 
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="mt-8 text-4xl font-bold tracking-tight text-white sm:text-6xl lg:text-7xl"
+            className="mt-6 font-heading text-8xl font-bold uppercase tracking-tight text-primary sm:text-9xl"
           >
-            One Platform.{" "}
-            <span className="bg-gradient-to-r from-white via-neutral-300 to-neutral-500 bg-clip-text text-transparent">
-              Every Athlete.
-            </span>{" "}
-            Every Opportunity.
+            KHELO भारत
           </motion.h1>
+
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="mt-8 text-3xl font-bold leading-tight text-foreground sm:text-4xl"
+          >
+            One platform connecting athletes, academies &<br />sponsors across India.
+          </motion.h2>
 
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="mt-6 text-lg leading-8 text-neutral-400"
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="mt-6 max-w-2xl text-xl leading-relaxed text-muted-foreground"
           >
-            Connect with coaches, discover tournaments, secure sponsorships, and track your
-            performance — all in one place. Built for India&apos;s sporting future.
+            A mobile-and-web sports ecosystem that helps grassroots athletes get discovered, academies run digitally, and sponsors find verified local talent.
           </motion.p>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="mt-10 flex items-center justify-center gap-x-6"
+            transition={{ duration: 0.5, delay: 0.4 }}
+            className="mt-10 flex items-center gap-x-6"
           >
-            <Button size="xl" asChild className="bg-white text-neutral-900 hover:bg-neutral-100">
+            <Button size="xl" asChild className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-none px-8">
               <Link href="/sign-up">
-                Get Started Free
+                Get Started
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
-            <Button size="xl" className="border border-neutral-700 bg-transparent text-white hover:bg-neutral-800">
+            <Button size="xl" variant="outline" className="rounded-none px-8 border-foreground/20 text-foreground bg-transparent hover:bg-foreground/5 hover:text-foreground">
               <Play className="mr-2 h-4 w-4" />
               Watch Demo
             </Button>
@@ -67,23 +69,21 @@ export function HeroSection() {
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.4 }}
-          className="mt-16 rounded-2xl border border-neutral-800 bg-neutral-900/50 p-2 backdrop-blur-sm sm:mt-24"
+          transition={{ duration: 0.7, delay: 0.5 }}
+          className="mt-20 border-t border-border pt-10 sm:mt-28"
         >
-          <div className="rounded-xl bg-neutral-950 p-8">
-            <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-              {[
-                { label: "Athletes", value: "50K+" },
-                { label: "Schools", value: "1,200+" },
-                { label: "Tournaments", value: "500+" },
-                { label: "States", value: "28+" },
-              ].map((stat) => (
-                <div key={stat.label} className="text-center">
-                  <p className="text-3xl font-bold text-white">{stat.value}</p>
-                  <p className="mt-1 text-sm text-neutral-400">{stat.label}</p>
-                </div>
-              ))}
-            </div>
+          <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
+            {[
+              { label: "Athletes", value: "50K+" },
+              { label: "Schools", value: "1,200+" },
+              { label: "Tournaments", value: "500+" },
+              { label: "States", value: "28+" },
+            ].map((stat) => (
+              <div key={stat.label}>
+                <p className="font-heading text-4xl font-bold text-foreground">{stat.value}</p>
+                <p className="mt-2 font-mono text-sm tracking-wider text-muted-foreground uppercase">{stat.label}</p>
+              </div>
+            ))}
           </div>
         </motion.div>
       </div>
