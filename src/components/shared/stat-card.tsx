@@ -16,14 +16,14 @@ interface StatCardProps {
 
 export function StatCard({ title, value, description, icon: Icon, trend, className }: StatCardProps) {
   return (
-    <Card className={cn("transition-all hover:shadow-md", className)}>
+    <Card className={cn("transition-all hover:shadow-md border-border bg-card shadow-sm", className)}>
       <CardContent className="p-6">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-neutral-500 dark:text-neutral-400">{title}</p>
-            <p className="text-2xl font-bold text-neutral-900 dark:text-white">{value}</p>
+            <p className="text-sm font-medium text-muted-foreground">{title}</p>
+            <p className="text-2xl font-bold text-foreground">{value}</p>
             {description && (
-              <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-400">{description}</p>
+              <p className="mt-1 text-xs text-muted-foreground">{description}</p>
             )}
             {trend && (
               <p className={cn(
@@ -34,8 +34,8 @@ export function StatCard({ title, value, description, icon: Icon, trend, classNa
               </p>
             )}
           </div>
-          <div className="rounded-xl bg-neutral-100 p-3 dark:bg-neutral-800">
-            <Icon className="h-6 w-6 text-neutral-600 dark:text-neutral-400" />
+          <div className="rounded-xl bg-primary/10 p-3">
+            <Icon className="h-6 w-6 text-primary" />
           </div>
         </div>
       </CardContent>

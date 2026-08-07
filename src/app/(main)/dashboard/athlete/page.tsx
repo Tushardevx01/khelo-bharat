@@ -61,15 +61,15 @@ export default function AthleteDashboardPage() {
                 ].map((tournament, i) => (
                   <div key={i} className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-neutral-900 dark:text-white">
+                      <p className="text-sm font-bold text-foreground">
                         {tournament.name}
                       </p>
-                      <div className="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400">
-                        <Calendar className="h-3 w-3" />
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
+                        <Calendar className="h-3 w-3 text-primary" />
                         {tournament.date}
                       </div>
                     </div>
-                    <Badge variant={tournament.status === "REGISTRATION_OPEN" ? "success" : "info"}>
+                    <Badge variant={tournament.status === "REGISTRATION_OPEN" ? "success" : "info"} className="border-0">
                       {tournament.status.replace(/_/g, " ")}
                     </Badge>
                   </div>
@@ -79,9 +79,9 @@ export default function AthleteDashboardPage() {
           </Card>
 
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
+            <CardHeader className="flex flex-row items-center justify-between border-b border-border pb-4 mb-4">
               <CardTitle>Recent Achievements</CardTitle>
-              <Button variant="ghost" size="sm" asChild>
+              <Button variant="ghost" size="sm" asChild className="text-muted-foreground hover:text-primary">
                 <Link href="/achievements">View All</Link>
               </Button>
             </CardHeader>
@@ -94,14 +94,14 @@ export default function AthleteDashboardPage() {
                 ].map((achievement, i) => (
                   <div key={i} className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-neutral-900 dark:text-white">
+                      <p className="text-sm font-bold text-foreground">
                         {achievement.title}
                       </p>
-                      <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                      <p className="text-xs text-muted-foreground mt-1">
                         {achievement.sport} • {achievement.date}
                       </p>
                     </div>
-                    <Award className="h-4 w-4 text-yellow-500" />
+                    <Award className="h-4 w-4 text-accent" />
                   </div>
                 ))}
               </div>
@@ -110,7 +110,7 @@ export default function AthleteDashboardPage() {
         </div>
 
         <Card>
-          <CardHeader>
+          <CardHeader className="border-b border-border pb-4 mb-4">
             <CardTitle>Performance Overview</CardTitle>
           </CardHeader>
           <CardContent>
@@ -120,10 +120,10 @@ export default function AthleteDashboardPage() {
                 { label: "Win Rate", value: "72%", change: "+5%" },
                 { label: "Avg. Score", value: "45.2", change: "+2.1" },
               ].map((stat, i) => (
-                <div key={i} className="rounded-lg border border-neutral-200 p-4 dark:border-neutral-800">
-                  <p className="text-sm text-neutral-500 dark:text-neutral-400">{stat.label}</p>
-                  <p className="text-2xl font-bold text-neutral-900 dark:text-white">{stat.value}</p>
-                  <p className="mt-1 text-xs text-green-600">{stat.change} from last month</p>
+                <div key={i} className="rounded-xl border border-border bg-card p-4 shadow-sm">
+                  <p className="text-sm text-muted-foreground">{stat.label}</p>
+                  <p className="text-2xl font-bold text-foreground mt-2">{stat.value}</p>
+                  <p className="mt-2 text-xs font-medium text-green-600">{stat.change} from last month</p>
                 </div>
               ))}
             </div>
