@@ -75,12 +75,20 @@ export async function getAllTournaments(
 
 export async function registerForTournament(tournamentId: string, teamName?: string) {
   const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
+  if (!userId) return { error: "Unauthorized" };
 
-  const { athleteService } = await import("@/services/athlete.service");
-  const athlete = await athleteService.getAthleteByUserId(userId);
+  try {
+    const { athleteService } = await import("@/services/athlete.service");
+    const athlete = await athleteService.getAthleteByUserId(userId);
 
-  return tournamentService.registerForTournament(tournamentId, athlete.id, { teamName });
+    const result = await tournamentService.registerForTournament(tournamentId, athlete.id, { teamName });
+    return { success: true, data: result };
+  } catch (error: any) {
+    if (error.name === "NotFoundError" || error.message?.includes("Athlete profile")) {
+      return { error: "ATHLETE_NOT_FOUND" };
+    }
+    return { error: error.message || "Failed to register for tournament" };
+  }
 }
 
 export async function getUpcomingTournaments(limit?: number) {
