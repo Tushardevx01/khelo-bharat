@@ -14,11 +14,11 @@ export function Header() {
   const pathname = usePathname();
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-neutral-200 bg-white/80 backdrop-blur-lg dark:border-neutral-800 dark:bg-neutral-950/80">
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/80 backdrop-blur-lg">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link href="/" className="flex items-center gap-2">
-          <Trophy className="h-6 w-6 text-neutral-900 dark:text-white" />
-          <span className="text-xl font-bold text-neutral-900 dark:text-white">Khelo Bharat</span>
+          <Trophy className="h-6 w-6 text-primary" />
+          <span className="font-sans text-xl font-bold tracking-tight text-primary">KHELO भारत</span>
         </Link>
 
         <nav className="hidden md:flex items-center gap-1">
@@ -27,10 +27,10 @@ export function Header() {
               key={item.href}
               href={item.href}
               className={cn(
-                "px-4 py-2 text-sm font-medium rounded-lg transition-colors",
+                "px-4 py-2 text-sm font-medium rounded-[12px] transition-colors",
                 pathname === item.href
-                  ? "bg-neutral-100 text-neutral-900 dark:bg-neutral-800 dark:text-white"
-                  : "text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 dark:text-neutral-400 dark:hover:text-white dark:hover:bg-neutral-800"
+                  ? "bg-card border border-border text-primary shadow-sm"
+                  : "text-muted-foreground hover:text-foreground hover:bg-card/50"
               )}
             >
               {item.label}
@@ -39,7 +39,7 @@ export function Header() {
         </nav>
 
         <div className="hidden md:flex items-center gap-3">
-          <Button variant="ghost" size="icon">
+          <Button variant="ghost" size="icon" className="text-muted-foreground hover:text-primary">
             <Search className="h-5 w-5" />
           </Button>
           <UserButton afterSignOutUrl="/" />
@@ -48,7 +48,7 @@ export function Header() {
         <Button
           variant="ghost"
           size="icon"
-          className="md:hidden"
+          className="md:hidden text-muted-foreground"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
         >
           {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -56,24 +56,24 @@ export function Header() {
       </div>
 
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-neutral-200 dark:border-neutral-800">
+        <div className="md:hidden border-t border-border bg-background">
           <div className="px-4 py-4 space-y-1">
             {NAVIGATION.main.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "block px-4 py-2 text-sm font-medium rounded-lg transition-colors",
+                  "block px-4 py-2 text-sm font-medium rounded-[12px] transition-colors",
                   pathname === item.href
-                    ? "bg-neutral-100 text-neutral-900 dark:bg-neutral-800 dark:text-white"
-                    : "text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50 dark:text-neutral-400 dark:hover:text-white"
+                    ? "bg-card border border-border text-primary shadow-sm"
+                    : "text-muted-foreground hover:text-foreground hover:bg-card/50"
                 )}
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {item.label}
               </Link>
             ))}
-            <div className="pt-4 border-t border-neutral-200 dark:border-neutral-800">
+            <div className="pt-4 border-t border-border">
               <UserButton afterSignOutUrl="/" />
             </div>
           </div>
