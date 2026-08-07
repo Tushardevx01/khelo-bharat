@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Header } from "@/components/layout/header";
+import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { PageHeader } from "@/components/layout/page-header";
 import { SearchInput } from "@/components/shared/search-input";
 import { Pagination } from "@/components/shared/pagination";
@@ -12,8 +13,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Calendar, MapPin, Users } from "lucide-react";
 import { SPORT_CATEGORIES, TOURNAMENT_STATUSES } from "@/constants";
 import Link from "next/link";
+import { useAuth } from "@clerk/nextjs";
 
 export default function TournamentsPage() {
+  const { isLoaded, isSignedIn } = useAuth();
   const [, setSearch] = useState("");
   const [sportFilter, setSportFilter] = useState("all");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -70,103 +73,119 @@ export default function TournamentsPage() {
     },
   ];
 
+  const content = (
+    <div className={isSignedIn ? "space-y-8" : ""}>
+      <PageHeader
+        title="Tournaments"
+        description="Discover and register for tournaments across India."
+      />
+
+      <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
+        <div className="flex-1">
+          <SearchInput placeholder="Search tournaments..." onSearch={setSearch} />
+        </div>
+        <Select value={sportFilter} onValueChange={setSportFilter}>
+          <SelectTrigger className="w-full sm:w-[180px]">
+            <SelectValue placeholder="All Sports" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Sports</SelectItem>
+            {SPORT_CATEGORIES.map((sport) => (
+              <SelectItem key={sport.value} value={sport.value}>
+                {sport.icon} {sport.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <SelectTrigger className="w-full sm:w-[180px]">
+            <SelectValue placeholder="All Status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Status</SelectItem>
+            {TOURNAMENT_STATUSES.map((status) => (
+              <SelectItem key={status.value} value={status.value}>
+                {status.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {tournaments.map((tournament) => (
+          <Link key={tournament.id} href={`/tournaments/${tournament.id}`}>
+            <Card className="h-full bg-card border-border transition-all hover:shadow-md shadow-sm">
+              <div className="h-40 bg-muted p-4 flex flex-col justify-between">
+                <div className="flex justify-between items-start">
+                  <Badge className="bg-primary/10 text-primary hover:bg-primary/20 border-0">
+                    {tournament.status.replace(/_/g, " ")}
+                  </Badge>
+                </div>
+              </div>
+              <CardContent className="p-6 relative z-10 -mt-6 bg-card rounded-t-2xl border-t border-border">
+                <Badge variant="secondary" className="mb-2 border-0">
+                  {tournament.sportCategory}
+                </Badge>
+                <h3 className="text-lg font-bold text-foreground">
+                  {tournament.title}
+                </h3>
+                <div className="mt-4 space-y-3">
+                  <div className="flex items-center text-sm text-muted-foreground">
+                    <Calendar className="mr-3 h-4 w-4 text-primary" />
+                    {new Date(tournament.startDate).toLocaleDateString("en-IN", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </div>
+                  <div className="flex items-center text-sm text-muted-foreground">
+                    <MapPin className="mr-3 h-4 w-4 text-primary" />
+                    {tournament.location}
+                  </div>
+                  <div className="flex items-center text-sm text-muted-foreground">
+                    <Users className="mr-3 h-4 w-4 text-primary" />
+                    {tournament.totalParticipants}/{tournament.maxParticipants} participants
+                  </div>
+                </div>
+                <div className="mt-6 flex items-center justify-between">
+                  <div>
+                    <p className="text-xs text-muted-foreground">Prize Pool</p>
+                    <p className="text-sm font-bold text-accent">
+                      ₹{tournament.prizePool.toLocaleString("en-IN")}
+                    </p>
+                  </div>
+                  <Button size="sm" className="font-medium">
+                    {tournament.status === "REGISTRATION_OPEN" ? "Register Now" : "View Details"}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          </Link>
+        ))}
+      </div>
+
+      <div className="mt-8">
+        <Pagination currentPage={page} totalPages={5} onPageChange={setPage} />
+      </div>
+    </div>
+  );
+
+  if (!isLoaded) return null;
+
+  if (isSignedIn) {
+    return (
+      <DashboardLayout>
+        {content}
+      </DashboardLayout>
+    );
+  }
+
   return (
     <div className="min-h-screen">
       <Header />
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <PageHeader
-          title="Tournaments"
-          description="Discover and register for tournaments across India."
-        />
-
-        <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
-          <div className="flex-1">
-            <SearchInput placeholder="Search tournaments..." onSearch={setSearch} />
-          </div>
-          <Select value={sportFilter} onValueChange={setSportFilter}>
-            <SelectTrigger className="w-full sm:w-[180px]">
-              <SelectValue placeholder="All Sports" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Sports</SelectItem>
-              {SPORT_CATEGORIES.map((sport) => (
-                <SelectItem key={sport.value} value={sport.value}>
-                  {sport.icon} {sport.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-full sm:w-[180px]">
-              <SelectValue placeholder="All Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Status</SelectItem>
-              {TOURNAMENT_STATUSES.map((status) => (
-                <SelectItem key={status.value} value={status.value}>
-                  {status.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {tournaments.map((tournament) => (
-            <Link key={tournament.id} href={`/tournaments/${tournament.id}`}>
-              <Card className="h-full bg-card border-border transition-all hover:shadow-md shadow-sm">
-                <div className="h-40 bg-muted p-4 flex flex-col justify-between">
-                  <div className="flex justify-between items-start">
-                    <Badge className="bg-primary/10 text-primary hover:bg-primary/20 border-0">
-                      {tournament.status.replace(/_/g, " ")}
-                    </Badge>
-                  </div>
-                </div>
-                <CardContent className="p-6 relative z-10 -mt-6 bg-card rounded-t-2xl border-t border-border">
-                  <Badge variant="secondary" className="mb-2 border-0">
-                    {tournament.sportCategory}
-                  </Badge>
-                  <h3 className="text-lg font-bold text-foreground">
-                    {tournament.title}
-                  </h3>
-                  <div className="mt-4 space-y-3">
-                    <div className="flex items-center text-sm text-muted-foreground">
-                      <Calendar className="mr-3 h-4 w-4 text-primary" />
-                      {new Date(tournament.startDate).toLocaleDateString("en-IN", {
-                        day: "numeric",
-                        month: "short",
-                        year: "numeric",
-                      })}
-                    </div>
-                    <div className="flex items-center text-sm text-muted-foreground">
-                      <MapPin className="mr-3 h-4 w-4 text-primary" />
-                      {tournament.location}
-                    </div>
-                    <div className="flex items-center text-sm text-muted-foreground">
-                      <Users className="mr-3 h-4 w-4 text-primary" />
-                      {tournament.totalParticipants}/{tournament.maxParticipants} participants
-                    </div>
-                  </div>
-                  <div className="mt-6 flex items-center justify-between">
-                    <div>
-                      <p className="text-xs text-muted-foreground">Prize Pool</p>
-                      <p className="text-sm font-bold text-accent">
-                        ₹{tournament.prizePool.toLocaleString("en-IN")}
-                      </p>
-                    </div>
-                    <Button size="sm" className="font-medium">
-                      {tournament.status === "REGISTRATION_OPEN" ? "Register Now" : "View Details"}
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
-          ))}
-        </div>
-
-        <div className="mt-8">
-          <Pagination currentPage={page} totalPages={5} onPageChange={setPage} />
-        </div>
+        {content}
       </main>
     </div>
   );
