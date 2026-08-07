@@ -10,8 +10,8 @@ const publicRoutes = [
   "/schools",
   "/schools/(.*)",
   "/sponsors",
-  "/login",
-  "/sign-up",
+  "/login(.*)",
+  "/sign-up(.*)",
   "/verify-email",
   "/api/webhooks/(.*)",
 ];
