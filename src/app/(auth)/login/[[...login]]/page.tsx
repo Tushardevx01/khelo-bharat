@@ -1,5 +1,3 @@
-"use client";
-
 import { SignIn } from "@clerk/nextjs";
 import Link from "next/link";
 import { Trophy } from "lucide-react";
