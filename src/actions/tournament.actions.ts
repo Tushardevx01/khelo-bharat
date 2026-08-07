@@ -38,24 +38,33 @@ export async function getTournamentById(id: string) {
   return tournamentService.getTournamentById(id);
 }
 
-export async function updateTournament(id: string, data: Record<string, unknown>) {
+async function verifyTournamentOwnership(tournamentId: string) {
   const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
 
+  const { userService } = await import("@/services/user.service");
+  const user = await userService.getUserByClerkId(userId);
+  
+  if (user.role === "SUPER_ADMIN") return;
+
+  const tournament = await tournamentService.getTournamentById(tournamentId);
+  if (tournament.organizerId !== user.id) {
+    throw new Error("Forbidden: You do not have permission to modify this tournament");
+  }
+}
+
+export async function updateTournament(id: string, data: Record<string, unknown>) {
+  await verifyTournamentOwnership(id);
   return tournamentService.updateTournament(id, data);
 }
 
 export async function updateTournamentStatus(id: string, status: TournamentStatus) {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
-
+  await verifyTournamentOwnership(id);
   return tournamentService.updateStatus(id, status);
 }
 
 export async function deleteTournament(id: string) {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
-
+  await verifyTournamentOwnership(id);
   return tournamentService.deleteTournament(id);
 }
 

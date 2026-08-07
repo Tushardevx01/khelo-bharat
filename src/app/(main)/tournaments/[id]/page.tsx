@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { getTournamentById } from "@/actions/tournament.actions";
 import { RegisterButton } from "./_components/register-button";
 import { notFound } from "next/navigation";
+import Image from "next/image";
 
 export default async function TournamentDetailPage({
   params,
@@ -147,7 +148,7 @@ export default async function TournamentDetailPage({
               <CardContent>
                 <div className="h-40 rounded-lg bg-neutral-100 flex items-center justify-center relative overflow-hidden">
                   {tournament.poster ? (
-                    <img src={tournament.poster} alt="Venue" className="w-full h-full object-cover" />
+                    <Image src={tournament.poster} alt="Venue" fill className="object-cover" />
                   ) : (
                     <MapPin className="h-8 w-8 text-neutral-400" />
                   )}

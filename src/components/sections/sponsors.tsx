@@ -1,16 +1,16 @@
 import { getVerifiedSponsors } from "@/actions/sponsor.actions";
 import { SponsorsClient } from "./sponsors-client";
-import { motion } from "framer-motion";
+import { Sponsor } from "@prisma/client";
 
 // Server components can't use framer-motion directly on themselves, but we can pass standard HTML classes or use a client wrapper for the title if needed.
 // However, since we want to keep the title animated, we'll just extract the title to a client component or let it be static on the server.
 // Let's create a small client wrapper for the title, or we can just render it statically since it's above the fold mostly.
 
 export async function SponsorsSection() {
-  let sponsors: any[] = [];
+  let sponsors: Sponsor[] = [];
   try {
     sponsors = await getVerifiedSponsors(6);
-  } catch (error) {
+  } catch {
     // Ignore error
   }
 

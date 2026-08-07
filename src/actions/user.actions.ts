@@ -60,6 +60,11 @@ export async function updateUserRole(id: string, role: string) {
   const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
 
+  const user = await userService.getUserByClerkId(userId);
+  if (user.role !== "SUPER_ADMIN") {
+    throw new Error("Forbidden: Only administrators can update roles");
+  }
+
   return userService.updateRole(id, role as never);
 }
 

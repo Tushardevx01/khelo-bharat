@@ -29,15 +29,28 @@ export async function createAthleteProfile(data: {
   return athleteService.createAthleteProfile(userId, data);
 }
 
+async function verifyAthleteOwnership(athleteId: string) {
+  const { userId } = await auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  const { userService } = await import("@/services/user.service");
+  const user = await userService.getUserByClerkId(userId);
+  
+  if (user.role === "SUPER_ADMIN") return;
+
+  const athlete = await athleteService.getAthleteById(athleteId);
+  if (athlete.userId !== user.id) {
+    throw new Error("Forbidden: You do not have permission to modify this athlete profile");
+  }
+}
+
 export async function updateAthleteProfile(id: string, data: {
   sportCategory?: SportCategory;
   height?: number;
   weight?: number;
   experience?: number;
 }) {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
-
+  await verifyAthleteOwnership(id);
   return athleteService.updateAthleteProfile(id, data);
 }
 

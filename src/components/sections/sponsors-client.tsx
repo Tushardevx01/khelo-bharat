@@ -1,9 +1,11 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Image from "next/image";
+import { Sponsor } from "@prisma/client";
 
 interface SponsorsClientProps {
-  sponsors: any[];
+  sponsors: Sponsor[];
 }
 
 export function SponsorsClient({ sponsors }: SponsorsClientProps) {
@@ -20,9 +22,9 @@ export function SponsorsClient({ sponsors }: SponsorsClientProps) {
           transition={{ duration: 0.5, delay: index * 0.05 }}
           className="flex flex-col items-center justify-center p-6 group cursor-pointer"
         >
-          <div className="flex h-24 w-24 items-center justify-center rounded-full border border-border bg-card shadow-sm transition-colors group-hover:border-primary group-hover:bg-primary/5 overflow-hidden">
+          <div className="relative flex h-24 w-24 items-center justify-center rounded-full border border-border bg-card shadow-sm transition-colors group-hover:border-primary group-hover:bg-primary/5 overflow-hidden">
             {sponsor.logo ? (
-              <img src={sponsor.logo} alt={sponsor.companyName} className="h-full w-full object-cover" />
+              <Image src={sponsor.logo} alt={sponsor.companyName} fill className="object-cover" />
             ) : (
               <span className="text-2xl font-sans font-bold text-muted-foreground group-hover:text-primary">
                 {sponsor.companyName.charAt(0)}

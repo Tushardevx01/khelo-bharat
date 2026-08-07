@@ -28,10 +28,23 @@ export async function createSponsorProfile(data: {
   return sponsorService.createSponsorProfile(userId, data);
 }
 
-export async function updateSponsorProfile(id: string, data: Record<string, unknown>) {
+async function verifySponsorOwnership(sponsorId: string) {
   const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
 
+  const { userService } = await import("@/services/user.service");
+  const user = await userService.getUserByClerkId(userId);
+  
+  if (user.role === "SUPER_ADMIN") return;
+
+  const sponsor = await sponsorService.getSponsorById(sponsorId);
+  if (sponsor.userId !== user.id) {
+    throw new Error("Forbidden: You do not have permission to modify this sponsor profile");
+  }
+}
+
+export async function updateSponsorProfile(id: string, data: Record<string, unknown>) {
+  await verifySponsorOwnership(id);
   return sponsorService.updateSponsorProfile(id, data);
 }
 

@@ -28,10 +28,23 @@ export async function createCoachProfile(data: {
   return coachService.createCoachProfile(userId, data);
 }
 
-export async function updateCoachProfile(id: string, data: Record<string, unknown>) {
+async function verifyCoachOwnership(coachId: string) {
   const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
 
+  const { userService } = await import("@/services/user.service");
+  const user = await userService.getUserByClerkId(userId);
+  
+  if (user.role === "SUPER_ADMIN") return;
+
+  const coach = await coachService.getCoachById(coachId);
+  if (coach.userId !== user.id) {
+    throw new Error("Forbidden: You do not have permission to modify this coach profile");
+  }
+}
+
+export async function updateCoachProfile(id: string, data: Record<string, unknown>) {
+  await verifyCoachOwnership(id);
   return coachService.updateCoachProfile(id, data);
 }
 

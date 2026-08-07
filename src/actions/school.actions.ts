@@ -35,10 +35,23 @@ export async function createSchoolProfile(data: {
   return schoolService.createSchoolProfile(userId, data);
 }
 
-export async function updateSchoolProfile(id: string, data: Record<string, unknown>) {
+async function verifySchoolOwnership(schoolId: string) {
   const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
 
+  const { userService } = await import("@/services/user.service");
+  const user = await userService.getUserByClerkId(userId);
+  
+  if (user.role === "SUPER_ADMIN") return;
+
+  const school = await schoolService.getSchoolById(schoolId);
+  if (school.userId !== user.id) {
+    throw new Error("Forbidden: You do not have permission to modify this school profile");
+  }
+}
+
+export async function updateSchoolProfile(id: string, data: Record<string, unknown>) {
+  await verifySchoolOwnership(id);
   return schoolService.updateSchoolProfile(id, data);
 }
 

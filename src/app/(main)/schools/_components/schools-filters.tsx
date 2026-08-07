@@ -2,7 +2,7 @@
 
 import { SearchInput } from "@/components/shared/search-input";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useTransition, useEffect, useState } from "react";
+import { useTransition, useEffect, useState, useCallback } from "react";
 
 export function SchoolsFilters() {
   const router = useRouter();
@@ -21,9 +21,9 @@ export function SchoolsFilters() {
       }
     }, 500);
     return () => clearTimeout(timer);
-  }, [searchValue, currentSearch]);
+  }, [searchValue, currentSearch, updateFilters]);
 
-  const updateFilters = (updates: Record<string, string>) => {
+  const updateFilters = useCallback((updates: Record<string, string>) => {
     const params = new URLSearchParams(searchParams.toString());
     
     Object.entries(updates).forEach(([key, value]) => {
@@ -40,7 +40,7 @@ export function SchoolsFilters() {
     startTransition(() => {
       router.push(`/schools?${params.toString()}`);
     });
-  };
+  }, [searchParams, router]);
 
   return (
     <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">

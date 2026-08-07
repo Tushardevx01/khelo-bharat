@@ -41,9 +41,25 @@ export async function getSponsorSponsorships() {
   return sponsorshipService.getSponsorSponsorships(sponsor.id);
 }
 
-export async function updateSponsorshipStatus(id: string, status: string) {
+async function verifySponsorshipOwnership(sponsorshipId: string) {
   const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
 
+  const { userService } = await import("@/services/user.service");
+  const user = await userService.getUserByClerkId(userId);
+  
+  if (user.role === "SUPER_ADMIN") return;
+
+  const { sponsorService } = await import("@/services/sponsor.service");
+  const sponsor = await sponsorService.getSponsorByUserId(user.id);
+
+  const sponsorship = await sponsorshipService.getSponsorshipById(sponsorshipId);
+  if (sponsorship.sponsorId !== sponsor.id) {
+    throw new Error("Forbidden: You do not have permission to modify this sponsorship");
+  }
+}
+
+export async function updateSponsorshipStatus(id: string, status: string) {
+  await verifySponsorshipOwnership(id);
   return sponsorshipService.updateStatus(id, status as never);
 }
