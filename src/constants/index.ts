@@ -21,6 +21,13 @@ export const SPORT_CATEGORIES = [
   { value: "VOLLEYBALL", label: "Volleyball", icon: "🏐" },
   { value: "HOCKEY", label: "Hockey", icon: "🏑" },
   { value: "KABADDI", label: "Kabaddi", icon: "🤼" },
+  { value: "CHESS", label: "Chess", icon: "♟️" },
+  { value: "TABLE_TENNIS", label: "Table Tennis", icon: "🏓" },
+  { value: "WRESTLING", label: "Wrestling", icon: "🤼‍♂️" },
+  { value: "BOXING", label: "Boxing", icon: "🥊" },
+  { value: "WEIGHTLIFTING", label: "Weightlifting", icon: "🏋️" },
+  { value: "SHOOTING", label: "Shooting", icon: "🎯" },
+  { value: "ARCHERY", label: "Archery", icon: "🏹" },
   { value: "OTHER", label: "Other", icon: "🏅" },
 ] as const;
 

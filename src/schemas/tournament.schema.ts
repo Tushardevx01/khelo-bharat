@@ -5,7 +5,8 @@ const tournamentBaseSchema = z.object({
   description: z.string().max(2000).optional(),
   sportCategory: z.enum([
     "CRICKET", "FOOTBALL", "BASKETBALL", "TENNIS", "BADMINTON",
-    "ATHLETICS", "SWIMMING", "VOLLEYBALL", "HOCKEY", "KABADDI", "OTHER"
+    "ATHLETICS", "SWIMMING", "VOLLEYBALL", "HOCKEY", "KABADDI",
+    "CHESS", "TABLE_TENNIS", "WRESTLING", "BOXING", "WEIGHTLIFTING", "SHOOTING", "ARCHERY", "OTHER"
   ]),
   startDate: z.coerce.date().min(new Date()),
   endDate: z.coerce.date(),

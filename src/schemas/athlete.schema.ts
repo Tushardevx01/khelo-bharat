@@ -3,7 +3,8 @@ import { z } from "zod";
 export const createAthleteSchema = z.object({
   sportCategory: z.enum([
     "CRICKET", "FOOTBALL", "BASKETBALL", "TENNIS", "BADMINTON",
-    "ATHLETICS", "SWIMMING", "VOLLEYBALL", "HOCKEY", "KABADDI", "OTHER"
+    "ATHLETICS", "SWIMMING", "VOLLEYBALL", "HOCKEY", "KABADDI", 
+    "CHESS", "TABLE_TENNIS", "WRESTLING", "BOXING", "WEIGHTLIFTING", "SHOOTING", "ARCHERY", "OTHER"
   ]),
   schoolId: z.string().uuid().optional(),
   coachId: z.string().uuid().optional(),
