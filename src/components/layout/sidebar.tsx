@@ -130,10 +130,10 @@ export function Sidebar({ role }: SidebarProps) {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center gap-3 rounded-[12px] px-3 py-2 text-sm font-medium transition-colors",
+                "flex items-center gap-3 rounded-[12px] px-3 py-2 text-sm font-medium transition-colors border",
                 isActive
-                  ? "bg-card border border-border text-primary shadow-sm"
-                  : "text-muted-foreground hover:text-foreground hover:bg-card/50"
+                  ? "bg-card border-border text-primary shadow-sm"
+                  : "border-transparent text-muted-foreground hover:text-foreground hover:bg-card/50"
               )}
               title={collapsed ? item.label : undefined}
             >

@@ -27,10 +27,10 @@ export function Header() {
               key={item.href}
               href={item.href}
               className={cn(
-                "px-4 py-2 text-sm font-medium rounded-[12px] transition-colors",
+                "px-4 py-2 text-sm font-medium rounded-[12px] transition-colors border",
                 pathname === item.href
-                  ? "bg-card border border-border text-primary shadow-sm"
-                  : "text-muted-foreground hover:text-foreground hover:bg-card/50"
+                  ? "bg-card border-border text-primary shadow-sm"
+                  : "border-transparent text-muted-foreground hover:text-foreground hover:bg-card/50"
               )}
             >
               {item.label}
