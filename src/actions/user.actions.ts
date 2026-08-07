@@ -63,6 +63,18 @@ export async function updateUserRole(id: string, role: string) {
   return userService.updateRole(id, role as never);
 }
 
+export async function completeOnboarding(role: string) {
+  const { userId } = await auth();
+  if (!userId) throw new Error("Unauthorized");
+
+  // Create the user in the database (this fetches from Clerk)
+  const user = await getOrCreateCurrentUser();
+  if (!user) throw new Error("Failed to create user");
+
+  // Update their role
+  return userService.updateRole(user.id, role as never);
+}
+
 export async function getDashboardStats() {
   const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");

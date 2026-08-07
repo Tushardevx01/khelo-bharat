@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { updateUserRole } from "@/actions/user.actions";
+import { completeOnboarding } from "@/actions/user.actions";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -42,7 +42,7 @@ const ROLES: RoleOption[] = [
   },
 ];
 
-export function OnboardingForm({ userId }: { userId: string }) {
+export function OnboardingForm() {
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
@@ -52,9 +52,7 @@ export function OnboardingForm({ userId }: { userId: string }) {
     
     setIsSubmitting(true);
     try {
-      await updateUserRole(userId, selectedRole);
-      // Wait a tiny bit for the session/user role to update before redirecting
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await completeOnboarding(selectedRole);
       router.push("/dashboard");
     } catch (error) {
       console.error("Failed to update role:", error);

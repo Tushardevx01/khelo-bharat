@@ -1,15 +1,10 @@
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
-import { getOrCreateCurrentUser } from "@/actions/user.actions";
 import { OnboardingForm } from "./_components/onboarding-form";
 
 export default async function OnboardingPage() {
   const { userId } = await auth();
   if (!userId) redirect("/sign-up");
-
-  // This ensures the user is inserted into the Prisma database
-  const user = await getOrCreateCurrentUser();
-  if (!user) redirect("/sign-up");
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-neutral-950 p-4">
@@ -23,7 +18,7 @@ export default async function OnboardingPage() {
           </p>
         </div>
         
-        <OnboardingForm userId={user.id} />
+        <OnboardingForm />
       </div>
     </div>
   );
