@@ -58,31 +58,31 @@ export default function AthletesPage() {
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {athletes.map((athlete) => (
             <Link key={athlete.id} href={`/athletes/${athlete.id}`}>
-              <Card className="transition-all hover:shadow-lg">
+              <Card className="transition-all hover:shadow-md shadow-sm border-border bg-card">
                 <CardContent className="p-6">
                   <div className="flex items-start gap-4">
-                    <Avatar className="h-12 w-12">
+                    <Avatar className="h-12 w-12 border border-border">
                       <AvatarImage src={athlete.avatar} />
-                      <AvatarFallback>{athlete.name.charAt(0)}</AvatarFallback>
+                      <AvatarFallback className="bg-primary/10 text-primary font-semibold">{athlete.name.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div className="flex-1">
-                      <h3 className="font-semibold text-neutral-900 dark:text-white">
+                      <h3 className="font-bold text-foreground">
                         {athlete.name}
                       </h3>
-                      <div className="flex items-center gap-2 text-sm text-neutral-500 dark:text-neutral-400">
-                        <MapPin className="h-3 w-3" />
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
+                        <MapPin className="h-3.5 w-3.5 text-primary" />
                         {athlete.location}
                       </div>
                     </div>
-                    <Badge variant="secondary">{athlete.sport}</Badge>
+                    <Badge variant="secondary" className="border-0 bg-secondary/60 text-foreground">{athlete.sport}</Badge>
                   </div>
-                  <div className="mt-4 flex items-center justify-between text-sm">
-                    <div className="flex items-center gap-1 text-neutral-600 dark:text-neutral-400">
-                      <Trophy className="h-4 w-4" />
+                  <div className="mt-5 flex items-center justify-between text-sm">
+                    <div className="flex items-center gap-1.5 text-muted-foreground font-medium">
+                      <Trophy className="h-4 w-4 text-accent" />
                       {athlete.achievements} achievements
                     </div>
-                    <div className="flex items-center gap-1 text-neutral-600 dark:text-neutral-400">
-                      <Star className="h-4 w-4" />
+                    <div className="flex items-center gap-1.5 text-muted-foreground font-medium">
+                      <Star className="h-4 w-4 text-accent" />
                       #{athlete.ranking}
                     </div>
                   </div>
