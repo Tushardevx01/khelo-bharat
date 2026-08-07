@@ -6,9 +6,9 @@ import { UserButton } from "@clerk/nextjs";
 import {
   LayoutDashboard, Trophy, BarChart3, Award, MessageSquare,
   Bell, Image, Settings, Users, FileText, ScrollText, Handshake,
-  GraduationCap, ChevronLeft, ChevronRight
+  GraduationCap, ChevronLeft, ChevronRight, Menu, X
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -35,7 +35,12 @@ interface SidebarProps {
 
 export function Sidebar({ role }: SidebarProps) {
   const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const pathname = usePathname();
+
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
 
   const getMenuItems = () => {
     switch (role) {
@@ -90,7 +95,7 @@ export function Sidebar({ role }: SidebarProps) {
 
   const menuItems = getMenuItems();
 
-  return (
+  const sidebarContent = (
     <aside
       className={cn(
         "flex h-full flex-col border-r border-neutral-200 bg-white transition-all duration-300 dark:border-neutral-800 dark:bg-neutral-950",
@@ -107,7 +112,7 @@ export function Sidebar({ role }: SidebarProps) {
           variant="ghost"
           size="icon"
           onClick={() => setCollapsed(!collapsed)}
-          className="h-8 w-8"
+          className="h-8 w-8 hidden md:flex"
         >
           {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
         </Button>
@@ -144,5 +149,42 @@ export function Sidebar({ role }: SidebarProps) {
         <UserButton afterSignOutUrl="/" />
       </div>
     </aside>
+  );
+
+  return (
+    <>
+      {/* Mobile toggle button */}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="fixed top-3 left-3 z-50 md:hidden h-10 w-10 bg-background border border-border shadow-sm"
+        onClick={() => setMobileOpen(!mobileOpen)}
+      >
+        {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+      </Button>
+
+      {/* Mobile overlay */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/50 md:hidden"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+
+      {/* Mobile sidebar */}
+      <div
+        className={cn(
+          "fixed inset-y-0 left-0 z-40 md:hidden transition-transform duration-300",
+          mobileOpen ? "translate-x-0" : "-translate-x-full"
+        )}
+      >
+        {sidebarContent}
+      </div>
+
+      {/* Desktop sidebar */}
+      <div className="hidden md:flex h-full">
+        {sidebarContent}
+      </div>
+    </>
   );
 }

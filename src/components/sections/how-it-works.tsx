@@ -63,7 +63,7 @@ export function HowItWorksSection() {
                 <div className="flex h-12 w-12 items-center justify-center rounded-[12px] bg-card border border-border shadow-sm">
                   <step.icon className="h-6 w-6 text-primary" />
                 </div>
-                <span className="text-6xl font-sans font-bold text-primary/10">
+                <span className="text-4xl font-sans font-bold text-primary/10 sm:text-6xl">
                   {step.step}
                 </span>
               </div>

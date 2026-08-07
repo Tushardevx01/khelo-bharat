@@ -11,7 +11,7 @@ export default function CareerGuidancePage() {
   return (
     <DashboardLayout>
       <div className="space-y-8">
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
           <PageHeader
             title="AI Career Guidance"
             description="Get personalized recommendations for your sports career."
@@ -31,7 +31,7 @@ export default function CareerGuidancePage() {
               Our AI engine will analyze your performance data, achievements, and goals to provide
               personalized career recommendations and training plans.
             </p>
-            <div className="mt-8 grid grid-cols-3 gap-4 max-w-lg mx-auto">
+            <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-3 sm:max-w-lg sm:mx-auto">
               {[
                 { icon: TrendingUp, label: "Performance Analysis" },
                 { icon: Target, label: "Goal Setting" },

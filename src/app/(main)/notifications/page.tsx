@@ -54,7 +54,7 @@ export default function NotificationsPage() {
                       <Icon className="h-5 w-5 text-neutral-600 dark:text-neutral-400" />
                     </div>
                     <div className="flex-1">
-                      <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <p className={`text-sm font-medium ${!notification.read ? "text-neutral-900 dark:text-white" : "text-neutral-600 dark:text-neutral-400"}`}>
                           {notification.title}
                         </p>

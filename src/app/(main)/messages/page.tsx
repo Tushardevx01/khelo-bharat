@@ -7,11 +7,12 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Send, Search } from "lucide-react";
+import { Send, Search, ArrowLeft } from "lucide-react";
 import { useState } from "react";
 
 export default function MessagesPage() {
   const [message, setMessage] = useState("");
+  const [activeChat, setActiveChat] = useState(false);
 
   const conversations = [
     { id: "1", name: "Rajesh Kumar", role: "Coach", lastMessage: "Great progress in the last match!", time: "2m ago", unread: 2 },
@@ -33,8 +34,8 @@ export default function MessagesPage() {
           description="Communicate with coaches, sponsors, and athletes."
         />
 
-        <div className="grid gap-6 lg:grid-cols-3" style={{ height: "calc(100vh - 280px)" }}>
-          <Card className="lg:col-span-1 overflow-hidden">
+        <div className="grid gap-6 lg:grid-cols-3" style={{ minHeight: "calc(100vh - 280px)" }}>
+          <Card className={`lg:col-span-1 overflow-hidden ${activeChat ? 'hidden lg:block' : ''}`}>
             <div className="p-4 border-b border-neutral-200 dark:border-neutral-800">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-400" />
@@ -45,6 +46,7 @@ export default function MessagesPage() {
               {conversations.map((conv) => (
                 <div
                   key={conv.id}
+                  onClick={() => setActiveChat(true)}
                   className="flex items-center gap-3 p-4 border-b border-neutral-100 dark:border-neutral-800 hover:bg-neutral-50 dark:hover:bg-neutral-900 cursor-pointer"
                 >
                   <Avatar className="h-10 w-10">
@@ -69,9 +71,17 @@ export default function MessagesPage() {
             </div>
           </Card>
 
-          <Card className="lg:col-span-2 flex flex-col overflow-hidden">
+          <Card className={`lg:col-span-2 flex flex-col overflow-hidden ${!activeChat ? 'hidden lg:flex' : 'flex'}`}>
             <div className="p-4 border-b border-neutral-200 dark:border-neutral-800">
               <div className="flex items-center gap-3">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 lg:hidden"
+                  onClick={() => setActiveChat(false)}
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                </Button>
                 <Avatar className="h-10 w-10">
                   <AvatarFallback>RK</AvatarFallback>
                 </Avatar>

@@ -85,10 +85,6 @@ export function FeaturesSection() {
         {/* Bento grid — explicit placement on lg for precise layout */}
         <div
           className="mt-16 grid gap-4 sm:grid-cols-2 lg:grid-cols-4"
-          style={{
-            gridTemplateRows: "repeat(3, minmax(0, 1fr))",
-            gridTemplateColumns: "repeat(4, 1fr)",
-          }}
         >
           {features.map((feature, index) => (
             <motion.div
@@ -103,10 +99,8 @@ export function FeaturesSection() {
                 ${feature.size === "lg" ? "lg:p-8" : ""}
               `}
               style={{
-                gridColumn: feature.size === "lg" && index === 0 ? "span 2" :
-                            feature.size === "lg" && index === 5 ? "span 2" :
-                            feature.size === "wide" ? "span 2" : undefined,
-                gridRow: feature.size === "lg" ? "span 2" : undefined,
+                gridColumn: undefined,
+                gridRow: undefined,
               }}
             >
               <div

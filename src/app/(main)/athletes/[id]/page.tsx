@@ -45,7 +45,7 @@ export default function AthleteDetailPage() {
           <div className="lg:col-span-2 space-y-6">
             <Card>
               <CardContent className="p-6">
-                <div className="flex items-start gap-6">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-6">
                   <Avatar className="h-20 w-20">
                     <AvatarFallback className="text-2xl">{athlete.name.charAt(0)}</AvatarFallback>
                   </Avatar>
@@ -72,7 +72,7 @@ export default function AthleteDetailPage() {
               </CardContent>
             </Card>
 
-            <div className="grid grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
               {[
                 { label: "Matches", value: athlete.stats.matchesPlayed },
                 { label: "Wins", value: athlete.stats.wins },

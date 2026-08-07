@@ -62,7 +62,7 @@ export default function SponsorMarketplacePage() {
                   </div>
                 </div>
 
-                <div className="mt-4 flex gap-2">
+                <div className="mt-4 flex flex-col gap-2 sm:flex-row">
                   <Button className="flex-1" size="sm">
                     <Handshake className="mr-2 h-4 w-4" />
                     Sponsor

@@ -42,7 +42,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   if (!isLoaded || !role) {
     return (
       <div className="flex h-screen">
-        <div className="w-64 border-r border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-950">
+        <div className="hidden w-64 border-r border-neutral-200 bg-white p-4 dark:border-neutral-800 dark:bg-neutral-950 md:block">
           <Skeleton className="h-8 w-32" />
           <div className="mt-8 space-y-3">
             {[...Array(6)].map((_, i) => (
@@ -50,9 +50,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             ))}
           </div>
         </div>
-        <div className="flex-1 p-8">
+        <div className="flex-1 p-4 sm:p-6 md:p-8">
           <Skeleton className="h-8 w-48 mb-6" />
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {[...Array(6)].map((_, i) => (
               <Skeleton key={i} className="h-32 w-full" />
             ))}
@@ -66,7 +66,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     <div className="flex h-screen overflow-hidden bg-neutral-50 dark:bg-neutral-950">
       <Sidebar role={role} />
       <main className="flex-1 overflow-y-auto">
-        <div className="p-8">{children}</div>
+        <div className="p-4 sm:p-6 md:p-8">{children}</div>
       </main>
     </div>
   );

@@ -19,7 +19,7 @@ export default function GalleryPage() {
   return (
     <DashboardLayout>
       <div className="space-y-8">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <PageHeader
             title="Gallery"
             description="Share and view your sports moments."

@@ -45,7 +45,7 @@ export function EventsSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="flex items-end justify-between"
+          className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"
         >
           <div>
             <h2 className="font-sans text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
@@ -55,7 +55,7 @@ export function EventsSection() {
               Don&apos;t miss out on exciting tournaments.
             </p>
           </div>
-          <Button variant="outline" className="hidden sm:flex text-primary border-primary hover:bg-primary/5">
+          <Button variant="outline" className="sm:flex text-primary border-primary hover:bg-primary/5">
             View All Events
           </Button>
         </motion.div>

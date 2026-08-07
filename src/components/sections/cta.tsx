@@ -22,8 +22,8 @@ export function CTASection() {
           <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground leading-relaxed">
             Join thousands of athletes, coaches, and schools already using Khelo Bharat to achieve their sporting dreams.
           </p>
-          <div className="mt-10 flex items-center justify-center gap-4">
-            <Button size="xl" asChild className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-[12px] font-semibold px-10">
+          <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+            <Button size="xl" asChild className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90 rounded-[12px] font-semibold px-10">
               <Link href="/sign-up">
                 Get Started Free
                 <ArrowRight className="ml-2 h-4 w-4" />

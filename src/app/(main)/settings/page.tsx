@@ -19,20 +19,20 @@ export default function SettingsPage() {
         />
 
         <div className="grid gap-6 lg:grid-cols-4">
-          <div className="space-y-2">
-            <Button variant="ghost" className="w-full justify-start">
+          <div className="flex gap-2 overflow-x-auto lg:flex-col lg:gap-2 lg:overflow-visible">
+            <Button variant="ghost" className="justify-start whitespace-nowrap">
               <User className="mr-2 h-4 w-4" />
               Profile
             </Button>
-            <Button variant="ghost" className="w-full justify-start">
+            <Button variant="ghost" className="justify-start whitespace-nowrap">
               <Bell className="mr-2 h-4 w-4" />
               Notifications
             </Button>
-            <Button variant="ghost" className="w-full justify-start">
+            <Button variant="ghost" className="justify-start whitespace-nowrap">
               <Shield className="mr-2 h-4 w-4" />
               Security
             </Button>
-            <Button variant="ghost" className="w-full justify-start">
+            <Button variant="ghost" className="justify-start whitespace-nowrap">
               <Palette className="mr-2 h-4 w-4" />
               Appearance
             </Button>
@@ -100,7 +100,7 @@ export default function SettingsPage() {
                 <CardDescription>Irreversible actions for your account.</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="flex items-center justify-between rounded-lg border border-red-200 p-4 dark:border-red-900">
+                <div className="flex flex-col gap-3 rounded-lg border border-red-200 p-4 dark:border-red-900 sm:flex-row sm:items-center sm:justify-between">
                   <div>
                     <p className="text-sm font-medium text-red-600">Delete Account</p>
                     <p className="text-xs text-neutral-500">Permanently delete your account and all data.</p>

@@ -114,7 +114,7 @@ export default function AthleteDashboardPage() {
             <CardTitle>Performance Overview</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
               {[
                 { label: "Matches Played", value: "24", change: "+3" },
                 { label: "Win Rate", value: "72%", change: "+5%" },

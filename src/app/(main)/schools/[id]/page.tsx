@@ -33,7 +33,7 @@ export default function SchoolDetailPage() {
           <div className="lg:col-span-2 space-y-6">
             <Card>
               <CardContent className="p-6">
-                <div className="flex items-start gap-6">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:gap-6">
                   <Avatar className="h-20 w-20">
                     <AvatarFallback className="text-2xl bg-neutral-100 dark:bg-neutral-800">
                       {school.name.charAt(0)}
