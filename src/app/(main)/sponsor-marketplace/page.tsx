@@ -56,21 +56,32 @@ export default async function SponsorMarketplacePage({
                           <h3 className="font-semibold text-foreground">
                             {athlete.user.name}
                           </h3>
-                          {athlete.state && (
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                              <MapPin className="h-3 w-3" />
-                              {athlete.state}
-                            </div>
-                          )}
                         </div>
                       </div>
                       <Badge variant="secondary">{athlete.sportCategory}</Badge>
                     </div>
 
-                    <div className="mt-4 flex items-center justify-between text-sm">
-                      <div className="flex items-center gap-1 text-muted-foreground">
-                        <Star className="h-4 w-4" />
-                        Points: {athlete.points}
+                    <div className="mt-4 flex items-center gap-2">
+                      {athlete.user.location && (
+                        <Badge variant="outline" className="flex items-center gap-1 bg-background/50 border-neutral-800">
+                          <MapPin className="h-3 w-3" />
+                          {athlete.user.location}
+                        </Badge>
+                      )}
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4 rounded-lg bg-neutral-900/50 p-4 mt-4">
+                      <div>
+                        <p className="text-xs text-neutral-400">Ranking</p>
+                        <p className="font-semibold text-white">
+                          #{athlete.ranking || '-'}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-xs text-neutral-400">Achievements</p>
+                        <p className="font-semibold text-white">
+                          {athlete.achievementsCount}
+                        </p>
                       </div>
                     </div>
 
@@ -90,9 +101,11 @@ export default async function SponsorMarketplacePage({
               ))}
             </div>
             
-            <div className="mt-8">
-              <Pagination meta={meta} />
-            </div>
+            {meta.totalPages > 1 && (
+              <div className="mt-8">
+                <Pagination currentPage={meta.page} totalPages={meta.totalPages} />
+              </div>
+            )}
           </>
         )}
       </main>
