@@ -9,58 +9,58 @@ import { Card, CardContent } from "@/components/ui/card";
 const events = [
   {
     id: "1",
-    title: "National Cricket Championship",
+    title: "Kolkata Football Championship",
     date: "2026-03-15",
-    location: "Mumbai, Maharashtra",
+    location: "Kolkata, WB",
     participants: 256,
-    category: "CRICKET",
-    status: "UPCOMING",
+    category: "Football",
+    status: "REGISTRATION_OPEN",
   },
   {
     id: "2",
-    title: "Inter-State Football League",
+    title: "New Delhi Football League",
     date: "2026-04-01",
     location: "Delhi, NCR",
     participants: 128,
-    category: "FOOTBALL",
+    category: "Football",
     status: "REGISTRATION_OPEN",
   },
   {
     id: "3",
-    title: "All India Badminton Open",
+    title: "All India Football Open",
     date: "2026-04-20",
-    location: "Hyderabad, Telangana",
+    location: "Hyderabad, TS",
     participants: 64,
-    category: "BADMINTON",
+    category: "Football",
     status: "UPCOMING",
   },
 ];
 
 export function EventsSection() {
   return (
-    <section className="bg-neutral-50 py-24 dark:bg-neutral-900">
+    <section className="bg-background py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="flex items-center justify-between"
+          className="flex items-end justify-between"
         >
           <div>
-            <h2 className="text-3xl font-bold tracking-tight text-neutral-900 dark:text-white sm:text-4xl">
+            <h2 className="font-sans text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
               Upcoming Events
             </h2>
-            <p className="mt-4 text-lg text-neutral-500 dark:text-neutral-400">
+            <p className="mt-4 text-lg text-muted-foreground">
               Don&apos;t miss out on exciting tournaments.
             </p>
           </div>
-          <Button variant="outline" className="hidden sm:flex">
+          <Button variant="outline" className="hidden sm:flex text-primary border-primary hover:bg-primary/5">
             View All Events
           </Button>
         </motion.div>
 
-        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {events.map((event, index) => (
             <motion.div
               key={event.id}
@@ -69,39 +69,41 @@ export function EventsSection() {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              <Card className="transition-all hover:shadow-lg">
-                <div className="h-40 rounded-t-xl bg-gradient-to-br from-neutral-800 to-neutral-950 p-4">
-                  <Badge variant={event.status === "REGISTRATION_OPEN" ? "success" : "info"}>
-                    {event.status.replace(/_/g, " ")}
-                  </Badge>
+              <Card className="bg-card border-border overflow-hidden group shadow-sm transition-shadow hover:shadow-md">
+                <div className="h-48 bg-muted p-6 flex flex-col justify-between">
+                  <div className="flex justify-between items-start">
+                    <Badge className="bg-primary/10 text-primary hover:bg-primary/20 border-0">
+                      {event.category}
+                    </Badge>
+                    <Badge variant={event.status === "REGISTRATION_OPEN" ? "default" : "secondary"} className="border-0">
+                      {event.status.replace(/_/g, " ")}
+                    </Badge>
+                  </div>
                 </div>
-                <CardContent className="p-6">
-                  <Badge variant="secondary" className="mb-2">
-                    {event.category}
-                  </Badge>
-                  <h3 className="text-lg font-semibold text-neutral-900 dark:text-white">
+                <CardContent className="p-6 -mt-8 bg-card relative z-10 rounded-t-2xl border-t border-border">
+                  <h3 className="text-xl font-bold text-foreground">
                     {event.title}
                   </h3>
-                  <div className="mt-3 space-y-2">
-                    <div className="flex items-center text-sm text-neutral-500 dark:text-neutral-400">
-                      <Calendar className="mr-2 h-4 w-4" />
+                  <div className="mt-4 space-y-3">
+                    <div className="flex items-center text-sm text-muted-foreground">
+                      <Calendar className="mr-3 h-4 w-4 text-primary" />
                       {new Date(event.date).toLocaleDateString("en-IN", {
                         day: "numeric",
                         month: "short",
                         year: "numeric",
                       })}
                     </div>
-                    <div className="flex items-center text-sm text-neutral-500 dark:text-neutral-400">
-                      <MapPin className="mr-2 h-4 w-4" />
+                    <div className="flex items-center text-sm text-muted-foreground">
+                      <MapPin className="mr-3 h-4 w-4 text-primary" />
                       {event.location}
                     </div>
-                    <div className="flex items-center text-sm text-neutral-500 dark:text-neutral-400">
-                      <Users className="mr-2 h-4 w-4" />
+                    <div className="flex items-center text-sm text-muted-foreground">
+                      <Users className="mr-3 h-4 w-4 text-primary" />
                       {event.participants} participants
                     </div>
                   </div>
-                  <Button className="mt-4 w-full" variant="outline">
-                    View Details
+                  <Button className="mt-6 w-full font-medium">
+                    Register Now
                   </Button>
                 </CardContent>
               </Card>

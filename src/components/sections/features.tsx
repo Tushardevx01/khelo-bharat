@@ -65,7 +65,7 @@ const features = [
 
 export function FeaturesSection() {
   return (
-    <section id="features" className="bg-neutral-50 py-24 dark:bg-neutral-900">
+    <section id="features" className="bg-background py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -74,10 +74,10 @@ export function FeaturesSection() {
           transition={{ duration: 0.5 }}
           className="mx-auto max-w-2xl text-center"
         >
-          <h2 className="text-3xl font-bold tracking-tight text-neutral-900 dark:text-white sm:text-4xl">
+          <h2 className="font-heading text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
             Built for the game
           </h2>
-          <p className="mt-4 text-lg text-neutral-500 dark:text-neutral-400">
+          <p className="mt-4 text-lg text-muted-foreground">
             Everything athletes, coaches, schools, and sponsors need — in one platform.
           </p>
         </motion.div>
@@ -90,12 +90,6 @@ export function FeaturesSection() {
             gridTemplateColumns: "repeat(4, 1fr)",
           }}
         >
-          {/* 
-            lg grid positions (4 cols × 3 rows):
-            Row 1: Tournament[1-2,1-2] Connect[3,1] Analytics[4,1]
-            Row 2: Certs[1,2] Messaging[2,2] Verified[3-4,2-3]
-            Row 3: Location[1,3] Calendar[2-3,3] Career[4,3]
-          */}
           {features.map((feature, index) => (
             <motion.div
               key={feature.title}
@@ -104,13 +98,9 @@ export function FeaturesSection() {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.05 }}
               className={`
-                group rounded-xl border p-6 transition-all
-                hover:shadow-lg
-                dark:border-neutral-800
-                ${feature.size === "lg"
-                  ? "border-neutral-800 bg-neutral-900 dark:bg-neutral-950 lg:p-8"
-                  : "border-neutral-200 bg-white dark:bg-neutral-950"
-                }
+                group rounded-[16px] border p-6 transition-all hover:shadow-sm hover:border-primary/50
+                bg-card border-border
+                ${feature.size === "lg" ? "lg:p-8" : ""}
               `}
               style={{
                 gridColumn: feature.size === "lg" && index === 0 ? "span 2" :
@@ -121,27 +111,21 @@ export function FeaturesSection() {
             >
               <div
                 className={`
-                  flex items-center justify-center rounded-lg transition-colors
-                  ${feature.size === "lg"
-                    ? "h-14 w-14 rounded-xl bg-neutral-800 group-hover:bg-neutral-700 dark:bg-neutral-800 dark:group-hover:bg-neutral-700"
-                    : "h-10 w-10 bg-neutral-100 group-hover:bg-neutral-900 dark:bg-neutral-800 dark:group-hover:bg-neutral-700"
-                  }
+                  flex items-center justify-center rounded-[12px] transition-colors bg-secondary/50 group-hover:bg-primary/10
+                  ${feature.size === "lg" ? "h-14 w-14" : "h-10 w-10"}
                 `}
               >
                 <feature.icon
                   className={`
-                    transition-colors
-                    ${feature.size === "lg"
-                      ? "h-7 w-7 text-neutral-300 group-hover:text-white"
-                      : "h-5 w-5 text-neutral-600 group-hover:text-white dark:text-neutral-400"
-                    }
+                    transition-colors text-muted-foreground group-hover:text-primary
+                    ${feature.size === "lg" ? "h-7 w-7" : "h-5 w-5"}
                   `}
                 />
               </div>
 
               <h3
                 className={`
-                  font-semibold tracking-tight text-neutral-900 dark:text-white
+                  font-semibold tracking-tight text-card-foreground
                   ${feature.size === "lg" ? "mt-6 text-xl" : "mt-3 text-base"}
                 `}
               >
@@ -150,7 +134,7 @@ export function FeaturesSection() {
 
               <p
                 className={`
-                  text-neutral-500 dark:text-neutral-400
+                  text-muted-foreground
                   ${feature.size === "lg" ? "mt-3 text-sm leading-relaxed" : "mt-1.5 text-sm"}
                 `}
               >

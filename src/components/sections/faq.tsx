@@ -29,7 +29,7 @@ const faqs = [
 
 export function FAQSection() {
   return (
-    <section className="bg-white py-24 dark:bg-neutral-950">
+    <section className="bg-background py-24 border-t border-border">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -38,10 +38,10 @@ export function FAQSection() {
           transition={{ duration: 0.5 }}
           className="text-center"
         >
-          <h2 className="text-3xl font-bold tracking-tight text-neutral-900 dark:text-white sm:text-4xl">
+          <h2 className="font-sans text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
             Frequently Asked Questions
           </h2>
-          <p className="mt-4 text-lg text-neutral-500 dark:text-neutral-400">
+          <p className="mt-4 text-lg text-muted-foreground">
             Everything you need to know about Khelo Bharat.
           </p>
         </motion.div>
@@ -51,20 +51,20 @@ export function FAQSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5, delay: 0.1 }}
-          className="mt-12"
+          className="mt-16"
         >
-          <Accordion.Root type="single" collapsible className="space-y-4">
+          <Accordion.Root type="single" collapsible className="space-y-0">
             {faqs.map((faq) => (
               <Accordion.Item
                 key={faq.question}
                 value={faq.question}
-                className="rounded-xl border border-neutral-200 dark:border-neutral-800"
+                className="border-b border-border group"
               >
-                <Accordion.Trigger className="flex w-full items-center justify-between p-4 text-left font-medium text-neutral-900 dark:text-white hover:no-underline">
+                <Accordion.Trigger className="flex w-full items-center justify-between py-6 text-left font-medium text-foreground hover:text-primary transition-colors">
                   {faq.question}
-                  <ChevronDown className="h-4 w-4 text-neutral-500 transition-transform duration-200 group-data-[state=open]:rotate-180" />
+                  <ChevronDown className="h-4 w-4 text-muted-foreground transition-transform duration-200 group-data-[state=open]:rotate-180" />
                 </Accordion.Trigger>
-                <Accordion.Content className="overflow-hidden px-4 pb-4 text-sm text-neutral-500 dark:text-neutral-400">
+                <Accordion.Content className="overflow-hidden pb-6 text-sm text-muted-foreground leading-relaxed data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
                   {faq.answer}
                 </Accordion.Content>
               </Accordion.Item>

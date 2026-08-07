@@ -30,7 +30,7 @@ const testimonials = [
 
 export function TestimonialsSection() {
   return (
-    <section className="bg-neutral-50 py-24 dark:bg-neutral-900">
+    <section className="bg-background py-24 border-t border-border">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -39,10 +39,10 @@ export function TestimonialsSection() {
           transition={{ duration: 0.5 }}
           className="mx-auto max-w-2xl text-center"
         >
-          <h2 className="text-3xl font-bold tracking-tight text-neutral-900 dark:text-white sm:text-4xl">
+          <h2 className="font-sans text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
             What our community says
           </h2>
-          <p className="mt-4 text-lg text-neutral-500 dark:text-neutral-400">
+          <p className="mt-4 text-lg text-muted-foreground">
             Trusted by thousands of athletes, coaches, and schools across India.
           </p>
         </motion.div>
@@ -55,26 +55,26 @@ export function TestimonialsSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="rounded-xl border border-neutral-200 bg-white p-6 dark:border-neutral-800 dark:bg-neutral-950"
+              className="rounded-2xl border border-border bg-card p-6 shadow-sm"
             >
               <div className="flex gap-1">
                 {Array.from({ length: testimonial.rating }).map((_, i) => (
-                  <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                  <Star key={i} className="h-4 w-4 fill-primary text-primary" />
                 ))}
               </div>
-              <p className="mt-4 text-sm text-neutral-600 dark:text-neutral-300">
+              <p className="mt-6 text-sm leading-relaxed text-foreground">
                 &ldquo;{testimonial.content}&rdquo;
               </p>
               <div className="mt-6 flex items-center gap-3">
                 <Avatar>
                   <AvatarImage src={testimonial.image} />
-                  <AvatarFallback>{testimonial.name.charAt(0)}</AvatarFallback>
+                  <AvatarFallback className="bg-primary/10 text-primary">{testimonial.name.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <div>
-                  <p className="text-sm font-medium text-neutral-900 dark:text-white">
+                  <p className="text-sm font-medium text-foreground">
                     {testimonial.name}
                   </p>
-                  <p className="text-xs text-neutral-500 dark:text-neutral-400">
+                  <p className="text-xs text-muted-foreground">
                     {testimonial.role}
                   </p>
                 </div>

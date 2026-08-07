@@ -7,23 +7,23 @@ import Link from "next/link";
 
 export function CTASection() {
   return (
-    <section className="bg-neutral-950 py-24">
+    <section className="bg-background py-24 border-t border-border">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
-          className="rounded-3xl bg-gradient-to-br from-neutral-800 to-neutral-900 p-8 text-center sm:p-12 lg:p-16"
+          className="rounded-[16px] bg-card border border-border p-8 text-center sm:p-16 lg:p-20 shadow-sm"
         >
-          <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+          <h2 className="font-sans text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
             Ready to start your journey?
           </h2>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-neutral-400">
+          <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground leading-relaxed">
             Join thousands of athletes, coaches, and schools already using Khelo Bharat to achieve their sporting dreams.
           </p>
-          <div className="mt-8 flex items-center justify-center gap-4">
-            <Button size="xl" asChild className="bg-white text-neutral-900 hover:bg-neutral-100">
+          <div className="mt-10 flex items-center justify-center gap-4">
+            <Button size="xl" asChild className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-[12px] font-semibold px-10">
               <Link href="/sign-up">
                 Get Started Free
                 <ArrowRight className="ml-2 h-4 w-4" />
