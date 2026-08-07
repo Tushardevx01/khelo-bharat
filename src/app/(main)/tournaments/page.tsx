@@ -38,10 +38,17 @@ export default async function TournamentsPage({
 
   const content = (
     <div className={isSignedIn ? "space-y-8" : ""}>
-      <PageHeader
-        title="Tournaments"
-        description="Discover and register for tournaments across India."
-      />
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <PageHeader
+          title="Tournaments"
+          description="Discover and register for tournaments across India."
+        />
+        {isSignedIn && (
+          <Button asChild>
+            <Link href="/tournaments/create">Create Tournament</Link>
+          </Button>
+        )}
+      </div>
 
       <TournamentsFilters />
 

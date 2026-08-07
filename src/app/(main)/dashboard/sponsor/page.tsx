@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { getSponsorSponsorships } from "@/actions/sponsorship.actions";
 
+export const dynamic = "force-dynamic";
+
 export default async function SponsorDashboardPage() {
   let sponsorships: any[] = [];
   try {

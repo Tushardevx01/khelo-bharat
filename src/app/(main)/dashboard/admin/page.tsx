@@ -5,6 +5,8 @@ import { Users, Trophy, School, Handshake, TrendingUp } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getDashboardStats } from "@/actions/user.actions";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminDashboardPage() {
   let stats: any = null;
   try {

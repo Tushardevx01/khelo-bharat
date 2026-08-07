@@ -11,6 +11,8 @@ import { getAllTournaments } from "@/actions/tournament.actions";
 import { auth } from "@clerk/nextjs/server";
 import { userService } from "@/services/user.service";
 
+export const dynamic = "force-dynamic";
+
 export default async function AthleteDashboardPage() {
   const { userId } = await auth();
   if (!userId) return null;

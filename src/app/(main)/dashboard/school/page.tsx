@@ -10,6 +10,8 @@ import { userService } from "@/services/user.service";
 import { schoolService } from "@/services/school.service";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
+export const dynamic = "force-dynamic";
+
 export default async function SchoolDashboardPage() {
   const { userId } = await auth();
   if (!userId) return null;
