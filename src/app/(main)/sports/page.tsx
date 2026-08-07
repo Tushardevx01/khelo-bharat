@@ -22,10 +22,10 @@ export default function SportsPage() {
               <Card className="transition-all hover:shadow-lg hover:scale-[1.02]">
                 <CardContent className="p-6 text-center">
                   <div className="text-4xl mb-3">{sport.icon}</div>
-                  <h3 className="text-lg font-semibold text-neutral-900 dark:text-white">
+                  <h3 className="text-lg font-bold text-foreground">
                     {sport.label}
                   </h3>
-                  <p className="mt-2 text-sm text-neutral-500 dark:text-neutral-400">
+                  <p className="mt-2 text-sm text-muted-foreground">
                     Explore tournaments and athletes
                   </p>
                 </CardContent>
