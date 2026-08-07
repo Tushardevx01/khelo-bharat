@@ -92,13 +92,21 @@ export class TournamentRepository {
 
     if (existing) throw new Error("Already registered for this tournament");
 
-    return prisma.tournamentRegistration.create({
-      data: {
-        tournamentId,
-        athleteId,
-        teamName: data?.teamName,
-      },
-    });
+    const [registration] = await prisma.$transaction([
+      prisma.tournamentRegistration.create({
+        data: {
+          tournamentId,
+          athleteId,
+          teamName: data?.teamName,
+        },
+      }),
+      prisma.tournament.update({
+        where: { id: tournamentId },
+        data: { totalParticipants: { increment: 1 } },
+      }),
+    ]);
+
+    return registration;
   }
 
   async getUpcoming(limit: number = 10) {

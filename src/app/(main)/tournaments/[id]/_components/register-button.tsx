@@ -43,6 +43,7 @@ export function RegisterButton({ tournamentId, isRegistered = false }: RegisterB
       
       setRegistered(true);
       toast.success("Successfully registered for the tournament!");
+      router.refresh();
     } catch (error: any) {
       toast.error(error.message || "Failed to register. Are you an athlete?");
     } finally {

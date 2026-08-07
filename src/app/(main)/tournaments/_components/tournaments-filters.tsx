@@ -17,16 +17,6 @@ export function TournamentsFilters() {
 
   const [searchValue, setSearchValue] = useState(currentSearch);
 
-  // Simple debounce for search
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (searchValue !== currentSearch) {
-        updateFilters({ search: searchValue });
-      }
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [searchValue, currentSearch, updateFilters]);
-
   const updateFilters = useCallback((updates: Record<string, string>) => {
     const params = new URLSearchParams(searchParams.toString());
     
@@ -45,6 +35,16 @@ export function TournamentsFilters() {
       router.push(`/tournaments?${params.toString()}`);
     });
   }, [searchParams, router]);
+
+  // Simple debounce for search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (searchValue !== currentSearch) {
+        updateFilters({ search: searchValue });
+      }
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchValue, currentSearch, updateFilters]);
 
   return (
     <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
