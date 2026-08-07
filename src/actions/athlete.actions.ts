@@ -5,10 +5,13 @@ import { athleteService } from "@/services/athlete.service";
 import { SportCategory } from "@prisma/client";
 
 export async function getAthleteProfile() {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
+  const { userId: clerkId } = await auth();
+  if (!clerkId) throw new Error("Unauthorized");
 
-  return athleteService.getAthleteByUserId(userId);
+  const { userService } = await import("@/services/user.service");
+  const user = await userService.getUserByClerkId(clerkId);
+
+  return athleteService.getAthleteByUserId(user.id);
 }
 
 export async function getAthleteById(id: string) {
@@ -23,10 +26,13 @@ export async function createAthleteProfile(data: {
   weight?: number;
   experience?: number;
 }) {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
+  const { userId: clerkId } = await auth();
+  if (!clerkId) throw new Error("Unauthorized");
 
-  return athleteService.createAthleteProfile(userId, data);
+  const { userService } = await import("@/services/user.service");
+  const user = await userService.getUserByClerkId(clerkId);
+
+  return athleteService.createAthleteProfile(user.id, data);
 }
 
 async function verifyAthleteOwnership(athleteId: string) {

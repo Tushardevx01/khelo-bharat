@@ -83,12 +83,30 @@ export async function getAllTournaments(
 }
 
 export async function registerForTournament(tournamentId: string, teamName?: string) {
-  const { userId } = await auth();
-  if (!userId) return { error: "Unauthorized" };
+  const { userId: clerkId } = await auth();
+  if (!clerkId) return { error: "Unauthorized" };
 
   try {
+    const { userService } = await import("@/services/user.service");
+    const user = await userService.getUserByClerkId(clerkId);
+
     const { athleteService } = await import("@/services/athlete.service");
-    const athlete = await athleteService.getAthleteByUserId(userId);
+    
+    let athlete;
+    try {
+      athlete = await athleteService.getAthleteByUserId(user.id);
+    } catch (e: any) {
+      if (e.name === "NotFoundError" || e.message?.includes("Athlete profile")) {
+        if (user.role === "ATHLETE") {
+          // Auto-create default profile to break the onboarding loop
+          athlete = await athleteService.createAthleteProfile(user.id, { sportCategory: "OTHER" });
+        } else {
+          return { error: "ATHLETE_NOT_FOUND" };
+        }
+      } else {
+        throw e;
+      }
+    }
 
     const result = await tournamentService.registerForTournament(tournamentId, athlete.id, { teamName });
     return { success: true, data: result };

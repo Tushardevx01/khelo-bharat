@@ -77,7 +77,28 @@ export async function completeOnboarding(role: string) {
   if (!user) throw new Error("Failed to create user");
 
   // Update their role
-  return userService.updateRole(user.id, role as never);
+  const updatedUser = await userService.updateRole(user.id, role as never);
+
+  // Auto-create default profiles to prevent NOT_FOUND errors
+  try {
+    if (role === "ATHLETE") {
+      const { athleteService } = await import("@/services/athlete.service");
+      await athleteService.createAthleteProfile(user.id, { sportCategory: "OTHER" }).catch(() => {});
+    } else if (role === "COACH") {
+      const { coachService } = await import("@/services/coach.service");
+      await coachService.createCoachProfile(user.id, { sportCategory: "OTHER" }).catch(() => {});
+    } else if (role === "SCHOOL_ADMIN") {
+      const { schoolService } = await import("@/services/school.service");
+      await schoolService.createSchoolProfile(user.id, { schoolName: "My School" }).catch(() => {});
+    } else if (role === "SPONSOR") {
+      const { sponsorService } = await import("@/services/sponsor.service");
+      await sponsorService.createSponsorProfile(user.id, { companyName: "My Company" }).catch(() => {});
+    }
+  } catch (error) {
+    console.error("Failed to auto-create profile:", error);
+  }
+
+  return updatedUser;
 }
 
 export async function getDashboardStats() {
