@@ -1,43 +1,37 @@
-"use client";
-
 import { Header } from "@/components/layout/header";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Calendar, MapPin } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { getTournamentById } from "@/actions/tournament.actions";
+import { RegisterButton } from "./_components/register-button";
+import { notFound } from "next/navigation";
 
-export default function TournamentDetailPage() {
-  const tournament = {
-    id: "1",
-    title: "National Cricket Championship 2026",
-    description: "The premier cricket tournament bringing together the best talent from across India. Compete at the national level and showcase your skills.",
-    sportCategory: "CRICKET",
-    status: "REGISTRATION_OPEN",
-    startDate: "2026-03-15",
-    endDate: "2026-03-20",
-    registrationDeadline: "2026-03-10",
-    location: "Wankhede Stadium",
-    city: "Mumbai",
-    state: "Maharashtra",
-    maxParticipants: 256,
-    totalParticipants: 128,
-    entryFee: 5000,
-    prizePool: 500000,
-    rules: "Standard BCCI rules apply. All participants must be registered with Khelo Bharat.",
-  };
+export default async function TournamentDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  
+  let tournament;
+  try {
+    tournament = await getTournamentById(id);
+  } catch (error) {
+    notFound();
+  }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-background">
       <Header />
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <div className="grid gap-8 lg:grid-cols-3">
           <div className="lg:col-span-2 space-y-6">
             <div className="rounded-xl bg-gradient-to-br from-neutral-800 to-neutral-950 p-6 text-white sm:p-8">
               <div className="flex items-center gap-2">
-                <Badge variant="success">{tournament.status.replace(/_/g, " ")}</Badge>
-                <Badge variant="secondary">{tournament.sportCategory}</Badge>
+                <Badge variant="secondary" className="bg-primary/20 text-primary border-0">{tournament.status.replace(/_/g, " ")}</Badge>
+                <Badge variant="secondary" className="border-0">{tournament.sportCategory}</Badge>
               </div>
               <h1 className="mt-4 text-2xl font-bold sm:text-3xl">{tournament.title}</h1>
               <div className="mt-4 flex flex-wrap gap-4 text-sm text-neutral-300">
@@ -65,8 +59,8 @@ export default function TournamentDetailPage() {
                 <Card>
                   <CardContent className="p-6">
                     <h3 className="text-lg font-semibold">About this Tournament</h3>
-                    <p className="mt-2 text-neutral-600 dark:text-neutral-400">
-                      {tournament.description}
+                    <p className="mt-2 text-neutral-600 dark:text-neutral-400 whitespace-pre-wrap">
+                      {tournament.description || "No description provided."}
                     </p>
                   </CardContent>
                 </Card>
@@ -75,8 +69,8 @@ export default function TournamentDetailPage() {
                 <Card>
                   <CardContent className="p-6">
                     <h3 className="text-lg font-semibold">Tournament Rules</h3>
-                    <p className="mt-2 text-neutral-600 dark:text-neutral-400">
-                      {tournament.rules}
+                    <p className="mt-2 text-neutral-600 dark:text-neutral-400 whitespace-pre-wrap">
+                      {tournament.rules || "Standard rules apply."}
                     </p>
                   </CardContent>
                 </Card>
@@ -85,7 +79,7 @@ export default function TournamentDetailPage() {
                 <Card>
                   <CardContent className="p-6">
                     <p className="text-neutral-600 dark:text-neutral-400">
-                      {tournament.totalParticipants} participants registered
+                      {tournament.totalParticipants} participants registered out of {tournament.maxParticipants || "unlimited"} spots.
                     </p>
                   </CardContent>
                 </Card>
@@ -110,32 +104,39 @@ export default function TournamentDetailPage() {
               <CardContent className="space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-neutral-500">Entry Fee</span>
-                  <span className="font-bold">₹{tournament.entryFee.toLocaleString("en-IN")}</span>
+                  <span className="font-bold">
+                    {tournament.entryFee > 0 ? `₹${tournament.entryFee.toLocaleString("en-IN")}` : "Free"}
+                  </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-neutral-500">Prize Pool</span>
-                  <span className="font-bold text-green-600">₹{tournament.prizePool.toLocaleString("en-IN")}</span>
+                  <span className="font-bold text-green-600">
+                    {tournament.prizePool > 0 ? `₹${tournament.prizePool.toLocaleString("en-IN")}` : "TBD"}
+                  </span>
                 </div>
                 <Separator />
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-neutral-500">Deadline</span>
                   <span className="text-sm">
-                    {new Date(tournament.registrationDeadline).toLocaleDateString("en-IN", {
-                      day: "numeric",
-                      month: "short",
-                      year: "numeric",
-                    })}
+                    {tournament.registrationDeadline 
+                      ? new Date(tournament.registrationDeadline).toLocaleDateString("en-IN", {
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
+                        })
+                      : "Open"
+                    }
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-neutral-500">Spots Left</span>
                   <span className="text-sm font-medium">
-                    {tournament.maxParticipants - tournament.totalParticipants}
+                    {tournament.maxParticipants ? tournament.maxParticipants - tournament.totalParticipants : "Unlimited"}
                   </span>
                 </div>
-                <Button className="w-full" size="lg">
-                  Register Now
-                </Button>
+                
+                <RegisterButton tournamentId={tournament.id} />
+                
               </CardContent>
             </Card>
 
@@ -144,8 +145,12 @@ export default function TournamentDetailPage() {
                 <CardTitle>Venue</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="h-40 rounded-lg bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center">
-                  <MapPin className="h-8 w-8 text-neutral-400" />
+                <div className="h-40 rounded-lg bg-neutral-100 flex items-center justify-center relative overflow-hidden">
+                  {tournament.poster ? (
+                    <img src={tournament.poster} alt="Venue" className="w-full h-full object-cover" />
+                  ) : (
+                    <MapPin className="h-8 w-8 text-neutral-400" />
+                  )}
                 </div>
                 <p className="mt-2 text-sm font-medium">{tournament.location}</p>
                 <p className="text-xs text-neutral-500">{tournament.city}, {tournament.state}</p>

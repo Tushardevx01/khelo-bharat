@@ -1,6 +1,6 @@
 import { DashboardLayout } from "@/components/layout/dashboard-layout";
 import { PageHeader } from "@/components/layout/page-header";
-import { CreateTournamentForm } from "../_components/create-tournament-form";
+import { CreateTournamentForm } from "@/app/(main)/tournaments/_components/create-tournament-form";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 

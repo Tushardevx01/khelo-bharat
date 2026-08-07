@@ -53,11 +53,11 @@ export function EventsClient({ events }: EventsClientProps) {
                   {event.location}
                 </div>
               </div>
-              <Button className="mt-6 w-full font-medium" asChild>
-                <Link href={`/tournaments/${event.id}`}>
+              <Link href={`/tournaments/${event.id}`} className="block mt-6">
+                <Button className="w-full font-medium">
                   View Details
-                </Link>
-              </Button>
+                </Button>
+              </Link>
             </CardContent>
           </Card>
         </motion.div>

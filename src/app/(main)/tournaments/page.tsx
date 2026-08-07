@@ -65,54 +65,56 @@ export default async function TournamentsPage({
       ) : (
         <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {tournaments.map((tournament) => (
-            <Link key={tournament.id} href={`/tournaments/${tournament.id}`}>
-              <Card className="h-full bg-card border-border transition-all hover:shadow-md shadow-sm">
-                <div className="h-40 bg-muted p-4 flex flex-col justify-between" style={tournament.poster ? { backgroundImage: `url(${tournament.poster})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}>
-                  <div className="flex justify-between items-start">
-                    <Badge className="bg-primary/10 text-primary hover:bg-primary/20 border-0">
-                      {tournament.status.replace(/_/g, " ")}
-                    </Badge>
+            <Card key={tournament.id} className="h-full bg-card border-border transition-all hover:shadow-md shadow-sm flex flex-col">
+              <div className="h-40 bg-muted p-4 flex flex-col justify-between" style={tournament.poster ? { backgroundImage: `url(${tournament.poster})`, backgroundSize: 'cover', backgroundPosition: 'center' } : {}}>
+                <div className="flex justify-between items-start">
+                  <Badge className="bg-primary/10 text-primary hover:bg-primary/20 border-0">
+                    {tournament.status.replace(/_/g, " ")}
+                  </Badge>
+                </div>
+              </div>
+              <CardContent className="p-6 relative z-10 -mt-6 bg-card rounded-t-2xl border-t border-border flex-1 flex flex-col">
+                <Badge variant="secondary" className="mb-2 border-0 w-fit">
+                  {tournament.sportCategory}
+                </Badge>
+                <h3 className="text-lg font-bold text-foreground line-clamp-1">
+                  <Link href={`/tournaments/${tournament.id}`} className="hover:underline">
+                    {tournament.title}
+                  </Link>
+                </h3>
+                <div className="mt-4 space-y-3 flex-1">
+                  <div className="flex items-center text-sm text-muted-foreground">
+                    <Calendar className="mr-3 h-4 w-4 text-primary" />
+                    {new Date(tournament.startDate).toLocaleDateString("en-IN", {
+                      day: "numeric",
+                      month: "short",
+                      year: "numeric",
+                    })}
+                  </div>
+                  <div className="flex items-center text-sm text-muted-foreground">
+                    <MapPin className="mr-3 h-4 w-4 text-primary" />
+                    {tournament.city}, {tournament.state}
+                  </div>
+                  <div className="flex items-center text-sm text-muted-foreground">
+                    <Users className="mr-3 h-4 w-4 text-primary" />
+                    {tournament.totalParticipants}/{tournament.maxParticipants || "∞"} participants
                   </div>
                 </div>
-                <CardContent className="p-6 relative z-10 -mt-6 bg-card rounded-t-2xl border-t border-border">
-                  <Badge variant="secondary" className="mb-2 border-0">
-                    {tournament.sportCategory}
-                  </Badge>
-                  <h3 className="text-lg font-bold text-foreground line-clamp-1">
-                    {tournament.title}
-                  </h3>
-                  <div className="mt-4 space-y-3">
-                    <div className="flex items-center text-sm text-muted-foreground">
-                      <Calendar className="mr-3 h-4 w-4 text-primary" />
-                      {new Date(tournament.startDate).toLocaleDateString("en-IN", {
-                        day: "numeric",
-                        month: "short",
-                        year: "numeric",
-                      })}
-                    </div>
-                    <div className="flex items-center text-sm text-muted-foreground">
-                      <MapPin className="mr-3 h-4 w-4 text-primary" />
-                      {tournament.city}, {tournament.state}
-                    </div>
-                    <div className="flex items-center text-sm text-muted-foreground">
-                      <Users className="mr-3 h-4 w-4 text-primary" />
-                      {tournament.totalParticipants}/{tournament.maxParticipants || "∞"} participants
-                    </div>
+                <div className="mt-6 flex items-center justify-between">
+                  <div>
+                    <p className="text-xs text-muted-foreground">Prize Pool</p>
+                    <p className="text-sm font-bold text-accent">
+                      ₹{tournament.prizePool.toLocaleString("en-IN")}
+                    </p>
                   </div>
-                  <div className="mt-6 flex items-center justify-between">
-                    <div>
-                      <p className="text-xs text-muted-foreground">Prize Pool</p>
-                      <p className="text-sm font-bold text-accent">
-                        ₹{tournament.prizePool.toLocaleString("en-IN")}
-                      </p>
-                    </div>
+                  <Link href={`/tournaments/${tournament.id}`}>
                     <Button size="sm" className="font-medium">
                       {tournament.status === "REGISTRATION_OPEN" ? "Register Now" : "View Details"}
                     </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            </Link>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
           ))}
         </div>
       )}
