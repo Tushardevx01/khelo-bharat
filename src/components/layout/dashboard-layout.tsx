@@ -24,8 +24,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   useEffect(() => {
     async function fetchRole() {
       try {
-        const { getCurrentUser } = await import("@/actions/user.actions");
-        const user = await getCurrentUser();
+        const { getOrCreateCurrentUser } = await import("@/actions/user.actions");
+        const user = await getOrCreateCurrentUser();
         if (user) {
           setRole(user.role);
         }
