@@ -89,7 +89,14 @@ export async function completeOnboarding(role: string) {
       await coachService.createCoachProfile(user.id, { sportCategory: "OTHER" }).catch(() => {});
     } else if (role === "SCHOOL_ADMIN") {
       const { schoolService } = await import("@/services/school.service");
-      await schoolService.createSchoolProfile(user.id, { schoolName: "My School" }).catch(() => {});
+      await schoolService.createSchoolProfile(user.id, { 
+        schoolName: "My School",
+        schoolType: "OTHER",
+        address: "Unknown",
+        city: "Unknown",
+        state: "Unknown",
+        pincode: "000000"
+      }).catch(() => {});
     } else if (role === "SPONSOR") {
       const { sponsorService } = await import("@/services/sponsor.service");
       await sponsorService.createSponsorProfile(user.id, { companyName: "My Company" }).catch(() => {});

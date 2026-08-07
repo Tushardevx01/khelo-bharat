@@ -136,7 +136,13 @@ export default async function TournamentDetailPage({
                   </span>
                 </div>
                 
-                <RegisterButton tournamentId={tournament.id} />
+                <RegisterButton 
+                  tournamentId={tournament.id} 
+                  status={tournament.status}
+                  maxParticipants={tournament.maxParticipants}
+                  totalParticipants={tournament.totalParticipants}
+                  registrationDeadline={tournament.registrationDeadline}
+                />
                 
               </CardContent>
             </Card>

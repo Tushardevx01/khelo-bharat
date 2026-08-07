@@ -12,9 +12,20 @@ import { useRouter, usePathname } from "next/navigation";
 interface RegisterButtonProps {
   tournamentId: string;
   isRegistered?: boolean;
+  status: string;
+  maxParticipants?: number | null;
+  totalParticipants: number;
+  registrationDeadline?: Date | null;
 }
 
-export function RegisterButton({ tournamentId, isRegistered = false }: RegisterButtonProps) {
+export function RegisterButton({ 
+  tournamentId, 
+  isRegistered = false,
+  status,
+  maxParticipants,
+  totalParticipants,
+  registrationDeadline
+}: RegisterButtonProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [registered, setRegistered] = useState(isRegistered);
   const { isSignedIn } = useAuth();
@@ -55,6 +66,30 @@ export function RegisterButton({ tournamentId, isRegistered = false }: RegisterB
     return (
       <Button className="w-full bg-green-500/10 text-green-500 hover:bg-green-500/20" size="lg" disabled>
         Registered
+      </Button>
+    );
+  }
+
+  if (status !== "REGISTRATION_OPEN") {
+    return (
+      <Button className="w-full bg-neutral-500/10 text-neutral-500 hover:bg-neutral-500/20 cursor-not-allowed" size="lg" disabled>
+        Registration Closed
+      </Button>
+    );
+  }
+
+  if (registrationDeadline && new Date() > new Date(registrationDeadline)) {
+    return (
+      <Button className="w-full bg-red-500/10 text-red-500 hover:bg-red-500/20 cursor-not-allowed" size="lg" disabled>
+        Deadline Passed
+      </Button>
+    );
+  }
+
+  if (maxParticipants && totalParticipants >= maxParticipants) {
+    return (
+      <Button className="w-full bg-red-500/10 text-red-500 hover:bg-red-500/20 cursor-not-allowed" size="lg" disabled>
+        Tournament Full
       </Button>
     );
   }
