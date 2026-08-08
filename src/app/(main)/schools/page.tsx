@@ -41,7 +41,7 @@ export default async function SchoolsPage({
           </div>
           <h3 className="text-xl font-bold text-foreground">No schools found</h3>
           <p className="mt-2 text-sm text-muted-foreground max-w-sm">
-            We couldn't find any schools matching your search. Check back later as more schools join the platform.
+            We couldn&apos;t find any schools matching your search. Check back later as more schools join the platform.
           </p>
         </div>
       ) : (

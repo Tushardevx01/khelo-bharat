@@ -11,3 +11,5 @@ export { performanceService } from "./performance.service";
 export { achievementService } from "./achievement.service";
 export { sponsorshipService } from "./sponsorship.service";
 export { galleryService } from "./gallery.service";
+export { auditService } from "./audit.service";
+export { platformService } from "./platform.service";

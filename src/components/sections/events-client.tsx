@@ -1,14 +1,15 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Calendar, MapPin, Users } from "lucide-react";
+import { Calendar, MapPin } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import Link from "next/link";
+import type { getAllTournaments } from "@/actions/tournament.actions";
 
 interface EventsClientProps {
-  events: any[];
+  events: Awaited<ReturnType<typeof getAllTournaments>>["data"];
 }
 
 export function EventsClient({ events }: EventsClientProps) {

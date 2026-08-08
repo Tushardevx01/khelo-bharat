@@ -85,41 +85,85 @@ enum MatchStatus {
   POSTPONED
 }
 
+enum SchoolMemberRole {
+  ADMIN
+  COACH
+  ATHLETE
+  STAFF
+}
+
+enum RelationshipStatus {
+  PENDING
+  ACTIVE
+  DECLINED
+  ENDED
+}
+
+enum SponsorshipRequestStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  WITHDRAWN
+  EXPIRED
+}
+
+enum ReportStatus {
+  OPEN
+  UNDER_REVIEW
+  RESOLVED
+  DISMISSED
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+  EXCUSED
+}
+
 // ─── Models ─────────────────────────────────────────────────────────────────
 
 model User {
-  id              String    @id @default(uuid())
-  clerkId         String    @unique
-  role            UserRole
-  email           String    @unique
-  name            String
-  phone           String?
-  avatar          String?
-  bio             String?
-  dateOfBirth     DateTime?
-  gender          Gender?
-  location        String?
-  latitude        Float?
-  longitude       Float?
-  isVerified      Boolean   @default(false)
-  isActive        Boolean   @default(true)
-  lastLoginAt     DateTime?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
-  deletedAt       DateTime?
+  id          String    @id @default(uuid())
+  clerkId     String    @unique
+  role        UserRole
+  email       String    @unique
+  name        String
+  phone       String?
+  avatar      String?
+  bio         String?
+  dateOfBirth DateTime?
+  gender      Gender?
+  location    String?
+  latitude    Float?
+  longitude   Float?
+  isVerified  Boolean   @default(false)
+  isActive    Boolean   @default(true)
+  lastLoginAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
 
-  athlete         Athlete?
-  school          School?
-  coach           Coach?
-  sponsor         Sponsor?
+  athlete Athlete?
+  school  School?
+  coach   Coach?
+  sponsor Sponsor?
 
-  certificates    Certificate[]
-  notifications   Notification[]
-  sentMessages    Message[]       @relation("Sender")
-  receivedMessages Message[]      @relation("Receiver")
-  galleries       Gallery[]
-  auditLogs       AuditLog[]
-  tournaments     Tournament[]
+  certificates             Certificate[]
+  notifications            Notification[]
+  sentMessages             Message[]                 @relation("Sender")
+  receivedMessages         Message[]                 @relation("Receiver")
+  galleries                Gallery[]
+  auditLogs                AuditLog[]
+  tournaments              Tournament[]
+  schoolMemberships        SchoolMember[]
+  tournamentOrganizerRoles TournamentOrganizer[]
+  conversationParticipants ConversationParticipant[]
+  reportedReports          Report[]                  @relation("ReporterReports")
+  subjectReports           Report[]                  @relation("SubjectReports")
+  moderatedReports         Report[]                  @relation("ModeratorReports")
+  updatedPlatformSettings  PlatformSetting[]         @relation("SettingsUpdatedBy")
+  contactMessages          ContactMessage[]
 
   @@index([email])
   @@index([clerkId])
@@ -128,28 +172,32 @@ model User {
 }
 
 model Athlete {
-  id              String    @id @default(uuid())
-  userId          String    @unique
-  sportCategory   SportCategory
-  schoolId        String?
-  coachId         String?
-  height          Float?
-  weight          Float?
-  experience      Int       @default(0)
-  achievementsCount Int     @default(0)
-  ranking         Int?
-  isFeatured      Boolean   @default(false)
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  id                String        @id @default(uuid())
+  userId            String        @unique
+  sportCategory     SportCategory
+  schoolId          String?
+  coachId           String?
+  height            Float?
+  weight            Float?
+  experience        Int           @default(0)
+  achievementsCount Int           @default(0)
+  ranking           Int?
+  isFeatured        Boolean       @default(false)
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
 
-  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  school          School?   @relation(fields: [schoolId], references: [id], onDelete: SetNull)
-  coach           Coach?    @relation(fields: [coachId], references: [id], onDelete: SetNull)
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  school School? @relation(fields: [schoolId], references: [id], onDelete: SetNull)
+  coach  Coach?  @relation(fields: [coachId], references: [id], onDelete: SetNull)
 
-  performances    Performance[]
-  achievements    Achievement[]
-  sponsorships    Sponsorship[]
-  registrations   TournamentRegistration[]
+  performances        Performance[]
+  achievements        Achievement[]
+  sponsorships        Sponsorship[]
+  registrations       TournamentRegistration[]
+  sports              AthleteSport[]
+  coachRelationships  CoachAthlete[]
+  trainingRecords     TrainingRecord[]
+  sponsorshipRequests SponsorshipRequest[]
 
   @@index([userId])
   @@index([sportCategory])
@@ -160,30 +208,33 @@ model Athlete {
 }
 
 model School {
-  id                  String    @id @default(uuid())
-  userId              String    @unique
-  schoolName          String
-  schoolType          String?
-  address             String?
-  city                String?
-  state               String?
-  pincode             String?
-  latitude            Float?
-  longitude           Float?
-  website             String?
-  principalName       String?
-  establishedYear     Int?
-  totalStudents       Int       @default(0)
-  sportsFacilities    String[]
-  isVerified          Boolean   @default(false)
-  rating              Float     @default(0)
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
-  deletedAt           DateTime?
+  id               String    @id @default(uuid())
+  userId           String    @unique
+  schoolName       String
+  schoolType       String?
+  address          String?
+  city             String?
+  state            String?
+  pincode          String?
+  latitude         Float?
+  longitude        Float?
+  website          String?
+  principalName    String?
+  establishedYear  Int?
+  totalStudents    Int       @default(0)
+  sportsFacilities String[]
+  isVerified       Boolean   @default(false)
+  rating           Float     @default(0)
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  deletedAt        DateTime?
 
-  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  athletes            Athlete[]
-  sponsorships        Sponsorship[]
+  user             User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  athletes         Athlete[]
+  sponsorships     Sponsorship[]
+  members          SchoolMember[]
+  sports           SchoolSport[]
+  trainingSessions TrainingSession[]
 
   @@index([userId])
   @@index([city, state])
@@ -191,21 +242,24 @@ model School {
 }
 
 model Coach {
-  id              String    @id @default(uuid())
-  userId          String    @unique
-  sportCategory   SportCategory
-  specialization  String?
-  certifications  String[]
-  experience      Int       @default(0)
-  rating          Float     @default(0)
-  hourlyRate      Float?
-  isAvailable     Boolean   @default(true)
-  athletesCount   Int       @default(0)
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  id             String        @id @default(uuid())
+  userId         String        @unique
+  sportCategory  SportCategory
+  specialization String?
+  certifications String[]
+  experience     Int           @default(0)
+  rating         Float         @default(0)
+  hourlyRate     Float?
+  isAvailable    Boolean       @default(true)
+  athletesCount  Int           @default(0)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
 
-  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  athletes        Athlete[]
+  user               User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  athletes           Athlete[]
+  coachRelationships CoachAthlete[]
+  trainingSessions   TrainingSession[]
+  trainingRecords    TrainingRecord[]
 
   @@index([userId])
   @@index([sportCategory])
@@ -213,22 +267,24 @@ model Coach {
 }
 
 model Sponsor {
-  id                  String    @id @default(uuid())
-  userId              String    @unique
-  companyName         String
-  companyType         String?
-  industry            String?
-  budget              Float?
-  website             String?
-  logo                String?
-  isVerified          Boolean   @default(false)
-  totalSponsored      Float     @default(0)
-  activeSponsorships  Int       @default(0)
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
+  id                 String   @id @default(uuid())
+  userId             String   @unique
+  companyName        String
+  companyType        String?
+  industry           String?
+  budget             Float?
+  website            String?
+  logo               String?
+  isVerified         Boolean  @default(false)
+  totalSponsored     Float    @default(0)
+  activeSponsorships Int      @default(0)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
 
-  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user                User                  @relation(fields: [userId], references: [id], onDelete: Cascade)
   sponsorships        Sponsorship[]
+  sponsorshipRequests SponsorshipRequest[]
+  campaigns           SponsorshipCampaign[]
 
   @@index([userId])
   @@index([companyName])
@@ -236,38 +292,42 @@ model Sponsor {
 }
 
 model Tournament {
-  id                    String    @id @default(uuid())
-  organizerId           String
-  title                 String
-  description           String?
-  sportCategory         SportCategory
-  status                TournamentStatus @default(DRAFT)
-  startDate             DateTime
-  endDate               DateTime
-  registrationDeadline  DateTime?
-  location              String?
-  city                  String?
-  state                 String?
-  latitude              Float?
-  longitude             Float?
-  maxParticipants       Int?
-  entryFee              Float     @default(0)
-  prizePool             Float     @default(0)
-  rules                 String?
-  poster                String?
-  isFeatured            Boolean   @default(false)
-  totalParticipants     Int       @default(0)
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
-  deletedAt             DateTime?
+  id                   String           @id @default(uuid())
+  organizerId          String
+  title                String
+  description          String?
+  sportCategory        SportCategory
+  status               TournamentStatus @default(DRAFT)
+  startDate            DateTime
+  endDate              DateTime
+  registrationDeadline DateTime?
+  location             String?
+  city                 String?
+  state                String?
+  latitude             Float?
+  longitude            Float?
+  maxParticipants      Int?
+  entryFee             Float            @default(0)
+  prizePool            Float            @default(0)
+  rules                String?
+  results              String?
+  poster               String?
+  isFeatured           Boolean          @default(false)
+  totalParticipants    Int              @default(0)
+  createdAt            DateTime         @default(now())
+  updatedAt            DateTime         @updatedAt
+  deletedAt            DateTime?
 
-  organizer             User      @relation(fields: [organizerId], references: [id], onDelete: Cascade)
-  registrations         TournamentRegistration[]
-  matches               Match[]
-  performances          Performance[]
-  certificates          Certificate[]
-  galleries             Gallery[]
-  sponsorships          Sponsorship[]
+  organizer      User                     @relation(fields: [organizerId], references: [id], onDelete: Cascade)
+  registrations  TournamentRegistration[]
+  matches        Match[]
+  performances   Performance[]
+  certificates   Certificate[]
+  galleries      Gallery[]
+  sponsorships   Sponsorship[]
+  organizerRoles TournamentOrganizer[]
+  venueId        String?
+  venue          TournamentVenue?         @relation(fields: [venueId], references: [id], onDelete: SetNull)
 
   @@index([organizerId])
   @@index([sportCategory])
@@ -276,20 +336,21 @@ model Tournament {
   @@index([isFeatured])
   @@index([city, state])
   @@index([deletedAt])
+  @@index([venueId])
 }
 
 model TournamentRegistration {
-  id              String    @id @default(uuid())
-  tournamentId    String
-  athleteId       String
-  teamName        String?
-  status          String    @default("PENDING")
-  registeredAt    DateTime  @default(now())
-  paymentStatus   String    @default("PENDING")
-  paymentAmount   Float     @default(0)
+  id            String   @id @default(uuid())
+  tournamentId  String
+  athleteId     String
+  teamName      String?
+  status        String   @default("PENDING")
+  registeredAt  DateTime @default(now())
+  paymentStatus String   @default("PENDING")
+  paymentAmount Float    @default(0)
 
-  tournament      Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
-  athlete         Athlete   @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+  tournament Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  athlete    Athlete    @relation(fields: [athleteId], references: [id], onDelete: Cascade)
 
   @@unique([tournamentId, athleteId])
   @@index([tournamentId])
@@ -298,23 +359,23 @@ model TournamentRegistration {
 }
 
 model Match {
-  id              String    @id @default(uuid())
-  tournamentId    String
-  round           Int?
-  matchNumber     Int?
-  player1Id       String?
-  player2Id       String?
-  winnerId        String?
-  score           String?
-  status          MatchStatus @default(SCHEDULED)
-  scheduledAt     DateTime?
-  completedAt     DateTime?
-  venue           String?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  id           String      @id @default(uuid())
+  tournamentId String
+  round        Int?
+  matchNumber  Int?
+  player1Id    String?
+  player2Id    String?
+  winnerId     String?
+  score        String?
+  status       MatchStatus @default(SCHEDULED)
+  scheduledAt  DateTime?
+  completedAt  DateTime?
+  venue        String?
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
 
-  tournament      Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
-  performances    Performance[]
+  tournament   Tournament    @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  performances Performance[]
 
   @@index([tournamentId])
   @@index([player1Id])
@@ -325,21 +386,21 @@ model Match {
 }
 
 model Performance {
-  id              String    @id @default(uuid())
-  athleteId       String
-  tournamentId    String?
-  matchId         String?
-  sport           SportCategory
-  score           Float?
-  rank            Int?
-  stats           Json?
-  notes           String?
-  date            DateTime  @default(now())
-  createdAt       DateTime  @default(now())
+  id           String        @id @default(uuid())
+  athleteId    String
+  tournamentId String?
+  matchId      String?
+  sport        SportCategory
+  score        Float?
+  rank         Int?
+  stats        Json?
+  notes        String?
+  date         DateTime      @default(now())
+  createdAt    DateTime      @default(now())
 
-  athlete         Athlete   @relation(fields: [athleteId], references: [id], onDelete: Cascade)
-  tournament      Tournament? @relation(fields: [tournamentId], references: [id], onDelete: SetNull)
-  match           Match?    @relation(fields: [matchId], references: [id], onDelete: SetNull)
+  athlete    Athlete     @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+  tournament Tournament? @relation(fields: [tournamentId], references: [id], onDelete: SetNull)
+  match      Match?      @relation(fields: [matchId], references: [id], onDelete: SetNull)
 
   @@index([athleteId])
   @@index([tournamentId])
@@ -349,22 +410,22 @@ model Performance {
 }
 
 model Certificate {
-  id              String    @id @default(uuid())
-  userId          String
-  tournamentId    String?
-  title           String
-  description     String?
-  certificateType String?
-  status          CertificateStatus @default(PENDING)
-  certificateUrl  String?
-  issuedAt        DateTime?
-  expiresAt       DateTime?
-  verificationCode String  @unique
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  id               String            @id @default(uuid())
+  userId           String
+  tournamentId     String?
+  title            String
+  description      String?
+  certificateType  String?
+  status           CertificateStatus @default(PENDING)
+  certificateUrl   String?
+  issuedAt         DateTime?
+  expiresAt        DateTime?
+  verificationCode String            @unique
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
 
-  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tournament      Tournament? @relation(fields: [tournamentId], references: [id], onDelete: SetNull)
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tournament Tournament? @relation(fields: [tournamentId], references: [id], onDelete: SetNull)
 
   @@index([userId])
   @@index([tournamentId])
@@ -373,19 +434,19 @@ model Certificate {
 }
 
 model Achievement {
-  id              String    @id @default(uuid())
-  athleteId       String
-  title           String
-  description     String?
-  sport           SportCategory
-  date            DateTime?
-  image           String?
-  verifiedBy      String?
-  isVerified      Boolean   @default(false)
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  id          String        @id @default(uuid())
+  athleteId   String
+  title       String
+  description String?
+  sport       SportCategory
+  date        DateTime?
+  image       String?
+  verifiedBy  String?
+  isVerified  Boolean       @default(false)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 
-  athlete         Athlete   @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+  athlete Athlete @relation(fields: [athleteId], references: [id], onDelete: Cascade)
 
   @@index([athleteId])
   @@index([sport])
@@ -394,25 +455,25 @@ model Achievement {
 }
 
 model Sponsorship {
-  id              String    @id @default(uuid())
-  sponsorId       String
-  athleteId       String?
-  schoolId        String?
-  tournamentId    String?
-  amount          Float
-  startDate       DateTime
-  endDate         DateTime
-  status          SponsorStatus @default(PENDING)
-  terms           String?
-  logo            String?
-  metrics         Json?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  id           String        @id @default(uuid())
+  sponsorId    String
+  athleteId    String?
+  schoolId     String?
+  tournamentId String?
+  amount       Float
+  startDate    DateTime
+  endDate      DateTime
+  status       SponsorStatus @default(PENDING)
+  terms        String?
+  logo         String?
+  metrics      Json?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
 
-  sponsor         Sponsor   @relation(fields: [sponsorId], references: [id], onDelete: Cascade)
-  athlete         Athlete?  @relation(fields: [athleteId], references: [id], onDelete: SetNull)
-  school          School?   @relation(fields: [schoolId], references: [id], onDelete: SetNull)
-  tournament      Tournament? @relation(fields: [tournamentId], references: [id], onDelete: SetNull)
+  sponsor    Sponsor     @relation(fields: [sponsorId], references: [id], onDelete: Cascade)
+  athlete    Athlete?    @relation(fields: [athleteId], references: [id], onDelete: SetNull)
+  school     School?     @relation(fields: [schoolId], references: [id], onDelete: SetNull)
+  tournament Tournament? @relation(fields: [tournamentId], references: [id], onDelete: SetNull)
 
   @@index([sponsorId])
   @@index([athleteId])
@@ -423,37 +484,40 @@ model Sponsorship {
 }
 
 model Message {
-  id              String    @id @default(uuid())
-  senderId        String
-  receiverId      String
-  content         String
-  isRead          Boolean   @default(false)
-  readAt          DateTime?
-  createdAt       DateTime  @default(now())
-  deletedAt       DateTime?
+  id             String    @id @default(uuid())
+  senderId       String
+  receiverId     String
+  content        String
+  isRead         Boolean   @default(false)
+  readAt         DateTime?
+  createdAt      DateTime  @default(now())
+  deletedAt      DateTime?
+  conversationId String?
 
-  sender          User      @relation("Sender", fields: [senderId], references: [id], onDelete: Cascade)
-  receiver        User      @relation("Receiver", fields: [receiverId], references: [id], onDelete: Cascade)
+  sender       User          @relation("Sender", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver     User          @relation("Receiver", fields: [receiverId], references: [id], onDelete: Cascade)
+  conversation Conversation? @relation(fields: [conversationId], references: [id], onDelete: SetNull)
 
   @@index([senderId])
   @@index([receiverId])
   @@index([createdAt])
   @@index([isRead])
   @@index([deletedAt])
+  @@index([conversationId, createdAt])
 }
 
 model Notification {
-  id              String    @id @default(uuid())
-  userId          String
-  type            NotificationType
-  title           String
-  message         String
-  data            Json?
-  isRead          Boolean   @default(false)
-  readAt          DateTime?
-  createdAt       DateTime  @default(now())
+  id        String           @id @default(uuid())
+  userId    String
+  type      NotificationType
+  title     String
+  message   String
+  data      Json?
+  isRead    Boolean          @default(false)
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
 
-  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([type])
@@ -462,18 +526,18 @@ model Notification {
 }
 
 model Gallery {
-  id              String    @id @default(uuid())
-  userId          String
-  tournamentId    String?
-  title           String?
-  description     String?
-  mediaUrl        String
-  mediaType       String    @default("IMAGE")
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  id           String   @id @default(uuid())
+  userId       String
+  tournamentId String?
+  title        String?
+  description  String?
+  mediaUrl     String
+  mediaType    String   @default("IMAGE")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
-  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tournament      Tournament? @relation(fields: [tournamentId], references: [id], onDelete: SetNull)
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tournament Tournament? @relation(fields: [tournamentId], references: [id], onDelete: SetNull)
 
   @@index([userId])
   @@index([tournamentId])
@@ -482,21 +546,280 @@ model Gallery {
 }
 
 model AuditLog {
-  id              String    @id @default(uuid())
-  userId          String?
-  action          String
-  entity          String
-  entityId        String?
-  oldData         Json?
-  newData         Json?
-  ipAddress       String?
-  userAgent       String?
-  createdAt       DateTime  @default(now())
+  id        String   @id @default(uuid())
+  userId    String?
+  action    String
+  entity    String
+  entityId  String?
+  oldData   Json?
+  newData   Json?
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
 
-  user            User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@index([userId])
   @@index([entity, entityId])
   @@index([action])
   @@index([createdAt])
+}
+
+model Sport {
+  id            String         @id @default(uuid())
+  name          String         @unique
+  category      SportCategory  @unique
+  description   String?
+  isActive      Boolean        @default(true)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  athleteSports AthleteSport[]
+  schoolSports  SchoolSport[]
+
+  @@index([isActive])
+}
+
+model AthleteSport {
+  id        String   @id @default(uuid())
+  athleteId String
+  sportId   String
+  position  String?
+  isPrimary Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  athlete Athlete @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+  sport   Sport   @relation(fields: [sportId], references: [id], onDelete: Restrict)
+
+  @@unique([athleteId, sportId])
+  @@index([sportId, isPrimary])
+}
+
+model SchoolMember {
+  id        String           @id @default(uuid())
+  schoolId  String
+  userId    String
+  role      SchoolMemberRole
+  joinedAt  DateTime         @default(now())
+  leftAt    DateTime?
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  school School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([schoolId, userId])
+  @@index([userId, role])
+  @@index([schoolId, role])
+}
+
+model SchoolSport {
+  id        String   @id @default(uuid())
+  schoolId  String
+  sportId   String
+  createdAt DateTime @default(now())
+
+  school School @relation(fields: [schoolId], references: [id], onDelete: Cascade)
+  sport  Sport  @relation(fields: [sportId], references: [id], onDelete: Restrict)
+
+  @@unique([schoolId, sportId])
+  @@index([sportId])
+}
+
+model CoachAthlete {
+  id        String             @id @default(uuid())
+  coachId   String
+  athleteId String
+  status    RelationshipStatus @default(PENDING)
+  notes     String?
+  startedAt DateTime?
+  endedAt   DateTime?
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+
+  coach   Coach   @relation(fields: [coachId], references: [id], onDelete: Cascade)
+  athlete Athlete @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+
+  @@unique([coachId, athleteId])
+  @@index([athleteId, status])
+  @@index([coachId, status])
+}
+
+model TrainingSession {
+  id          String   @id @default(uuid())
+  coachId     String
+  schoolId    String?
+  title       String
+  description String?
+  startsAt    DateTime
+  endsAt      DateTime
+  location    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  coach   Coach            @relation(fields: [coachId], references: [id], onDelete: Cascade)
+  school  School?          @relation(fields: [schoolId], references: [id], onDelete: SetNull)
+  records TrainingRecord[]
+
+  @@index([coachId, startsAt])
+  @@index([schoolId, startsAt])
+}
+
+model TrainingRecord {
+  id         String           @id @default(uuid())
+  sessionId  String
+  athleteId  String
+  coachId    String
+  attendance AttendanceStatus @default(PRESENT)
+  feedback   String?
+  notes      String?
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+
+  session TrainingSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  athlete Athlete         @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+  coach   Coach           @relation(fields: [coachId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, athleteId])
+  @@index([athleteId, createdAt])
+  @@index([coachId, createdAt])
+}
+
+model TournamentVenue {
+  id        String   @id @default(uuid())
+  name      String
+  address   String
+  city      String
+  district  String?
+  state     String
+  country   String   @default("India")
+  latitude  Float
+  longitude Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tournaments Tournament[]
+
+  @@index([city, state])
+  @@index([latitude, longitude])
+}
+
+model TournamentOrganizer {
+  id           String   @id @default(uuid())
+  tournamentId String
+  userId       String
+  role         String   @default("ORGANIZER")
+  createdAt    DateTime @default(now())
+
+  tournament Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([tournamentId, userId])
+  @@index([userId])
+}
+
+model SponsorshipRequest {
+  id          String                   @id @default(uuid())
+  sponsorId   String
+  athleteId   String
+  message     String                   @db.Text
+  status      SponsorshipRequestStatus @default(PENDING)
+  respondedAt DateTime?
+  createdAt   DateTime                 @default(now())
+  updatedAt   DateTime                 @updatedAt
+
+  sponsor Sponsor @relation(fields: [sponsorId], references: [id], onDelete: Cascade)
+  athlete Athlete @relation(fields: [athleteId], references: [id], onDelete: Cascade)
+
+  @@unique([sponsorId, athleteId])
+  @@index([athleteId, status])
+  @@index([sponsorId, status])
+}
+
+model SponsorshipCampaign {
+  id          String    @id @default(uuid())
+  sponsorId   String
+  name        String
+  description String?
+  startsAt    DateTime?
+  endsAt      DateTime?
+  budget      Decimal?  @db.Decimal(14, 2)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  sponsor Sponsor @relation(fields: [sponsorId], references: [id], onDelete: Cascade)
+
+  @@index([sponsorId, startsAt])
+}
+
+model Conversation {
+  id        String   @id @default(uuid())
+  directKey String?  @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  participants ConversationParticipant[]
+  messages     Message[]
+}
+
+model ConversationParticipant {
+  id             String    @id @default(uuid())
+  conversationId String
+  userId         String
+  lastReadAt     DateTime?
+  createdAt      DateTime  @default(now())
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([conversationId, userId])
+  @@index([userId, lastReadAt])
+}
+
+model Report {
+  id            String       @id @default(uuid())
+  reporterId    String
+  subjectUserId String?
+  reason        String       @db.Text
+  status        ReportStatus @default(OPEN)
+  resolution    String?
+  moderatedById String?
+  resolvedAt    DateTime?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  reporter    User  @relation("ReporterReports", fields: [reporterId], references: [id], onDelete: Cascade)
+  subjectUser User? @relation("SubjectReports", fields: [subjectUserId], references: [id], onDelete: SetNull)
+  moderatedBy User? @relation("ModeratorReports", fields: [moderatedById], references: [id], onDelete: SetNull)
+
+  @@index([status, createdAt])
+  @@index([subjectUserId])
+}
+
+model ContactMessage {
+  id         String    @id @default(uuid())
+  userId     String?
+  name       String
+  email      String
+  subject    String
+  message    String    @db.Text
+  createdAt  DateTime  @default(now())
+  resolvedAt DateTime?
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
+  @@index([resolvedAt])
+}
+
+model PlatformSetting {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  value       Json
+  description String?
+  updatedById String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  updatedBy User? @relation("SettingsUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
 }

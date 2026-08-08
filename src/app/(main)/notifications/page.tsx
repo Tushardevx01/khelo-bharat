@@ -18,14 +18,9 @@ const getIcon = (type: string) => {
 };
 
 export default async function NotificationsPage() {
-  let notifications: any[] = [];
-  try {
-    notifications = await getNotifications();
-  } catch (error) {
-    // User might not be logged in or have profile set up
-  }
+  const notifications = await getNotifications().catch(() => []);
 
-  const hasUnread = notifications.some((n) => !n.read);
+  const hasUnread = notifications.some((notification) => !notification.isRead);
 
   return (
     <DashboardLayout>
@@ -45,7 +40,7 @@ export default async function NotificationsPage() {
             </div>
             <h3 className="text-xl font-bold text-foreground">No notifications</h3>
             <p className="mt-2 text-sm text-muted-foreground max-w-sm">
-              You're all caught up! We'll notify you when there's new activity on your account.
+              You&apos;re all caught up. We&apos;ll notify you when there&apos;s new activity on your account.
             </p>
           </div>
         ) : (
@@ -56,7 +51,7 @@ export default async function NotificationsPage() {
                 <Card
                   key={notification.id}
                   className={`transition-all hover:shadow-md bg-card border-border ${
-                    !notification.read ? "border-l-4 border-l-primary" : ""
+                    !notification.isRead ? "border-l-4 border-l-primary" : ""
                   }`}
                 >
                   <CardContent className="p-4">
@@ -66,14 +61,14 @@ export default async function NotificationsPage() {
                       </div>
                       <div className="flex-1">
                         <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
-                          <p className={`text-sm font-medium ${!notification.read ? "text-foreground" : "text-muted-foreground"}`}>
+                          <p className={`text-sm font-medium ${!notification.isRead ? "text-foreground" : "text-muted-foreground"}`}>
                             {notification.title}
                           </p>
                           <span className="text-xs text-muted-foreground whitespace-nowrap">
                             {formatDistanceToNow(new Date(notification.createdAt), { addSuffix: true })}
                           </span>
                         </div>
-                        <p className={`mt-1 text-sm ${!notification.read ? "text-muted-foreground" : "text-muted-foreground/80"}`}>
+                        <p className={`mt-1 text-sm ${!notification.isRead ? "text-muted-foreground" : "text-muted-foreground/80"}`}>
                           {notification.message}
                         </p>
                       </div>

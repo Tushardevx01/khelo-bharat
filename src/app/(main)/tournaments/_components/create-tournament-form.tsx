@@ -78,8 +78,8 @@ export function CreateTournamentForm() {
 
       const tournament = await createTournament(data);
       router.push(`/tournaments/${tournament.id}`);
-    } catch (err: any) {
-      setError(err.message || "Failed to create tournament");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to create tournament");
       setIsSubmitting(false);
     }
   }

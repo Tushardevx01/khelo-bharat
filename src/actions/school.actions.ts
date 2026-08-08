@@ -1,13 +1,13 @@
 "use server";
 
-import { auth } from "@clerk/nextjs/server";
 import { schoolService } from "@/services/school.service";
+import { ForbiddenError } from "@/lib/errors";
+import { requireCurrentUser, requireRole } from "@/lib/auth";
+import { createSchoolSchema } from "@/schemas/profile.schema";
 
 export async function getSchoolProfile() {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
-
-  return schoolService.getSchoolByUserId(userId);
+  const user = await requireCurrentUser();
+  return schoolService.getSchoolByUserId(user.id);
 }
 
 export async function getSchoolById(id: string) {
@@ -29,25 +29,20 @@ export async function createSchoolProfile(data: {
   totalStudents?: number;
   sportsFacilities?: string[];
 }) {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
-
-  return schoolService.createSchoolProfile(userId, data);
+  const user = await requireRole("SCHOOL_ADMIN");
+  return schoolService.createSchoolProfile(user.id, createSchoolSchema.parse(data));
 }
 
 async function verifySchoolOwnership(schoolId: string) {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
-
-  const { userService } = await import("@/services/user.service");
-  const user = await userService.getUserByClerkId(userId);
+  const user = await requireCurrentUser();
   
-  if (user.role === "SUPER_ADMIN") return;
+  if (user.role === "SUPER_ADMIN") return user;
 
   const school = await schoolService.getSchoolById(schoolId);
   if (school.userId !== user.id) {
-    throw new Error("Forbidden: You do not have permission to modify this school profile");
+    throw new ForbiddenError("You do not have permission to modify this school profile");
   }
+  return user;
 }
 
 export async function updateSchoolProfile(id: string, data: Record<string, unknown>) {

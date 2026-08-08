@@ -26,6 +26,10 @@ export class AthleteRepository {
         school: { select: { id: true, schoolName: true } },
         coach: { include: { user: { select: { name: true } } } },
         achievements: { orderBy: { date: "desc" } },
+        sports: { include: { sport: true } },
+        coachRelationships: { include: { coach: { include: { user: true } } } },
+        sponsorshipRequests: { include: { sponsor: true } },
+        registrations: { include: { tournament: true } },
       },
     });
     return athlete;

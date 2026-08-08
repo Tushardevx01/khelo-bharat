@@ -23,6 +23,28 @@ export class CoachRepository {
     });
   }
 
+  async findDashboardByUserId(userId: string) {
+    return prisma.coach.findUnique({
+      where: { userId },
+      select: {
+        id: true,
+        rating: true,
+        athletes: {
+          select: { id: true, sportCategory: true, user: { select: { name: true, avatar: true } } },
+          take: 5,
+          orderBy: { createdAt: "desc" },
+        },
+        _count: { select: { athletes: true, coachRelationships: { where: { status: "ACTIVE" } } } },
+        trainingSessions: {
+          where: { startsAt: { gte: new Date() } },
+          select: { id: true, title: true, startsAt: true, endsAt: true, _count: { select: { records: true } } },
+          take: 5,
+          orderBy: { startsAt: "asc" },
+        },
+      },
+    });
+  }
+
   async create(data: Prisma.CoachCreateInput) {
     return prisma.coach.create({ data });
   }

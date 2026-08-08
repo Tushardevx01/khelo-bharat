@@ -9,11 +9,15 @@ import { Send, Search, ArrowLeft } from "lucide-react";
 import { useState, useTransition, useEffect, useRef } from "react";
 import { sendMessage, markAsRead } from "@/actions/message.actions";
 import { useRouter } from "next/navigation";
+import type { getConversation, getConversations } from "@/actions/message.actions";
+
+type Conversation = Awaited<ReturnType<typeof getConversations>>[number];
+type Message = Awaited<ReturnType<typeof getConversation>>[number];
 
 interface MessagesViewProps {
-  conversations: any[];
+  conversations: Conversation[];
   activeChatId?: string;
-  activeMessages: any[];
+  activeMessages: Message[];
   currentUserId: string;
 }
 
@@ -30,13 +34,15 @@ export function MessagesView({ conversations, activeChatId, activeMessages, curr
     }
   }, [activeMessages]);
 
-  const activeConversation = conversations.find(c => {
+  const activeConversation = conversations.find((c) => {
+    if (!c.lastMessage) return false;
     const otherUser = c.lastMessage.senderId === currentUserId ? c.lastMessage.receiver : c.lastMessage.sender;
     return otherUser.id === activeChatId;
   });
 
-  const otherUser = activeConversation 
-    ? (activeConversation.lastMessage.senderId === currentUserId ? activeConversation.lastMessage.receiver : activeConversation.lastMessage.sender) 
+  const activeLastMessage = activeConversation?.lastMessage;
+  const otherUser = activeLastMessage
+    ? (activeLastMessage.senderId === currentUserId ? activeLastMessage.receiver : activeLastMessage.sender)
     : null;
 
   const handleSend = async (e: React.FormEvent) => {
@@ -77,6 +83,7 @@ export function MessagesView({ conversations, activeChatId, activeMessages, curr
             </div>
           ) : (
             conversations.map((conv) => {
+              if (!conv.lastMessage) return null;
               const other = conv.lastMessage.senderId === currentUserId ? conv.lastMessage.receiver : conv.lastMessage.sender;
               return (
                 <div

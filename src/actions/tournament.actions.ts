@@ -3,6 +3,10 @@
 import { auth } from "@clerk/nextjs/server";
 import { tournamentService } from "@/services/tournament.service";
 import { TournamentStatus, SportCategory } from "@prisma/client";
+import { ForbiddenError, UnauthorizedError, ValidationError } from "@/lib/errors";
+import { requireCurrentUser, requireRole } from "@/lib/auth";
+import { createTournamentSchema, tournamentRegistrationSchema, updateTournamentSchema } from "@/schemas/tournament.schema";
+import { revalidatePath } from "next/cache";
 
 export async function createTournament(data: {
   title: string;
@@ -22,16 +26,15 @@ export async function createTournament(data: {
   rules?: string;
   poster?: string;
 }) {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
+  const user = await requireRole("SCHOOL_ADMIN", "SUPER_ADMIN");
+  const input = createTournamentSchema.parse(data);
 
-  const { userService } = await import("@/services/user.service");
-  const user = await userService.getUserByClerkId(userId);
-
-  return tournamentService.createTournament({
-    ...data,
+  const tournament = await tournamentService.createTournament({
+    ...input,
     organizerId: user.id,
   });
+  revalidatePath("/tournaments");
+  return tournament;
 }
 
 export async function getTournamentById(id: string) {
@@ -39,33 +42,41 @@ export async function getTournamentById(id: string) {
 }
 
 async function verifyTournamentOwnership(tournamentId: string) {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
-
-  const { userService } = await import("@/services/user.service");
-  const user = await userService.getUserByClerkId(userId);
+  const user = await requireCurrentUser();
   
   if (user.role === "SUPER_ADMIN") return;
 
   const tournament = await tournamentService.getTournamentById(tournamentId);
   if (tournament.organizerId !== user.id) {
-    throw new Error("Forbidden: You do not have permission to modify this tournament");
+    throw new ForbiddenError("You do not have permission to modify this tournament");
   }
+  return user;
 }
 
 export async function updateTournament(id: string, data: Record<string, unknown>) {
   await verifyTournamentOwnership(id);
-  return tournamentService.updateTournament(id, data);
+  const tournament = await tournamentService.updateTournament(id, updateTournamentSchema.parse(data));
+  revalidatePath(`/tournaments/${id}`);
+  revalidatePath("/tournaments");
+  return tournament;
 }
 
 export async function updateTournamentStatus(id: string, status: TournamentStatus) {
   await verifyTournamentOwnership(id);
-  return tournamentService.updateStatus(id, status);
+  if (!Object.values(TournamentStatus).includes(status)) {
+    throw new ValidationError("Invalid tournament status");
+  }
+  const tournament = await tournamentService.updateStatus(id, status);
+  revalidatePath(`/tournaments/${id}`);
+  revalidatePath("/tournaments");
+  return tournament;
 }
 
 export async function deleteTournament(id: string) {
   await verifyTournamentOwnership(id);
-  return tournamentService.deleteTournament(id);
+  const tournament = await tournamentService.deleteTournament(id);
+  revalidatePath("/tournaments");
+  return tournament;
 }
 
 export async function getAllTournaments(
@@ -77,45 +88,29 @@ export async function getAllTournaments(
     organizerId?: string;
     city?: string;
     state?: string;
+    search?: string;
   }
 ) {
-  return tournamentService.getAllTournaments({ page, limit }, filters);
+  return tournamentService.getAllTournaments({ page, limit, search: filters?.search }, filters);
 }
 
 export async function registerForTournament(tournamentId: string, teamName?: string) {
   const { userId: clerkId } = await auth();
-  if (!clerkId) return { error: "Unauthorized" };
+  if (!clerkId) throw new UnauthorizedError();
 
-  try {
-    const { userService } = await import("@/services/user.service");
-    const user = await userService.getUserByClerkId(clerkId);
+  const input = tournamentRegistrationSchema.parse({ tournamentId, teamName });
+  const user = await requireCurrentUser();
 
-    const { athleteService } = await import("@/services/athlete.service");
-    
-    let athlete;
-    try {
-      athlete = await athleteService.getAthleteByUserId(user.id);
-    } catch (e: any) {
-      if (e.name === "NotFoundError" || e.message?.includes("Athlete profile")) {
-        if (user.role === "ATHLETE") {
-          // Auto-create default profile to break the onboarding loop
-          athlete = await athleteService.createAthleteProfile(user.id, { sportCategory: "OTHER" });
-        } else {
-          return { error: "ATHLETE_NOT_FOUND" };
-        }
-      } else {
-        throw e;
-      }
-    }
-
-    const result = await tournamentService.registerForTournament(tournamentId, athlete.id, { teamName });
-    return { success: true, data: result };
-  } catch (error: any) {
-    if (error.name === "NotFoundError" || error.message?.includes("Athlete profile")) {
-      return { error: "ATHLETE_NOT_FOUND" };
-    }
-    return { error: error.message || "Failed to register for tournament" };
+  if (user.role !== "ATHLETE") {
+    throw new ForbiddenError("Only athletes can register for tournaments");
   }
+
+  const { athleteService } = await import("@/services/athlete.service");
+  const athlete = await athleteService.getAthleteByUserId(user.id);
+  const result = await tournamentService.registerForTournament(input.tournamentId, athlete.id, { teamName: input.teamName });
+  revalidatePath(`/tournaments/${input.tournamentId}`);
+  revalidatePath("/tournaments");
+  return { success: true, data: result };
 }
 
 export async function getUpcomingTournaments(limit?: number) {

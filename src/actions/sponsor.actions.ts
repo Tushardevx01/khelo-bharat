@@ -1,13 +1,13 @@
 "use server";
 
-import { auth } from "@clerk/nextjs/server";
 import { sponsorService } from "@/services/sponsor.service";
+import { ForbiddenError } from "@/lib/errors";
+import { requireCurrentUser, requireRole } from "@/lib/auth";
+import { createSponsorSchema } from "@/schemas/profile.schema";
 
 export async function getSponsorProfile() {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
-
-  return sponsorService.getSponsorByUserId(userId);
+  const user = await requireCurrentUser();
+  return sponsorService.getSponsorByUserId(user.id);
 }
 
 export async function getSponsorById(id: string) {
@@ -22,25 +22,20 @@ export async function createSponsorProfile(data: {
   website?: string;
   logo?: string;
 }) {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
-
-  return sponsorService.createSponsorProfile(userId, data);
+  const user = await requireRole("SPONSOR");
+  return sponsorService.createSponsorProfile(user.id, createSponsorSchema.parse(data));
 }
 
 async function verifySponsorOwnership(sponsorId: string) {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
-
-  const { userService } = await import("@/services/user.service");
-  const user = await userService.getUserByClerkId(userId);
+  const user = await requireCurrentUser();
   
-  if (user.role === "SUPER_ADMIN") return;
+  if (user.role === "SUPER_ADMIN") return user;
 
   const sponsor = await sponsorService.getSponsorById(sponsorId);
   if (sponsor.userId !== user.id) {
-    throw new Error("Forbidden: You do not have permission to modify this sponsor profile");
+    throw new ForbiddenError("You do not have permission to modify this sponsor profile");
   }
+  return user;
 }
 
 export async function updateSponsorProfile(id: string, data: Record<string, unknown>) {

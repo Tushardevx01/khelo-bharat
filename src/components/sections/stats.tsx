@@ -2,24 +2,21 @@ import { getPlatformStats } from "@/actions/system.actions";
 import { StatsClient } from "./stats-client";
 
 export async function StatsSection() {
-  let statsData = {
-    athletes: "0",
-    schools: "0",
-    tournaments: "0",
-    states: "28",
-  };
+  let statsData: Awaited<ReturnType<typeof getPlatformStats>> | null = null;
 
   try {
     statsData = await getPlatformStats();
-  } catch (error) {
-    console.error("Error fetching platform stats:", error);
+  } catch {
+    statsData = null;
   }
 
+  if (!statsData) return null;
+
   const stats = [
-    { label: "Active Athletes", value: statsData.athletes },
-    { label: "Partner Schools", value: statsData.schools },
-    { label: "Tournaments Hosted", value: statsData.tournaments },
-    { label: "States Covered", value: statsData.states },
+    { label: "Active Athletes", value: statsData.athletes.toLocaleString("en-IN") },
+    { label: "Partner Schools", value: statsData.schools.toLocaleString("en-IN") },
+    { label: "Tournaments Hosted", value: statsData.tournaments.toLocaleString("en-IN") },
+    { label: "States Covered", value: statsData.states.toLocaleString("en-IN") },
   ];
 
   return (

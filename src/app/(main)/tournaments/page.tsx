@@ -34,7 +34,7 @@ export default async function TournamentsPage({
     sportCategory,
     status,
     search,
-  } as any);
+  });
 
   const content = (
     <div className={isSignedIn ? "space-y-8" : ""}>
@@ -59,7 +59,7 @@ export default async function TournamentsPage({
           </div>
           <h3 className="text-xl font-bold text-foreground">No tournaments found</h3>
           <p className="mt-2 text-sm text-muted-foreground max-w-sm">
-            We couldn't find any tournaments matching your criteria. Try adjusting your filters or check back later.
+            We couldn&apos;t find any tournaments matching your criteria. Try adjusting your filters or check back later.
           </p>
         </div>
       ) : (

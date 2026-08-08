@@ -36,7 +36,7 @@ export default async function SponsorsPage({
             </div>
             <h3 className="text-xl font-bold text-foreground">No sponsors found</h3>
             <p className="mt-2 text-sm text-muted-foreground max-w-sm">
-              We couldn't find any sponsors matching your criteria.
+              We couldn&apos;t find any sponsors matching your criteria.
             </p>
           </div>
         ) : (

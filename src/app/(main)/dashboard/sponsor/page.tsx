@@ -11,10 +11,7 @@ import { getSponsorSponsorships } from "@/actions/sponsorship.actions";
 export const dynamic = "force-dynamic";
 
 export default async function SponsorDashboardPage() {
-  let sponsorships: any[] = [];
-  try {
-    sponsorships = await getSponsorSponsorships();
-  } catch (error) {}
+  const sponsorships = await getSponsorSponsorships().catch(() => []);
 
   const activeSponsorships = sponsorships.filter(s => s.status === "ACTIVE");
   const totalAmount = sponsorships.reduce((sum, s) => sum + s.amount, 0);
@@ -31,7 +28,7 @@ export default async function SponsorDashboardPage() {
           <StatCard title="Active Sponsorships" value={activeSponsorships.length} icon={Handshake} />
           <StatCard title="Athletes Sponsored" value={sponsorships.filter(s => s.athleteId).length} icon={Users} />
           <StatCard title="Total Invested" value={`₹${(totalAmount / 100000).toFixed(2)}L`} icon={TrendingUp} />
-          <StatCard title="ROI Score" value="-" icon={BarChart3} />
+          <StatCard title="Sponsorship Records" value={sponsorships.length} icon={BarChart3} />
         </div>
 
         <div className="grid gap-4 md:grid-cols-2">
@@ -86,12 +83,10 @@ export default async function SponsorDashboardPage() {
             <CardContent>
               <div className="space-y-4">
                 {[
-                  { label: "Total Budget", value: "-" },
-                  { label: "Spent", value: `₹${(totalAmount / 100000).toFixed(2)}L` },
-                  { label: "Remaining", value: "-" },
-                  { label: "Avg. per Sponsorship", value: sponsorships.length ? `₹${((totalAmount / sponsorships.length) / 100000).toFixed(2)}L` : "₹0L" },
-                ].map((item, i) => (
-                  <div key={i} className="flex items-center justify-between">
+                  { label: "Committed", value: `₹${(totalAmount / 100000).toFixed(2)}L` },
+                  { label: "Average per Sponsorship", value: sponsorships.length ? `₹${((totalAmount / sponsorships.length) / 100000).toFixed(2)}L` : "₹0L" },
+                ].map((item) => (
+                  <div key={item.label} className="flex items-center justify-between">
                     <span className="text-sm text-neutral-600 dark:text-neutral-400">{item.label}</span>
                     <span className="text-sm font-medium text-neutral-900 dark:text-white">{item.value}</span>
                   </div>

@@ -7,12 +7,7 @@ import { Award, Download, ExternalLink, CheckCircle, FileText } from "lucide-rea
 import { getUserCertificates } from "@/actions/certificate.actions";
 
 export default async function CertificatesPage() {
-  let certificates: any[] = [];
-  try {
-    certificates = await getUserCertificates();
-  } catch (error) {
-    // Handle unauthenticated or missing profile
-  }
+  const certificates = await getUserCertificates().catch(() => []);
 
   return (
     <DashboardLayout>

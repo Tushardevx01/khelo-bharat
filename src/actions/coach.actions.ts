@@ -1,14 +1,14 @@
 "use server";
 
-import { auth } from "@clerk/nextjs/server";
 import { coachService } from "@/services/coach.service";
 import { SportCategory } from "@prisma/client";
+import { ForbiddenError } from "@/lib/errors";
+import { requireCurrentUser, requireRole } from "@/lib/auth";
+import { createCoachSchema } from "@/schemas/profile.schema";
 
 export async function getCoachProfile() {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
-
-  return coachService.getCoachByUserId(userId);
+  const user = await requireCurrentUser();
+  return coachService.getCoachByUserId(user.id);
 }
 
 export async function getCoachById(id: string) {
@@ -22,25 +22,20 @@ export async function createCoachProfile(data: {
   experience?: number;
   hourlyRate?: number;
 }) {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
-
-  return coachService.createCoachProfile(userId, data);
+  const user = await requireRole("COACH");
+  return coachService.createCoachProfile(user.id, createCoachSchema.parse(data));
 }
 
 async function verifyCoachOwnership(coachId: string) {
-  const { userId } = await auth();
-  if (!userId) throw new Error("Unauthorized");
-
-  const { userService } = await import("@/services/user.service");
-  const user = await userService.getUserByClerkId(userId);
+  const user = await requireCurrentUser();
   
-  if (user.role === "SUPER_ADMIN") return;
+  if (user.role === "SUPER_ADMIN") return user;
 
   const coach = await coachService.getCoachById(coachId);
   if (coach.userId !== user.id) {
-    throw new Error("Forbidden: You do not have permission to modify this coach profile");
+    throw new ForbiddenError("You do not have permission to modify this coach profile");
   }
+  return user;
 }
 
 export async function updateCoachProfile(id: string, data: Record<string, unknown>) {

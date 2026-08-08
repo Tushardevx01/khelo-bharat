@@ -9,17 +9,8 @@ import { getAthleteProfile } from "@/actions/athlete.actions";
 import { getAthleteAchievements } from "@/actions/achievement.actions";
 
 export default async function AchievementsPage() {
-  let athlete = null;
-  let achievements: any[] = [];
-  
-  try {
-    athlete = await getAthleteProfile();
-    if (athlete) {
-      achievements = await getAthleteAchievements(athlete.id);
-    }
-  } catch (error) {
-    // User might not be an athlete, or not registered yet
-  }
+  const athlete = await getAthleteProfile().catch(() => null);
+  const achievements = athlete ? await getAthleteAchievements(athlete.id) : [];
 
   return (
     <DashboardLayout>
@@ -47,7 +38,7 @@ export default async function AchievementsPage() {
               You need to complete your athlete profile to start adding achievements.
             </p>
             <Button className="mt-6" asChild>
-              <Link href="/settings">Complete Profile</Link>
+              <Link href="/profile">Complete Profile</Link>
             </Button>
           </div>
         ) : achievements.length === 0 ? (

@@ -30,25 +30,27 @@ export class PerformanceRepository {
   }
 
   async getStats(athleteId: string) {
-    const performances = await prisma.performance.findMany({
-      where: { athleteId },
-      include: {
-        tournament: { select: { id: true, title: true } },
-      },
-      orderBy: { date: "desc" },
-    });
-
-    const totalCompetitions = performances.length;
-    const wins = performances.filter((p) => p.rank === 1).length;
-    const podiumFinishes = performances.filter((p) => p.rank && p.rank <= 3).length;
-    const averageRank = performances.reduce((sum, p) => sum + (p.rank || 0), 0) / totalCompetitions || 0;
+    const where = { athleteId };
+    const [totalCompetitions, wins, podiumFinishes, averages, performances] = await Promise.all([
+      prisma.performance.count({ where }),
+      prisma.performance.count({ where: { ...where, rank: 1 } }),
+      prisma.performance.count({ where: { ...where, rank: { lte: 3 } } }),
+      prisma.performance.aggregate({ where, _avg: { rank: true, score: true } }),
+      prisma.performance.findMany({
+        where,
+        include: { tournament: { select: { id: true, title: true } } },
+        orderBy: { date: "desc" },
+        take: 10,
+      }),
+    ]);
 
     return {
       totalCompetitions,
       wins,
       podiumFinishes,
-      averageRank: Math.round(averageRank * 10) / 10,
-      recentForm: performances.slice(0, 5).map((p) => ({
+      averageRank: averages._avg.rank,
+      averageScore: averages._avg.score,
+      recentForm: performances.map((p) => ({
         date: p.date,
         rank: p.rank,
         score: p.score,

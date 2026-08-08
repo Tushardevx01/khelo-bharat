@@ -25,6 +25,34 @@ export class UserRepository {
     return prisma.user.create({ data });
   }
 
+  async upsertFromIdentity(data: {
+    clerkId: string;
+    email: string;
+    name: string;
+    avatar?: string | null;
+    role: UserRole;
+  }) {
+    const emailOwner = await prisma.user.findUnique({
+      where: { email: data.email },
+      select: { clerkId: true },
+    });
+    if (emailOwner && emailOwner.clerkId !== data.clerkId) {
+      throw new ConflictError("This email is already linked to another account");
+    }
+
+    return prisma.user.upsert({
+      where: { clerkId: data.clerkId },
+      create: data,
+      update: {
+        email: data.email,
+        name: data.name,
+        avatar: data.avatar ?? undefined,
+        deletedAt: null,
+        isActive: true,
+      },
+    });
+  }
+
   async update(id: string, data: Prisma.UserUpdateInput) {
     const user = await prisma.user.findUnique({ where: { id } });
     if (!user) throw new NotFoundError("User");
@@ -35,6 +63,13 @@ export class UserRepository {
     const user = await prisma.user.findUnique({ where: { id } });
     if (!user) throw new NotFoundError("User");
     return prisma.user.update({ where: { id }, data: { deletedAt: new Date() } });
+  }
+
+  async deleteByClerkId(clerkId: string) {
+    return prisma.user.updateMany({
+      where: { clerkId, deletedAt: null },
+      data: { deletedAt: new Date(), isActive: false },
+    });
   }
 
   async findAll(pagination: PaginationInput, role?: UserRole) {

@@ -11,18 +11,13 @@ export class UserService {
     avatar?: string;
     role?: UserRole;
   }) {
-    let user = await userRepository.findByClerkId(data.clerkId);
-    if (user) return user;
-
-    user = await userRepository.create({
+    return userRepository.upsertFromIdentity({
       clerkId: data.clerkId,
       email: data.email,
       name: data.name,
       avatar: data.avatar || null,
       role: data.role || "ATHLETE",
     });
-
-    return user;
   }
 
   async getUserByClerkId(clerkId: string) {
@@ -71,6 +66,10 @@ export class UserService {
 
   async updateLastLogin(id: string) {
     return userRepository.update(id, { lastLoginAt: new Date() });
+  }
+
+  async deleteUserByClerkId(clerkId: string) {
+    return userRepository.deleteByClerkId(clerkId);
   }
 }
 

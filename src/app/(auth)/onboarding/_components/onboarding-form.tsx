@@ -53,9 +53,8 @@ export function OnboardingForm() {
     setIsSubmitting(true);
     try {
       await completeOnboarding(selectedRole);
-      router.push("/dashboard");
-    } catch (error) {
-      console.error("Failed to update role:", error);
+      router.push("/profile");
+    } catch {
       setIsSubmitting(false);
     }
   };

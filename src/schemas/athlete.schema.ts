@@ -10,7 +10,7 @@ export const createAthleteSchema = z.object({
   coachId: z.string().uuid().optional(),
   height: z.number().min(50).max(250).optional(),
   weight: z.number().min(20).max(200).optional(),
-  experience: z.string().max(500).optional(),
+  experience: z.number().int().min(0).max(100).optional(),
 });
 
 export const updateAthleteSchema = createAthleteSchema.partial();

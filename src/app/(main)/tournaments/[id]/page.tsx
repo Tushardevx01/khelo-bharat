@@ -19,7 +19,7 @@ export default async function TournamentDetailPage({
   let tournament;
   try {
     tournament = await getTournamentById(id);
-  } catch (error) {
+  } catch {
     notFound();
   }
 
@@ -79,17 +79,35 @@ export default async function TournamentDetailPage({
               <TabsContent value="participants" className="mt-4">
                 <Card>
                   <CardContent className="p-6">
-                    <p className="text-neutral-600 dark:text-neutral-400">
+                    <p className="text-neutral-600 dark:text-neutral-400 mb-4">
                       {tournament.totalParticipants} participants registered out of {tournament.maxParticipants || "unlimited"} spots.
                     </p>
+                    {tournament.registrations && tournament.registrations.length > 0 && (
+                      <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
+                        {tournament.registrations.map((reg) => (
+                          <div key={reg.id} className="flex items-center gap-3 rounded-lg border p-3">
+                            {reg.athlete.user.avatar ? (
+                              <Image src={reg.athlete.user.avatar} alt={reg.athlete.user.name} width={40} height={40} className="h-10 w-10 rounded-full bg-neutral-100 object-cover" />
+                            ) : (
+                              <div className="h-10 w-10 rounded-full bg-neutral-200" />
+                            )}
+                            <div>
+                              <p className="font-medium text-sm">{reg.athlete.user.name}</p>
+                              {reg.teamName && <p className="text-xs text-neutral-500">{reg.teamName}</p>}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               </TabsContent>
               <TabsContent value="results" className="mt-4">
                 <Card>
                   <CardContent className="p-6">
-                    <p className="text-neutral-600 dark:text-neutral-400">
-                      Results will be available after the tournament concludes.
+                    <h3 className="text-lg font-semibold">Tournament Results</h3>
+                    <p className="mt-2 text-neutral-600 dark:text-neutral-400 whitespace-pre-wrap">
+                      {tournament.results || "Results will be available after the tournament concludes."}
                     </p>
                   </CardContent>
                 </Card>

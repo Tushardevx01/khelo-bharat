@@ -1,6 +1,6 @@
 import { tournamentRepository } from "@/repositories/tournament.repository";
 import { TournamentStatus, SportCategory } from "@prisma/client";
-import { NotFoundError, ValidationError } from "@/lib/errors";
+import { NotFoundError } from "@/lib/errors";
 import { PaginationInput } from "@/lib/validators";
 
 export class TournamentService {
@@ -70,26 +70,12 @@ export class TournamentService {
     organizerId?: string;
     city?: string;
     state?: string;
+    search?: string;
   }) {
     return tournamentRepository.findAll(pagination, filters);
   }
 
   async registerForTournament(tournamentId: string, athleteId: string, data?: { teamName?: string }) {
-    const tournament = await tournamentRepository.findById(tournamentId);
-    if (!tournament) throw new NotFoundError("Tournament");
-
-    if (tournament.status !== "REGISTRATION_OPEN") {
-      throw new ValidationError("Registration is not open for this tournament");
-    }
-
-    if (tournament.registrationDeadline && new Date() > tournament.registrationDeadline) {
-      throw new ValidationError("Registration deadline has passed");
-    }
-
-    if (tournament.maxParticipants && tournament.totalParticipants >= tournament.maxParticipants) {
-      throw new ValidationError("Tournament is full");
-    }
-
     return tournamentRepository.register(tournamentId, athleteId, data);
   }
 

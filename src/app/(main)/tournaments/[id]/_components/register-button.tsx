@@ -40,23 +40,13 @@ export function RegisterButton({
 
     try {
       setIsLoading(true);
-      const res = await registerForTournament(tournamentId);
-      
-      if (res?.error) {
-        if (res.error === "ATHLETE_NOT_FOUND") {
-          toast.error("Please complete your athlete profile first.");
-          router.push("/onboarding");
-          return;
-        }
-        toast.error(res.error);
-        return;
-      }
+      await registerForTournament(tournamentId);
       
       setRegistered(true);
       toast.success("Successfully registered for the tournament!");
       router.refresh();
-    } catch (error: any) {
-      toast.error(error.message || "Failed to register. Are you an athlete?");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to register for this tournament.");
     } finally {
       setIsLoading(false);
     }

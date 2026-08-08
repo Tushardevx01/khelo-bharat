@@ -9,7 +9,7 @@ import { useTransition, useEffect, useState, useCallback } from "react";
 export function AthletesFilters() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
 
   const currentSearch = searchParams.get("search") || "";
   const currentSport = searchParams.get("sport") || "all";

@@ -30,7 +30,16 @@ export class SchoolService {
     totalStudents?: number;
     sportsFacilities?: string[];
   }) {
-    return schoolRepository.create({ user: { connect: { id: userId } }, ...data });
+    return schoolRepository.create({ 
+      user: { connect: { id: userId } }, 
+      ...data,
+      members: {
+        create: {
+          userId: userId,
+          role: "ADMIN"
+        }
+      }
+    });
   }
 
   async updateSchoolProfile(id: string, data: Record<string, unknown>) {

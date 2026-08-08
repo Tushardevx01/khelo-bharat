@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { Webhook } from "svix";
 import { headers } from "next/headers";
 import { userService } from "@/services/user.service";
+import { errorResponse, successResponse } from "@/lib/api-response";
+import { ValidationError } from "@/lib/errors";
 
 const webhookSecret = process.env.CLERK_WEBHOOK_SECRET || "";
 
@@ -24,18 +26,37 @@ async function handleWebhook(event: { type: string; data: Record<string, unknown
   }
 
   if (eventType === "user.updated") {
-    const { id, first_name, last_name, image_url } = event.data;
+    const { id, first_name, last_name, image_url, email_addresses } = event.data;
     const name = `${first_name || ""} ${last_name || ""}`.trim() || "User";
+    const email = (email_addresses as Array<{ email_address: string }>)?.[0]?.email_address;
 
     try {
       const user = await userService.getUserByClerkId(id as string);
-      await userService.updateUser(user.id, { name });
-      if (image_url) {
-        await userService.updateAvatar(user.id, image_url as string);
+      await userService.getOrCreateUser({
+        clerkId: user.clerkId,
+        email: email || user.email,
+        name,
+        avatar: (image_url as string | undefined) || user.avatar || undefined,
+        role: user.role,
+      });
+    } catch (error) {
+      // A missed create event is recovered only when Clerk gave us a complete identity.
+      if (email) {
+        await userService.getOrCreateUser({
+          clerkId: id as string,
+          email,
+          name,
+          avatar: image_url as string | undefined,
+        });
+        return;
       }
-    } catch {
-      // User not found, skip
+      throw error;
     }
+  }
+
+  if (eventType === "user.deleted") {
+    const clerkId = event.data.id as string | undefined;
+    if (clerkId) await userService.deleteUserByClerkId(clerkId);
   }
 }
 
@@ -46,11 +67,17 @@ export async function POST(request: NextRequest) {
   const svix_signature = headerPayload.get("svix-signature");
 
   if (!svix_id || !svix_timestamp || !svix_signature) {
-    return NextResponse.json({ error: "Missing svix headers" }, { status: 400 });
+    return errorResponse(new ValidationError("Missing webhook signature"));
   }
 
-  const payload = await request.json();
-  const body = JSON.stringify(payload);
+  if (!webhookSecret) {
+    return NextResponse.json(
+      { success: false, error: { code: "WEBHOOK_NOT_CONFIGURED", message: "Webhook is unavailable" } },
+      { status: 503 },
+    );
+  }
+
+  const body = await request.text();
 
   const wh = new Webhook(webhookSecret);
   let evt: { type: string; data: Record<string, unknown> };
@@ -61,16 +88,14 @@ export async function POST(request: NextRequest) {
       "svix-timestamp": svix_timestamp,
       "svix-signature": svix_signature,
     }) as { type: string; data: Record<string, unknown> };
-  } catch (err) {
-    console.error("Webhook verification failed:", err);
-    return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
+  } catch {
+    return errorResponse(new ValidationError("Invalid webhook signature"));
   }
 
   try {
     await handleWebhook(evt);
-    return NextResponse.json({ success: true });
+    return successResponse({ received: true });
   } catch (error) {
-    console.error("Webhook handler error:", error);
-    return NextResponse.json({ error: "Webhook handler failed" }, { status: 500 });
+    return errorResponse(error);
   }
 }

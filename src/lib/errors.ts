@@ -44,10 +44,36 @@ export class ConflictError extends AppError {
   }
 }
 
-export function handleApiError(error: unknown): { success: boolean; error: string; status: number } {
-  if (error instanceof AppError) {
-    return { success: false, error: error.message, status: error.statusCode };
+export class RateLimitError extends AppError {
+  constructor(message: string = "Too many requests") {
+    super(message, "RATE_LIMITED", 429);
+    this.name = "RateLimitError";
   }
-  console.error("Unexpected error:", error);
-  return { success: false, error: "Internal server error", status: 500 };
+}
+
+export class InternalServerError extends AppError {
+  constructor(message: string = "Something went wrong") {
+    super(message, "INTERNAL_SERVER_ERROR", 500);
+    this.name = "InternalServerError";
+  }
+}
+
+export function handleApiError(error: unknown): {
+  success: false;
+  error: { code: string; message: string };
+  status: number;
+} {
+  if (error instanceof AppError) {
+    return {
+      success: false,
+      error: { code: error.code, message: error.message },
+      status: error.statusCode,
+    };
+  }
+  console.error("Unexpected application error", error);
+  return {
+    success: false,
+    error: { code: "INTERNAL_SERVER_ERROR", message: "Something went wrong" },
+    status: 500,
+  };
 }

@@ -21,7 +21,10 @@ export class SchoolRepository {
   async findByUserId(userId: string) {
     return prisma.school.findUnique({
       where: { userId },
-      include: { user: true },
+      include: {
+        user: true,
+        athletes: { include: { user: { select: { id: true, name: true, avatar: true, isVerified: true } } }, orderBy: { createdAt: "desc" } },
+      },
     });
   }
 

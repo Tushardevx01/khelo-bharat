@@ -50,3 +50,8 @@ export const tournamentQuerySchema = z.object({
   sortBy: z.enum(["startDate", "createdAt", "totalParticipants"]).default("startDate"),
   sortOrder: z.enum(["asc", "desc"]).default("desc"),
 });
+
+export const tournamentRegistrationSchema = z.object({
+  tournamentId: z.string().uuid(),
+  teamName: z.string().trim().min(2).max(100).optional(),
+});

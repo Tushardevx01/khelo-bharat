@@ -1,9 +1,8 @@
-import { Header } from "@/components/layout/header";
 import { PageHeader } from "@/components/layout/page-header";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Users, MapPin, Star, Handshake } from "lucide-react";
+import { MapPin, Handshake } from "lucide-react";
 import { getAllAthletes } from "@/actions/athlete.actions";
 import { MarketplaceFilters } from "./_components/marketplace-filters";
 import { Pagination } from "@/components/shared/pagination";
@@ -19,9 +18,8 @@ export default async function SponsorMarketplacePage({
   const page = typeof params.page === "string" ? parseInt(params.page) : 1;
   const search = typeof params.search === "string" ? params.search : undefined;
   const sport = typeof params.sport === "string" ? params.sport : undefined;
-  const location = typeof params.location === "string" ? params.location : undefined;
 
-  const { data: athletes, pagination: meta } = await getAllAthletes(page, 12, { sport, location, search } as any);
+  const { data: athletes, pagination: meta } = await getAllAthletes(page, 12, sport, search);
 
   return (
     <div className="min-h-screen">

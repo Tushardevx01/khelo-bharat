@@ -44,7 +44,7 @@ export default async function AthletesPage({
           </div>
           <h3 className="text-xl font-bold text-foreground">No athletes found</h3>
           <p className="mt-2 text-sm text-muted-foreground max-w-sm">
-            We couldn't find any athletes matching your criteria. Try adjusting your search or filters.
+            We couldn&apos;t find any athletes matching your criteria. Try adjusting your search or filters.
           </p>
         </div>
       ) : (

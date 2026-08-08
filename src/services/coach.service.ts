@@ -16,6 +16,12 @@ export class CoachService {
     return coach;
   }
 
+  async getDashboard(userId: string) {
+    const coach = await coachRepository.findDashboardByUserId(userId);
+    if (!coach) throw new NotFoundError("Coach profile");
+    return coach;
+  }
+
   async createCoachProfile(userId: string, data: {
     sportCategory: SportCategory;
     specialization?: string;

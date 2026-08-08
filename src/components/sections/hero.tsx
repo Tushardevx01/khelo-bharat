@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowRight, Play } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
@@ -58,10 +58,6 @@ export function HeroSection() {
                 Get Started
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
-            </Button>
-            <Button size="lg" variant="outline">
-              <Play className="mr-2 h-4 w-4" />
-              Watch Demo
             </Button>
           </motion.div>
         </div>

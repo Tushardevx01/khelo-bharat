@@ -1,5 +1,13 @@
 import { z } from "zod";
 
+export const userRoleSchema = z.enum([
+  "SUPER_ADMIN",
+  "SCHOOL_ADMIN",
+  "ATHLETE",
+  "COACH",
+  "SPONSOR",
+]);
+
 export const updateProfileSchema = z.object({
   name: z.string().min(2).max(100).optional(),
   phone: z.string().regex(/^\+?[1-9]\d{1,14}$/, "Invalid phone number").optional(),
@@ -13,7 +21,7 @@ export const userQuerySchema = z.object({
   page: z.coerce.number().min(1).default(1),
   limit: z.coerce.number().min(1).max(100).default(10),
   search: z.string().optional(),
-  role: z.string().optional(),
+  role: userRoleSchema.optional(),
   sortBy: z.enum(["name", "email", "createdAt"]).default("createdAt"),
   sortOrder: z.enum(["asc", "desc"]).default("desc"),
 });

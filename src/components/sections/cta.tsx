@@ -20,7 +20,7 @@ export function CTASection() {
             Ready to start your journey?
           </h2>
           <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground leading-relaxed">
-            Join thousands of athletes, coaches, and schools already using Khelo Bharat to achieve their sporting dreams.
+            Create your verified profile and take part in a connected sports ecosystem built for India.
           </p>
           <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
             <Button size="lg" asChild className="w-full sm:w-auto bg-primary text-primary-foreground hover:bg-primary/90 rounded-[12px] font-semibold px-10 py-6 text-lg">
